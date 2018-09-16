@@ -7,22 +7,27 @@
  */
 
 import React, { Component } from 'react'
-import { Platform, View } from 'react-native'
 import { Payments } from './src/scenes/payments'
-
-const instructions = Platform.select({
-  ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
-  android:
-    'Double tap R on your keyboard to reload,\n' +
-    'Shake or press menu button for dev menu',
-});
+import { NewPayment } from './src/scenes/new-payment'
+import { Router, Scene } from 'react-native-router-flux'
+import { initDatabase } from './src/db/database'
 
 export default class App extends Component {
+
   render() {
     return (
-      <View>
-        <Payments />
-      </View>
+      <Router>
+        <Scene key="root">
+          <Scene key="payments"
+            component={Payments}
+            title="Paymentss"
+            hideNavBar={true}
+            initial />
+          <Scene key="newPayment"
+            component={NewPayment}
+            title="New Payment" />
+        </Scene>
+      </Router>
     );
   }
 }
