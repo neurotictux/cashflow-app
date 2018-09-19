@@ -1,85 +1,109 @@
 import React, { Component } from 'react'
-import { Button, ListView, View, Text, StyleSheet } from 'react-native'
+import { ListView, View, Text, StyleSheet, Button } from 'react-native'
+import DatePicker from 'react-native-datepicker'
 import { Toolbar } from 'react-native-material-ui'
 import { Actions } from 'react-native-router-flux'
-import { PaymentListItem } from '../components/PaymentListItem'
+import PaymentListItem from '../components/PaymentListItem'
 import { PaymentService } from '../db/database'
 import { toDate } from '../utils/string'
 import { PaymentType } from '../utils/constants'
 import ActionButton from 'react-native-action-button'
-import Icon from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
+import Modal from 'react-native-modal'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import { paymentsChanged } from '../actions'
 
-const payments = [
-  { description: 'Renner', cost: 356.98, type: PaymentType.LOSS },
-  { description: 'Salary', cost: 1387.91, type: PaymentType.GAIN }
-]
+class Payments extends Component {
 
-export class Payments extends Component {
-
-  constructor() {
-    super();
-    const ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
+  constructor(props) {
+    super(props)
     this.state = {
-      dataSource: ds.cloneWithRows(payments),
       sum: '$ 0.00',
-      color: 'red'
+      color: 'green',
+      modalVisible: false,
+      payments: []
     }
+
+    this.openForecast = this.openForecast.bind(this)
+    this.updateExpectedBalance = this.updateExpectedBalance.bind(this)
   }
 
   componentDidMount() {
-    this.refreshList()
+    PaymentService.getAll()
+      .then(res => this.props.paymentsChanged(res))
+      .catch(err => console.warn(err))
   }
 
-  componentDidUpdate() {
-    console.log(this.state.color)
-  }
-
-  refreshList() {
-    PaymentService.getAll().then(res => {
-      const sumCost = (type) => {
-        const arr = res.filter(p => p.type === type)
-        let sum = 0
-        arr.forEach(p => sum += p.cost)
-        return sum
-      }
-      const sorted = res.sort((a, b) => toDate(a.date) > toDate(b.date) ? -1 : toDate(a.date) < toDate(b.date) ? 1 : 0)
-      const sum = (sumCost(PaymentType.GAIN) - sumCost(PaymentType.LOSS)).toFixed(2)
-
-      this.setState({
-        dataSource: this.state.dataSource.cloneWithRows(sorted),
-        sum: '$ ' + sum,
-        color: sum < 0 ? 'red' : 'green'
-      })
-    }).catch(err => console.warn(err))
-  }
-
-  onEdit(payment) {
-    Actions.newPayment({
-      payment: payment,
-      title: 'Edit Payment'
-    })
-  }
-
-  onRemove(p) {
-    if (p && p.appId) {
-      PaymentService.remove(p.appId).then(() => {
-        this.refreshList()
-      })
-    }
+  openForecast() {
+    this.setState({ modalVisible: true })
   }
 
   menuSelected(index) {
     switch (index) {
       case 0:
-        this.refreshList()
         break;
     }
 
   }
 
+  updateExpectedBalance(date) {
+    const payments = this.state.payments.filter(p => toDate(p.date) < toDate(date))
+    const sumCost = (type) => {
+      const arr = payments.filter(p => p.type === type)
+      let sum = 0
+      arr.forEach(p => sum += p.cost)
+      return sum
+    }
+    const sum = (sumCost(PaymentType.GAIN) - sumCost(PaymentType.LOSS)).toFixed(2)
+    this.setState({
+      sum: '$ ' + sum,
+      color: sum < 0 ? 'red' : 'green',
+      date: date
+    })
+  }
+
   render() {
     return (
       <View style={{ flex: 1 }}>
+
+        <View>
+          <Modal isVisible={this.state.modalVisible}>
+            <View style={{ flex: 1, backgroundColor: 'white', borderRadius: 4, alignItems: 'center', justifyContent: 'center' }}>
+              <View style={{ alignItems: 'center' }}>
+                <Text style={{ fontSize: 20 }}>Expected Balance:</Text>
+                <Text style={{ fontSize: 20, fontWeight: 'bold', color: this.state.color }}>{this.state.sum}</Text>
+              </View>
+              <DatePicker
+                style={{ width: 200, marginTop: 30 }}
+                date={this.state.date}
+                mode="date"
+                placeholder="Maximum Date"
+                format="DD-MM-YYYY"
+                minDate="01-01-2000"
+                maxDate="01-01-2030"
+                confirmBtnText="Confirm"
+                cancelBtnText="Cancel"
+                customStyles={{
+                  dateIcon: {
+                    position: 'absolute',
+                    left: 0,
+                    top: 4,
+                    marginLeft: 0
+                  },
+                  dateInput: {
+                    marginLeft: 40
+                  }
+                }}
+                onDateChange={(date) => this.updateExpectedBalance(date)}
+              />
+              <View style={{ marginTop: 20, width: 100 }}>
+                <Button onPress={() => this.setState({ modalVisible: false })} title="OK"></Button>
+              </View>
+            </View>
+          </Modal>
+        </View>
+
         <Toolbar
           style={{ container: { backgroundColor: '#282' } }}
           leftElement="menu"
@@ -97,39 +121,27 @@ export class Payments extends Component {
           onRightElementPress={(label) => this.menuSelected(label.index)}
         />
 
-        <View style={{ alignItems: 'center' }}>
-          <Text style={{ fontSize: 20 }}>Expected Balance:</Text>
-          <Text style={{ fontSize: 20, fontWeight: 'bold', color: this.state.color }}>{this.state.sum}</Text>
-        </View>
-
         <ListView
           collapsable={true}
-          maxHeight={520}
+          enableEmptySections={true}
           borderWidth={1}
           paddingLeft={10}
           paddingRight={10}
           borderColor={'#ccc'}
           marginTop={10}
-          dataSource={this.state.dataSource}
-          renderRow={p => <PaymentListItem
-            payment={p}
-            onEdit={(x) => this.onEdit(x)}
-            onRemove={(x) => this.onRemove(x)} />
-          }
+          marginBottom={80}
+          dataSource={this.props.dates}
+          renderRow={p => <PaymentListItem date={p} payments={this.props.payments} />}
         />
 
-        <ActionButton offsetX={10} offsetY={10} buttonColor="rgba(231,76,60,1)">
-          <ActionButton.Item buttonColor='#9b59b6' title="New Task" onPress={() => console.log("notes tapped!")}>
-            <Icon name="md-create" style={styles.actionButtonIcon} />
-          </ActionButton.Item>
-          <ActionButton.Item buttonColor='#3498db' title="Notifications" onPress={() => { }}>
-            <Icon name="md-notifications-off" style={styles.actionButtonIcon} />
-          </ActionButton.Item>
+        <ActionButton offsetX={10} offsetY={10} buttonColor="#282">
           <ActionButton.Item buttonColor='#1abc9c' title="New Payment" onPress={() => Actions.newPayment({ payment: {} })}>
-            <Icon name="md-add" style={styles.actionButtonIcon} />
+            <Icon name="plus" style={styles.actionButtonIcon} />
+          </ActionButton.Item>
+          <ActionButton.Item buttonColor='#1abc9c' title="Forecast" onPress={this.openForecast}>
+            <Icon name="currency-usd" style={styles.actionButtonIcon} />
           </ActionButton.Item>
         </ActionButton>
-
       </View >)
   }
 }
@@ -141,3 +153,14 @@ const styles = StyleSheet.create({
     color: 'white',
   },
 });
+
+const ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
+
+const mapStateToProps = store => ({
+  payments: store.appState.payments,
+  dates: ds.cloneWithRows(store.appState.dates)
+})
+
+const mapDispatchToProps = dispatch => bindActionCreators({ paymentsChanged }, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(Payments)

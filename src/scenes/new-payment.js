@@ -5,7 +5,10 @@ import { Actions } from 'react-native-router-flux'
 import { Checkbox } from 'react-native-material-ui'
 import { PaymentType } from '../utils/constants'
 import { PaymentService } from '../db/database'
-import { toMoney, fromMoney, fromMoneyString } from '../utils/string';
+import { toMoney, fromMoney, fromMoneyString } from '../utils/string'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+import { paymentsChanged } from '../actions'
 
 const styles = {
   input: {
@@ -16,13 +19,14 @@ const styles = {
   }
 }
 
-export class NewPayment extends Component {
+class NewPayment extends Component {
 
   constructor(props) {
     super(props)
     this.save = this.save.bind(this)
     this.remove = this.remove.bind(this)
     this.duplicate = this.duplicate.bind(this)
+    this.paymentsChanged = this.paymentsChanged.bind(this)
     const p = props.payment || { type: PaymentType.LOSS }
     this.state = {
       appId: p.appId,
@@ -43,14 +47,18 @@ export class NewPayment extends Component {
       type: this.state.type,
       date: this.state.date,
       paid: this.state.paid,
-    }).then(() => Actions.pop())
-      .catch(err => this.setState({ error: err }))
+    }).then(() => {
+      this.paymentsChanged()
+      Actions.pop({ refresh: { launchRefresh: true } })
+    }).catch(err => this.setState({ error: err }))
   }
 
   remove() {
     PaymentService.remove(this.state.appId)
-      .then(() => Actions.pop())
-      .catch(err => this.setState({ error: err }))
+      .then(() => {
+        this.paymentsChanged()
+        Actions.pop()
+      }).catch(err => this.setState({ error: err }))
   }
 
   duplicate() {
@@ -61,8 +69,16 @@ export class NewPayment extends Component {
       type: this.state.type,
       date: this.state.date,
       paid: this.state.paid,
-    }).then(() => Actions.pop())
-      .catch(err => this.setState({ error: err }))
+    }).then(() => {
+      this.paymentsChanged()
+      Actions.pop()
+    }).catch(err => this.setState({ error: err }))
+  }
+
+  paymentsChanged() {
+    PaymentService.getAll()
+      .then(res => this.props.paymentsChanged(res))
+      .catch(err => console.warn(err))
   }
 
   render() {
@@ -130,3 +146,11 @@ export class NewPayment extends Component {
     )
   }
 }
+
+const mapStateToProps = store => ({
+  payments: store.appState.payments
+})
+
+const mapDispatchToProps = dispatch => bindActionCreators({ paymentsChanged }, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(NewPayment)
