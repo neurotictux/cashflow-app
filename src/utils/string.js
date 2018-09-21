@@ -28,3 +28,53 @@ export const toDate = (d) => {
     result = new Date('')
   return result
 }
+
+export const isSameMonth = (x, y) => {
+  const date1 = toDate(x)
+  const date2 = toDate(y)
+  if (date1.toString() === 'Invalid Date' || date2.toString() === 'Invalid Date')
+    return false
+  return date1.getFullYear() === date2.getFullYear() && date1.getMonth() === date2.getMonth()
+}
+
+export const distinctMonths = (dates) => {
+  let result = []
+  if (Array.isArray(dates)) {
+    dates.forEach(p => {
+      const date = toDate(p)
+      if (date.toString() !== 'Invalid Date' && result.filter(x => isSameMonth(x, p)).length === 0)
+        result.push(p)
+    })
+  }
+  return result
+}
+
+export const monthName = (x) => {
+  const month = toDate(x).getMonth()
+  switch (month) {
+    case 0:
+      return 'January'
+    case 1:
+      return 'February'
+    case 2:
+      return 'March'
+    case 3:
+      return 'April'
+    case 4:
+      return 'May'
+    case 5:
+      return 'June'
+    case 6:
+      return 'July'
+    case 7:
+      return 'August'
+    case 8:
+      return 'September'
+    case 9:
+      return 'October'
+    case 10:
+      return 'November'
+    case 11:
+      return 'December'
+  }
+}

@@ -5,7 +5,7 @@ import { Toolbar } from 'react-native-material-ui'
 import { Actions } from 'react-native-router-flux'
 import PaymentListItem from '../components/PaymentListItem'
 import { PaymentService } from '../db/database'
-import { toDate } from '../utils/string'
+import { toDate, distinctMonths } from '../utils/string'
 import { PaymentType } from '../utils/constants'
 import ActionButton from 'react-native-action-button'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
@@ -130,8 +130,8 @@ class Payments extends Component {
           borderColor={'#ccc'}
           marginTop={10}
           marginBottom={80}
-          dataSource={this.props.dates}
-          renderRow={p => <PaymentListItem date={p} payments={this.props.payments} />}
+          dataSource={this.props.months}
+          renderRow={p => <PaymentListItem month={p} />}
         />
 
         <ActionButton offsetX={10} offsetY={10} buttonColor="#282">
@@ -142,7 +142,7 @@ class Payments extends Component {
             <Icon name="currency-usd" style={styles.actionButtonIcon} />
           </ActionButton.Item>
         </ActionButton>
-      </View >)
+      </View>)
   }
 }
 
@@ -158,9 +158,9 @@ const ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
 
 const mapStateToProps = store => ({
   payments: store.appState.payments,
-  dates: ds.cloneWithRows(store.appState.dates)
+  months: ds.cloneWithRows(distinctMonths(store.appState.dates))
 })
 
-const mapDispatchToProps = dispatch => bindActionCreators({ paymentsChanged }, dispatch);
+const mapDispatchToProps = dispatch => bindActionCreators({ paymentsChanged }, dispatch)
 
 export default connect(mapStateToProps, mapDispatchToProps)(Payments)
