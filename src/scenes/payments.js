@@ -138,7 +138,7 @@ class Payments extends Component {
           <ActionButton.Item buttonColor='#1abc9c' title="New Payment" onPress={() => Actions.newPayment({ payment: {} })}>
             <Icon name="plus" style={styles.actionButtonIcon} />
           </ActionButton.Item>
-          <ActionButton.Item buttonColor='#1abc9c' title="Forecast" onPress={this.openForecast}>
+          <ActionButton.Item buttonColor='#1abc9c' title="Simulation" onPress={() => Actions.simulation()}>
             <Icon name="currency-usd" style={styles.actionButtonIcon} />
           </ActionButton.Item>
         </ActionButton>

@@ -37,6 +37,18 @@ export const isSameMonth = (x, y) => {
   return date1.getFullYear() === date2.getFullYear() && date1.getMonth() === date2.getMonth()
 }
 
+export const monthYearIsHigher = (bigger, smaller) => {
+  const biggerDate = toDate(bigger)
+  const smallerDate = toDate(smaller)
+  if (biggerDate.toString() === 'Invalid Date' || smallerDate.toString() === 'Invalid Date')
+    return false
+  const biggerYear = biggerDate.getFullYear()
+  const smallerYear = smallerDate.getFullYear()
+  const biggerMonth = biggerDate.getMonth()
+  const smallerMonth = smallerDate.getMonth()
+  return biggerYear > smallerYear || (biggerYear === smallerYear && biggerMonth > smallerMonth)
+}
+
 export const distinctMonths = (dates) => {
   let result = []
   if (Array.isArray(dates)) {
