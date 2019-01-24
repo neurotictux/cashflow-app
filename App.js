@@ -11,9 +11,7 @@ import { Provider } from 'react-redux'
 import { Store } from './src/store'
 import { Router, Scene } from 'react-native-router-flux'
 
-import Payments from './src/scenes/payments'
-import NewPayment from './src/scenes/new-payment'
-import { Simulation } from './src/scenes/simulation'
+import { Login, NewPayment, Payments, Simulation, Future } from './src/scenes'
 
 export default class App extends Component {
 
@@ -22,22 +20,32 @@ export default class App extends Component {
       <Provider store={Store}>
         <Router>
           <Scene key="root">
-            <Scene key="payments"
-              component={Payments}
-              title="Paymentss"
+            <Scene key="login"
+              component={Login}
+              title="Login"
               hideNavBar={true}
               initial
-              />
+            />
+            <Scene key="payments"
+              component={Payments}
+              title="Payments"
+              hideNavBar={true}
+            />
             <Scene key="newPayment"
               component={NewPayment}
               title="New Payment" />
             <Scene key="simulation"
               component={Simulation}
               title="Simulation"
-                />
+            />
+            <Scene key="futurePayments"
+              component={Future}
+              title="Pagamentos Futuros"
+              hideNavBar={true}
+            />
           </Scene>
         </Router>
       </Provider>
-    );
+    )
   }
 }

@@ -3,7 +3,21 @@ import { fromMoney } from '../utils/string';
 
 const keys = {
   PAYMENTS: '@CashFlow:PAYMENTS',
-  PAYMENTS_ID: '@CashFlow:PAYMENTS:ID'
+  PAYMENTS_ID: '@CashFlow:PAYMENTS:ID',
+  TOKEN: '@CashFlow:TOKEN',
+}
+
+let currentToken = ''
+
+AsyncStorage.getItem(keys.TOKEN).then(t => currentToken = t)
+
+export const TokenStorage = {
+  get: () => currentToken,
+  getAsync: () => AsyncStorage.getItem(keys.TOKEN),
+  save: async (token) => {
+    currentToken = token
+    await AsyncStorage.setItem(keys.TOKEN, token)
+  }
 }
 
 export const PaymentService = {

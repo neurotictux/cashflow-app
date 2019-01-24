@@ -3,16 +3,17 @@ import { ListView, View, Text, StyleSheet, Button } from 'react-native'
 import DatePicker from 'react-native-datepicker'
 import { Toolbar } from 'react-native-material-ui'
 import { Actions } from 'react-native-router-flux'
-import PaymentListItem from '../components/PaymentListItem'
-import { PaymentService } from '../db/database'
-import { toDate, distinctMonths } from '../utils/string'
-import { PaymentType } from '../utils/constants'
 import ActionButton from 'react-native-action-button'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import Modal from 'react-native-modal'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
+
 import { paymentsChanged } from '../actions'
+import PaymentListItem from '../components/PaymentListItem'
+import { PaymentService } from '../storage'
+import { toDate, distinctMonths } from '../utils/string'
+import { PaymentType } from '../utils/constants'
 
 class Payments extends Component {
 

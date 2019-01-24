@@ -6,7 +6,7 @@ import { toMoney } from '../utils/string'
 
 const ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
 
-export class Simulation extends Component {
+export default class Simulation extends Component {
 
   constructor(props) {
     super(props)
