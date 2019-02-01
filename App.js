@@ -8,44 +8,60 @@
 
 import React, { Component } from 'react'
 import { Provider } from 'react-redux'
-import { Store } from './src/store'
 import { Router, Scene } from 'react-native-router-flux'
+import { COLOR, ThemeContext, getTheme } from 'react-native-material-ui'
 
+import { Store } from './src/store'
 import { Login, NewPayment, Payments, Simulation, Future } from './src/scenes'
+
+const uiTheme = {
+  palette: {
+    primaryColor: COLOR.green500,
+  },
+  toolbar: {
+    container: {
+      height: 50,
+    },
+  },
+};
 
 export default class App extends Component {
 
   render() {
     return (
-      <Provider store={Store}>
-        <Router>
-          <Scene key="root">
-            <Scene key="login"
-              component={Login}
-              title="Login"
-              hideNavBar={true}
-              initial
-            />
-            <Scene key="payments"
-              component={Payments}
-              title="Payments"
-              hideNavBar={true}
-            />
-            <Scene key="newPayment"
-              component={NewPayment}
-              title="New Payment" />
-            <Scene key="simulation"
-              component={Simulation}
-              title="Simulation"
-            />
-            <Scene key="futurePayments"
-              component={Future}
-              title="Pagamentos Futuros"
-              hideNavBar={true}
-            />
-          </Scene>
-        </Router>
-      </Provider>
+      <ThemeContext.Provider value={getTheme(uiTheme)}>
+        <Provider store={Store}>
+          <Router>
+            <Scene key="root">
+              <Scene key="login"
+                component={Login}
+                title="Login"
+                hideNavBar={true}
+                type='reset'
+                initial
+              />
+              <Scene key="payments"
+                component={Payments}
+                title="Pagamentos"
+                hideNavBar={true}
+              />
+              <Scene key="newPayment"
+                component={NewPayment}
+                title="Novo Pagamento" />
+              <Scene key="simulation"
+                component={Simulation}
+                title="Simulation"
+              />
+              <Scene key="futurePayments"
+                component={Future}
+                title="Pagamentos Futuros"
+                hideNavBar={true}
+                type='reset'
+              />
+            </Scene>
+          </Router>
+        </Provider>
+      </ThemeContext.Provider>
     )
   }
 }

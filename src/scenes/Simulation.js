@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { ListView, Button, Text, View } from 'react-native'
 import { Card } from 'react-native-material-ui'
-import { PatternTextInput } from '../components/PatternTextInput'
+import { PatternTextInput } from '../components'
 import { toMoney } from '../utils/string'
 
 const ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
@@ -46,10 +46,6 @@ export default class Simulation extends Component {
     const last = Number(this.state.last)
     const nTotal = Number(this.state.total)
     const fgts = Number(this.state.fgts)
-    console.log(first)
-    console.log(last)
-    console.log(total)
-    console.log(fgts)
 
     if (!first || !last || !nTotal || first <= last)
       return
@@ -58,21 +54,17 @@ export default class Simulation extends Component {
 
     let installments = []
 
-    let total = 0;
-    let parcela = first;
-    const descontoFgts = fgts > 0 ? fgts / 360 : 0;
-    console.log(descontoFgts)
+    let total = 0
+    let parcela = first
+    const descontoFgts = fgts > 0 ? fgts / 360 : 0
     for (let i = 1; i <= nTotal; i++) {
       total += (parcela - descontoFgts)
       installments.push({
         number: i,
         value: toMoney((parcela - descontoFgts))
       })
-      console.log(`Parcela ${i} - ${(parcela - descontoFgts)}`)
       parcela -= interest;
     }
-    console.log('')
-    console.log(`Total: ${total}`)
 
     this.setState({
       sumTotal: '$ ' + total.toFixed(2),

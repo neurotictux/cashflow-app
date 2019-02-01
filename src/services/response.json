@@ -1,0 +1,983 @@
+{
+  "01/2019": {
+    "payments": [
+      {
+        "description": "Magazine Luiza",
+        "cost": 290.91,
+        "type": 2,
+        "isCreditCard": true,
+        "month": "01/2019",
+        "items": [
+          {
+            "paymentId": 5,
+            "description": "Televisão Mãe",
+            "cost": 186.67,
+            "plots": 15,
+            "type": 2,
+            "creditCard": "Magazine Luiza",
+            "paymentDate": "24/01/2019",
+            "month": "01/2019",
+            "day": 1
+          },
+          {
+            "paymentId": 17,
+            "description": "Anuidade Magazine Luiza",
+            "cost": 9.99,
+            "plots": 0,
+            "type": 2,
+            "creditCard": "Magazine Luiza",
+            "paymentDate": "24/01/2019",
+            "month": "01/2019",
+            "day": 1
+          },
+          {
+            "paymentId": 13,
+            "description": "Balcão Microondas",
+            "cost": 38.48,
+            "plots": 10,
+            "type": 2,
+            "creditCard": "Magazine Luiza",
+            "paymentDate": "24/01/2019",
+            "month": "01/2019",
+            "day": 1
+          },
+          {
+            "paymentId": 14,
+            "description": "Microondas",
+            "cost": 55.77,
+            "plots": 10,
+            "type": 2,
+            "creditCard": "Magazine Luiza",
+            "paymentDate": "24/01/2019",
+            "month": "01/2019",
+            "day": 1
+          }
+        ]
+      },
+      {
+        "description": "Master Card",
+        "cost": 1362.58,
+        "type": 2,
+        "isCreditCard": true,
+        "month": "01/2019",
+        "items": [
+          {
+            "paymentId": 6,
+            "description": "Netflix",
+            "cost": 27.9,
+            "plots": 0,
+            "type": 2,
+            "creditCard": "Master Card",
+            "paymentDate": "24/01/2019",
+            "month": "01/2019",
+            "day": 1
+          },
+          {
+            "paymentId": 9,
+            "description": "Claro Celular",
+            "cost": 29.9,
+            "plots": 0,
+            "type": 2,
+            "creditCard": "Master Card",
+            "paymentDate": "24/01/2019",
+            "month": "01/2019",
+            "day": 1
+          },
+          {
+            "paymentId": 3,
+            "description": "Cama Box",
+            "cost": 107.54,
+            "plots": 10,
+            "type": 2,
+            "creditCard": "Master Card",
+            "paymentDate": "24/01/2019",
+            "month": "01/2019",
+            "day": 1
+          },
+          {
+            "paymentId": 18,
+            "description": "Frigobar",
+            "cost": 778.79,
+            "plots": 1,
+            "type": 2,
+            "creditCard": "Master Card",
+            "paymentDate": "24/01/2019",
+            "month": "01/2019",
+            "day": 1
+          },
+          {
+            "paymentId": 15,
+            "description": "Celular",
+            "cost": 84.4,
+            "plots": 10,
+            "type": 2,
+            "creditCard": "Master Card",
+            "paymentDate": "24/01/2019",
+            "month": "01/2019",
+            "day": 1
+          },
+          {
+            "paymentId": 2,
+            "description": "Balcão Pia",
+            "cost": 86.05,
+            "plots": 10,
+            "type": 2,
+            "creditCard": "Master Card",
+            "paymentDate": "24/01/2019",
+            "month": "01/2019",
+            "day": 1
+          },
+          {
+            "paymentId": 8,
+            "description": "Internet",
+            "cost": 79.0,
+            "plots": 0,
+            "type": 2,
+            "creditCard": "Master Card",
+            "paymentDate": "24/01/2019",
+            "month": "01/2019",
+            "day": 1
+          },
+          {
+            "paymentId": 25,
+            "description": "Curso Inglês",
+            "cost": 169.0,
+            "plots": 0,
+            "type": 0,
+            "creditCard": "Master Card",
+            "paymentDate": "24/01/2019",
+            "month": "01/2019",
+            "day": 1
+          }
+        ]
+      },
+      {
+        "description": "Condomínio",
+        "cost": 250.0,
+        "type": 2,
+        "isCreditCard": false,
+        "month": "01/2019",
+        "items": [
+          {
+            "paymentId": 10,
+            "description": "Condomínio",
+            "cost": 250.0,
+            "plots": 0,
+            "type": 2,
+            "creditCard": null,
+            "paymentDate": "24/01/2019",
+            "month": "01/2019",
+            "day": 1
+          }
+        ]
+      },
+      {
+        "description": "Faculdade",
+        "cost": 780.0,
+        "type": 2,
+        "isCreditCard": false,
+        "month": "01/2019",
+        "items": [
+          {
+            "paymentId": 11,
+            "description": "Faculdade",
+            "cost": 780.0,
+            "plots": 0,
+            "type": 2,
+            "creditCard": null,
+            "paymentDate": "24/01/2019",
+            "month": "01/2019",
+            "day": 1
+          }
+        ]
+      },
+      {
+        "description": "Jeferson Apartamento",
+        "cost": 500.0,
+        "type": 2,
+        "isCreditCard": false,
+        "month": "01/2019",
+        "items": [
+          {
+            "paymentId": 1,
+            "description": "Jeferson Apartamento",
+            "cost": 500.0,
+            "plots": 7,
+            "type": 2,
+            "creditCard": null,
+            "paymentDate": "24/01/2019",
+            "month": "01/2019",
+            "day": 1
+          }
+        ]
+      },
+      {
+        "description": "Anuidade Master Card",
+        "cost": 10.43,
+        "type": 2,
+        "isCreditCard": false,
+        "month": "01/2019",
+        "items": [
+          {
+            "paymentId": 16,
+            "description": "Anuidade Master Card",
+            "cost": 10.43,
+            "plots": 0,
+            "type": 2,
+            "creditCard": null,
+            "paymentDate": "24/01/2019",
+            "month": "01/2019",
+            "day": 1
+          }
+        ]
+      },
+      {
+        "description": "Ajuda Mãe Televisão",
+        "cost": 200.0,
+        "type": 1,
+        "isCreditCard": false,
+        "month": "01/2019",
+        "items": [
+          {
+            "paymentId": 20,
+            "description": "Ajuda Mãe Televisão",
+            "cost": 200.0,
+            "plots": 6,
+            "type": 1,
+            "creditCard": null,
+            "paymentDate": "24/01/2019",
+            "month": "01/2019",
+            "day": 1
+          }
+        ]
+      },
+      {
+        "description": "IPVA - Moto",
+        "cost": 170.0,
+        "type": 2,
+        "isCreditCard": false,
+        "month": "01/2019",
+        "items": [
+          {
+            "paymentId": 22,
+            "description": "IPVA - Moto",
+            "cost": 170.0,
+            "plots": 1,
+            "type": 2,
+            "creditCard": null,
+            "paymentDate": "24/01/2019",
+            "month": "01/2019",
+            "day": 1
+          }
+        ]
+      },
+      {
+        "description": "Balada BNZ",
+        "cost": 483.0,
+        "type": 2,
+        "isCreditCard": false,
+        "month": "01/2019",
+        "items": [
+          {
+            "paymentId": 23,
+            "description": "Balada BNZ",
+            "cost": 483.0,
+            "plots": 1,
+            "type": 2,
+            "creditCard": null,
+            "paymentDate": "24/01/2019",
+            "month": "01/2019",
+            "day": 1
+          }
+        ]
+      },
+      {
+        "description": "Entrada",
+        "cost": 3700.0,
+        "type": 1,
+        "isCreditCard": false,
+        "month": "01/2019",
+        "items": [
+          {
+            "paymentId": 12,
+            "description": "Entrada",
+            "cost": 3700.0,
+            "plots": 0,
+            "type": 1,
+            "creditCard": null,
+            "paymentDate": "24/01/2019",
+            "month": "01/2019",
+            "day": 1
+          }
+        ]
+      },
+      {
+        "description": "Entrada 2018/2019 Bônus",
+        "cost": 1539.92,
+        "type": 1,
+        "isCreditCard": false,
+        "month": "01/2019",
+        "items": [
+          {
+            "paymentId": 19,
+            "description": "Entrada 2018/2019 Bônus",
+            "cost": 1539.92,
+            "plots": 0,
+            "type": 1,
+            "creditCard": null,
+            "paymentDate": "24/01/2019",
+            "month": "01/2019",
+            "day": 1
+          }
+        ]
+      }
+    ],
+    "costIncome": 5439.92,
+    "costExpense": 3846.92,
+    "cost": 1593.00,
+    "acumulatedCost": 1593.00
+  },
+  "02/2019": {
+    "payments": [
+      {
+        "description": "Magazine Luiza",
+        "cost": 290.91,
+        "type": 2,
+        "isCreditCard": true,
+        "month": "02/2019",
+        "items": [
+          {
+            "paymentId": 5,
+            "description": "Televisão Mãe",
+            "cost": 186.67,
+            "plots": 15,
+            "type": 2,
+            "creditCard": "Magazine Luiza",
+            "paymentDate": "24/02/2019",
+            "month": "02/2019",
+            "day": 1
+          },
+          {
+            "paymentId": 17,
+            "description": "Anuidade Magazine Luiza",
+            "cost": 9.99,
+            "plots": 0,
+            "type": 2,
+            "creditCard": "Magazine Luiza",
+            "paymentDate": "24/02/2019",
+            "month": "02/2019",
+            "day": 1
+          },
+          {
+            "paymentId": 13,
+            "description": "Balcão Microondas",
+            "cost": 38.48,
+            "plots": 10,
+            "type": 2,
+            "creditCard": "Magazine Luiza",
+            "paymentDate": "24/02/2019",
+            "month": "02/2019",
+            "day": 1
+          },
+          {
+            "paymentId": 14,
+            "description": "Microondas",
+            "cost": 55.77,
+            "plots": 10,
+            "type": 2,
+            "creditCard": "Magazine Luiza",
+            "paymentDate": "24/02/2019",
+            "month": "02/2019",
+            "day": 1
+          }
+        ]
+      },
+      {
+        "description": "Master Card",
+        "cost": 864.79,
+        "type": 2,
+        "isCreditCard": true,
+        "month": "02/2019",
+        "items": [
+          {
+            "paymentId": 6,
+            "description": "Netflix",
+            "cost": 27.9,
+            "plots": 0,
+            "type": 2,
+            "creditCard": "Master Card",
+            "paymentDate": "24/02/2019",
+            "month": "02/2019",
+            "day": 1
+          },
+          {
+            "paymentId": 9,
+            "description": "Claro Celular",
+            "cost": 29.9,
+            "plots": 0,
+            "type": 2,
+            "creditCard": "Master Card",
+            "paymentDate": "24/02/2019",
+            "month": "02/2019",
+            "day": 1
+          },
+          {
+            "paymentId": 3,
+            "description": "Cama Box",
+            "cost": 107.54,
+            "plots": 10,
+            "type": 2,
+            "creditCard": "Master Card",
+            "paymentDate": "24/02/2019",
+            "month": "02/2019",
+            "day": 1
+          },
+          {
+            "paymentId": 15,
+            "description": "Celular",
+            "cost": 84.4,
+            "plots": 10,
+            "type": 2,
+            "creditCard": "Master Card",
+            "paymentDate": "24/02/2019",
+            "month": "02/2019",
+            "day": 1
+          },
+          {
+            "paymentId": 2,
+            "description": "Balcão Pia",
+            "cost": 86.05,
+            "plots": 10,
+            "type": 2,
+            "creditCard": "Master Card",
+            "paymentDate": "24/02/2019",
+            "month": "02/2019",
+            "day": 1
+          },
+          {
+            "paymentId": 8,
+            "description": "Internet",
+            "cost": 79.0,
+            "plots": 0,
+            "type": 2,
+            "creditCard": "Master Card",
+            "paymentDate": "24/02/2019",
+            "month": "02/2019",
+            "day": 1
+          },
+          {
+            "paymentId": 4,
+            "description": "Curso Inglês (Taxa Cancelamento)",
+            "cost": 450.0,
+            "plots": 0,
+            "type": 0,
+            "creditCard": "Master Card",
+            "paymentDate": "24/02/2019",
+            "month": "02/2019",
+            "day": 1
+          }
+        ]
+      },
+      {
+        "description": "Condomínio",
+        "cost": 250.0,
+        "type": 2,
+        "isCreditCard": false,
+        "month": "02/2019",
+        "items": [
+          {
+            "paymentId": 10,
+            "description": "Condomínio",
+            "cost": 250.0,
+            "plots": 0,
+            "type": 2,
+            "creditCard": null,
+            "paymentDate": "24/02/2019",
+            "month": "02/2019",
+            "day": 1
+          }
+        ]
+      },
+      {
+        "description": "Faculdade",
+        "cost": 780.0,
+        "type": 2,
+        "isCreditCard": false,
+        "month": "02/2019",
+        "items": [
+          {
+            "paymentId": 11,
+            "description": "Faculdade",
+            "cost": 780.0,
+            "plots": 0,
+            "type": 2,
+            "creditCard": null,
+            "paymentDate": "24/02/2019",
+            "month": "02/2019",
+            "day": 1
+          }
+        ]
+      },
+      {
+        "description": "Jeferson Apartamento",
+        "cost": 500.0,
+        "type": 2,
+        "isCreditCard": false,
+        "month": "02/2019",
+        "items": [
+          {
+            "paymentId": 1,
+            "description": "Jeferson Apartamento",
+            "cost": 500.0,
+            "plots": 7,
+            "type": 2,
+            "creditCard": null,
+            "paymentDate": "24/02/2019",
+            "month": "02/2019",
+            "day": 1
+          }
+        ]
+      },
+      {
+        "description": "Apartamento",
+        "cost": 740.34,
+        "type": 2,
+        "isCreditCard": false,
+        "month": "02/2019",
+        "items": [
+          {
+            "paymentId": 7,
+            "description": "Apartamento",
+            "cost": 740.34,
+            "plots": 0,
+            "type": 2,
+            "creditCard": null,
+            "paymentDate": "24/02/2019",
+            "month": "02/2019",
+            "day": 1
+          }
+        ]
+      },
+      {
+        "description": "Anuidade Master Card",
+        "cost": 10.43,
+        "type": 2,
+        "isCreditCard": false,
+        "month": "02/2019",
+        "items": [
+          {
+            "paymentId": 16,
+            "description": "Anuidade Master Card",
+            "cost": 10.43,
+            "plots": 0,
+            "type": 2,
+            "creditCard": null,
+            "paymentDate": "24/02/2019",
+            "month": "02/2019",
+            "day": 1
+          }
+        ]
+      },
+      {
+        "description": "Ajuda Mãe Televisão",
+        "cost": 200.0,
+        "type": 1,
+        "isCreditCard": false,
+        "month": "02/2019",
+        "items": [
+          {
+            "paymentId": 20,
+            "description": "Ajuda Mãe Televisão",
+            "cost": 200.0,
+            "plots": 6,
+            "type": 1,
+            "creditCard": null,
+            "paymentDate": "24/02/2019",
+            "month": "02/2019",
+            "day": 1
+          }
+        ]
+      },
+      {
+        "description": "Entrada",
+        "cost": 3700.0,
+        "type": 1,
+        "isCreditCard": false,
+        "month": "02/2019",
+        "items": [
+          {
+            "paymentId": 12,
+            "description": "Entrada",
+            "cost": 3700.0,
+            "plots": 0,
+            "type": 1,
+            "creditCard": null,
+            "paymentDate": "24/02/2019",
+            "month": "02/2019",
+            "day": 1
+          }
+        ]
+      },
+      {
+        "description": "LUZ - RGE",
+        "cost": 50.0,
+        "type": 2,
+        "isCreditCard": false,
+        "month": "02/2019",
+        "items": [
+          {
+            "paymentId": 21,
+            "description": "LUZ - RGE",
+            "cost": 50.0,
+            "plots": 0,
+            "type": 2,
+            "creditCard": null,
+            "paymentDate": "24/02/2019",
+            "month": "02/2019",
+            "day": 1
+          }
+        ]
+      },
+      {
+        "description": "Celular Jaques - Amazon",
+        "cost": 84.99,
+        "type": 2,
+        "isCreditCard": false,
+        "month": "02/2019",
+        "items": [
+          {
+            "paymentId": 24,
+            "description": "Celular Jaques - Amazon",
+            "cost": 84.99,
+            "plots": 10,
+            "type": 2,
+            "creditCard": null,
+            "paymentDate": "24/02/2019",
+            "month": "02/2019",
+            "day": 1
+          }
+        ]
+      }
+    ],
+    "costIncome": 3900.0,
+    "costExpense": 3571.46,
+    "cost": 328.54,
+    "acumulatedCost": 1921.54
+  },
+  "03/2019": {
+    "payments": [
+      {
+        "description": "Magazine Luiza",
+        "cost": 290.91,
+        "type": 2,
+        "isCreditCard": true,
+        "month": "03/2019",
+        "items": [
+          {
+            "paymentId": 5,
+            "description": "Televisão Mãe",
+            "cost": 186.67,
+            "plots": 15,
+            "type": 2,
+            "creditCard": "Magazine Luiza",
+            "paymentDate": "24/03/2019",
+            "month": "03/2019",
+            "day": 1
+          },
+          {
+            "paymentId": 17,
+            "description": "Anuidade Magazine Luiza",
+            "cost": 9.99,
+            "plots": 0,
+            "type": 2,
+            "creditCard": "Magazine Luiza",
+            "paymentDate": "24/03/2019",
+            "month": "03/2019",
+            "day": 1
+          },
+          {
+            "paymentId": 13,
+            "description": "Balcão Microondas",
+            "cost": 38.48,
+            "plots": 10,
+            "type": 2,
+            "creditCard": "Magazine Luiza",
+            "paymentDate": "24/03/2019",
+            "month": "03/2019",
+            "day": 1
+          },
+          {
+            "paymentId": 14,
+            "description": "Microondas",
+            "cost": 55.77,
+            "plots": 10,
+            "type": 2,
+            "creditCard": "Magazine Luiza",
+            "paymentDate": "24/03/2019",
+            "month": "03/2019",
+            "day": 1
+          }
+        ]
+      },
+      {
+        "description": "Master Card",
+        "cost": 414.79,
+        "type": 2,
+        "isCreditCard": true,
+        "month": "03/2019",
+        "items": [
+          {
+            "paymentId": 6,
+            "description": "Netflix",
+            "cost": 27.9,
+            "plots": 0,
+            "type": 2,
+            "creditCard": "Master Card",
+            "paymentDate": "24/03/2019",
+            "month": "03/2019",
+            "day": 1
+          },
+          {
+            "paymentId": 9,
+            "description": "Claro Celular",
+            "cost": 29.9,
+            "plots": 0,
+            "type": 2,
+            "creditCard": "Master Card",
+            "paymentDate": "24/03/2019",
+            "month": "03/2019",
+            "day": 1
+          },
+          {
+            "paymentId": 3,
+            "description": "Cama Box",
+            "cost": 107.54,
+            "plots": 10,
+            "type": 2,
+            "creditCard": "Master Card",
+            "paymentDate": "24/03/2019",
+            "month": "03/2019",
+            "day": 1
+          },
+          {
+            "paymentId": 15,
+            "description": "Celular",
+            "cost": 84.4,
+            "plots": 10,
+            "type": 2,
+            "creditCard": "Master Card",
+            "paymentDate": "24/03/2019",
+            "month": "03/2019",
+            "day": 1
+          },
+          {
+            "paymentId": 2,
+            "description": "Balcão Pia",
+            "cost": 86.05,
+            "plots": 10,
+            "type": 2,
+            "creditCard": "Master Card",
+            "paymentDate": "24/03/2019",
+            "month": "03/2019",
+            "day": 1
+          },
+          {
+            "paymentId": 8,
+            "description": "Internet",
+            "cost": 79.0,
+            "plots": 0,
+            "type": 2,
+            "creditCard": "Master Card",
+            "paymentDate": "24/03/2019",
+            "month": "03/2019",
+            "day": 1
+          }
+        ]
+      },
+      {
+        "description": "Condomínio",
+        "cost": 250.0,
+        "type": 2,
+        "isCreditCard": false,
+        "month": "03/2019",
+        "items": [
+          {
+            "paymentId": 10,
+            "description": "Condomínio",
+            "cost": 250.0,
+            "plots": 0,
+            "type": 2,
+            "creditCard": null,
+            "paymentDate": "24/03/2019",
+            "month": "03/2019",
+            "day": 1
+          }
+        ]
+      },
+      {
+        "description": "Faculdade",
+        "cost": 780.0,
+        "type": 2,
+        "isCreditCard": false,
+        "month": "03/2019",
+        "items": [
+          {
+            "paymentId": 11,
+            "description": "Faculdade",
+            "cost": 780.0,
+            "plots": 0,
+            "type": 2,
+            "creditCard": null,
+            "paymentDate": "24/03/2019",
+            "month": "03/2019",
+            "day": 1
+          }
+        ]
+      },
+      {
+        "description": "Jeferson Apartamento",
+        "cost": 500.0,
+        "type": 2,
+        "isCreditCard": false,
+        "month": "03/2019",
+        "items": [
+          {
+            "paymentId": 1,
+            "description": "Jeferson Apartamento",
+            "cost": 500.0,
+            "plots": 7,
+            "type": 2,
+            "creditCard": null,
+            "paymentDate": "24/03/2019",
+            "month": "03/2019",
+            "day": 1
+          }
+        ]
+      },
+      {
+        "description": "Apartamento",
+        "cost": 740.34,
+        "type": 2,
+        "isCreditCard": false,
+        "month": "03/2019",
+        "items": [
+          {
+            "paymentId": 7,
+            "description": "Apartamento",
+            "cost": 740.34,
+            "plots": 0,
+            "type": 2,
+            "creditCard": null,
+            "paymentDate": "24/03/2019",
+            "month": "03/2019",
+            "day": 1
+          }
+        ]
+      },
+      {
+        "description": "Anuidade Master Card",
+        "cost": 10.43,
+        "type": 2,
+        "isCreditCard": false,
+        "month": "03/2019",
+        "items": [
+          {
+            "paymentId": 16,
+            "description": "Anuidade Master Card",
+            "cost": 10.43,
+            "plots": 0,
+            "type": 2,
+            "creditCard": null,
+            "paymentDate": "24/03/2019",
+            "month": "03/2019",
+            "day": 1
+          }
+        ]
+      },
+      {
+        "description": "Ajuda Mãe Televisão",
+        "cost": 200.0,
+        "type": 1,
+        "isCreditCard": false,
+        "month": "03/2019",
+        "items": [
+          {
+            "paymentId": 20,
+            "description": "Ajuda Mãe Televisão",
+            "cost": 200.0,
+            "plots": 6,
+            "type": 1,
+            "creditCard": null,
+            "paymentDate": "24/03/2019",
+            "month": "03/2019",
+            "day": 1
+          }
+        ]
+      },
+      {
+        "description": "Entrada",
+        "cost": 3700.0,
+        "type": 1,
+        "isCreditCard": false,
+        "month": "03/2019",
+        "items": [
+          {
+            "paymentId": 12,
+            "description": "Entrada",
+            "cost": 3700.0,
+            "plots": 0,
+            "type": 1,
+            "creditCard": null,
+            "paymentDate": "24/03/2019",
+            "month": "03/2019",
+            "day": 1
+          }
+        ]
+      },
+      {
+        "description": "LUZ - RGE",
+        "cost": 50.0,
+        "type": 2,
+        "isCreditCard": false,
+        "month": "03/2019",
+        "items": [
+          {
+            "paymentId": 21,
+            "description": "LUZ - RGE",
+            "cost": 50.0,
+            "plots": 0,
+            "type": 2,
+            "creditCard": null,
+            "paymentDate": "24/03/2019",
+            "month": "03/2019",
+            "day": 1
+          }
+        ]
+      },
+      {
+        "description": "Celular Jaques - Amazon",
+        "cost": 84.99,
+        "type": 2,
+        "isCreditCard": false,
+        "month": "03/2019",
+        "items": [
+          {
+            "paymentId": 24,
+            "description": "Celular Jaques - Amazon",
+            "cost": 84.99,
+            "plots": 10,
+            "type": 2,
+            "creditCard": null,
+            "paymentDate": "24/03/2019",
+            "month": "03/2019",
+            "day": 1
+          }
+        ]
+      }
+    ],
+    "costIncome": 3900.0,
+    "costExpense": 3121.46,
+    "cost": 778.54,
+    "acumulatedCost": 2700.08
+  }
+}

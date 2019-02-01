@@ -8,25 +8,37 @@ export const toMoney = (n) => {
   return '$ ' + result.toFixed(2)
 }
 
-export const fromMoney = (n) => {
-  let result = n + ''
-  result = Number(result ? result.replace(/[^0-9.]/g, '') : '0')
-  return result
+export const toReal = (val) => {
+  return isNaN(val) ? val : `R$ ${Number(val)
+    .toFixed(2).replace('.', ',')
+    .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')}`
 }
 
-export const fromMoneyString = (n) => {
-  let result = n + ''
-  return result.replace(/[^0-9.]/g, '')
-}
+export const fromReal = n => Number(n ? n.replace(/[^0-9,]/g, '').replace(',', '.') : '0')
+
+export const fromMoney = n => Number(n ? n.replace(/[^0-9.]/g, '') : '0')
+
+export const fromMoneyString = n => (n + '').replace(/[^0-9.]/g, '')
+
+export const onlyInteger = n => (n + '').replace(/[^0-9]/g, '')
 
 export const toDate = (d) => {
   let result
-  const arr = (d + '').replace(/[^0-9-]/).split('-')
-  if (arr.length === 3)
-    result = new Date(`${arr[1]}/${arr[0]}/${arr[2]}`)
-  else
-    result = new Date('')
+  const arr = (d + '').replace('/', '-').replace(/[^0-9-]/).split('-')
+  const dateStr = arr.length === 2 ? `${arr[0]}/01/${arr[1]}` : arr.length === 3 ? `${arr[1]}/${arr[0]}/${arr[2]}` : ''
+  result = new Date(dateStr)
   return result
+}
+
+export const currentMonth = (monthAdded) => {
+  const now = new Date()
+  let month = now.getMonth() + (monthAdded > 1 && monthAdded < 12 ? monthAdded : 1)
+  let year = now.getFullYear()
+  if (month > 12) {
+    month = month - 12
+    year++
+  }
+  return `${month}/${year}`
 }
 
 export const isSameMonth = (x, y) => {
@@ -62,31 +74,51 @@ export const distinctMonths = (dates) => {
 }
 
 export const monthName = (x) => {
-  const month = toDate(x).getMonth()
+  let month = null
+  if (!isNaN(x))
+    month = Number(x) - 1
+  else
+    month = toDate(x).getMonth()
   switch (month) {
     case 0:
-      return 'January'
+      return 'Janeiro'
     case 1:
-      return 'February'
+      return 'Fevereiro'
     case 2:
-      return 'March'
+      return 'Março'
     case 3:
-      return 'April'
+      return 'Abril'
     case 4:
-      return 'May'
+      return 'Maio'
     case 5:
-      return 'June'
+      return 'Junho'
     case 6:
-      return 'July'
+      return 'Julho'
     case 7:
-      return 'August'
+      return 'Agosto'
     case 8:
-      return 'September'
+      return 'Setembro'
     case 9:
-      return 'October'
+      return 'Outubro'
     case 10:
-      return 'November'
+      return 'Novembro'
     case 11:
-      return 'December'
+      return 'Dezembro'
+    default:
+      return 'Invalid Month'
   }
+}
+
+export const generatePickerMonthYear = (monthYear, sumYears) => {
+  const currentMonthYear = (monthYear || currentMonth()).split('/')
+  const currYear = Number(currentMonthYear[1])
+  const result = []
+  let j = Number(currentMonthYear[0])
+  for (let i = currYear; i <= currYear + (sumYears || 2); i++) {
+    for (j; j <= 12; j++) {
+      result.push(`${j > 9 ? j : '0' + j}/${i}`)
+    }
+    j = 1
+  }
+  return result
 }

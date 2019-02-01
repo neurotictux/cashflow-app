@@ -1,9 +1,22 @@
 import axios from 'axios'
 import { TokenStorage } from '../storage/index'
+import { Actions } from 'react-native-router-flux'
 
-const apiUrl = 'https://financemanagerweb.herokuapp.com/api'
+//const apiUrl = 'https://financemanagerweb.herokuapp.com/api'
+const apiUrl = 'http://localhost:5000/api'
+
+axios.interceptors.response.use(response => response, err => {
+  console.log(err)
+  const { request, status } = err.response
+  if (status === 401 && !request.responseURL.endsWith('/api/token')) {
+    TokenStorage.save(null)
+    Actions.login()
+  }
+  return Promise.reject(err)
+})
 
 const sendRequest = (method, url, headers, data) => {
+  console.log(data)
   return axios({
     method: method,
     headers: headers,
@@ -12,7 +25,7 @@ const sendRequest = (method, url, headers, data) => {
   }).then(res => res.data)
     .catch(err => {
       throw {
-        message: err.response.data,
+        message: err.response.status === 400 ? err.response.data.error : err.response.data,
         status: err.response.status
       }
     })

@@ -6,7 +6,6 @@ export class PatternTextInput extends Component {
   constructor(props) {
     super(props)
     if (!props.pattern)
-      console.warn(`Property 'Pattern' of 'PatternTextInput' component is required`)
     this.textChanged = this.textChanged.bind(this)
     this.state = { text: '', pattern: new RegExp(props.pattern) }
   }

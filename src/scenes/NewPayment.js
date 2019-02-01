@@ -1,14 +1,11 @@
 import React, { Component } from 'react'
-import { Text, Button, Picker, View, TextInput } from 'react-native'
-import DatePicker from 'react-native-datepicker'
+import { ActivityIndicator, Text, Button, Picker, View, TextInput } from 'react-native'
 import { Actions } from 'react-native-router-flux'
 import { Checkbox } from 'react-native-material-ui'
+
 import { PaymentType } from '../utils/constants'
-import { PaymentService } from '../storage'
-import { toMoney, fromMoney, fromMoneyString } from '../utils/string'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import { paymentsChanged } from '../actions'
+import { CreditCardService, PaymentService } from '../services'
+import { fromReal, onlyInteger, fromMoneyString, toReal, generatePickerMonthYear } from '../utils/string'
 
 const styles = {
   input: {
@@ -19,138 +16,166 @@ const styles = {
   }
 }
 
-class NewPayment extends Component {
+export default class NewPayment extends Component {
 
   constructor(props) {
     super(props)
-    this.save = this.save.bind(this)
-    this.remove = this.remove.bind(this)
-    this.duplicate = this.duplicate.bind(this)
-    this.paymentsChanged = this.paymentsChanged.bind(this)
-    const p = props.payment || { type: PaymentType.LOSS }
+    const p = props.payment || { type: PaymentType.Expense }
+    const now = new Date()
+
+    const date = (p.firstPayment || `01/01/${now.getFullYear()}`).split('/')
+
     this.state = {
-      appId: p.appId,
+      id: p.id,
       description: p.description,
-      cost: toMoney(p.cost ? p.cost : '0'),
-      type: p.type || PaymentType.LOSS,
-      date: p.date,
-      paid: p.paid,
-      error: ''
+      cost: toReal(p.cost ? p.cost : '0'),
+      type: p.type || PaymentType.Expense,
+      date: `${date[1]}/${date[2]}`,
+      error: '',
+      plots: p.plots ? p.plots + '' : '',
+      plotsPaid: p.plotsPaid ? p.plotsPaid + '' : '',
+      singlePlot: p.singlePlot,
+      fixedPayment: p.fixedPayment,
+      useCreditCard: false,
+      cards: [],
+      card: p.creditCard || {},
+      loading: true,
+      monthsYearsPicker: generatePickerMonthYear('01/' + (now.getFullYear() - 1), 5)
     }
   }
 
+  componentDidMount() {
+    CreditCardService.get()
+      .then(res => this.setState({ cards: res, loading: false }))
+      .catch(err => this.setState({ error: err.message, loading: false }))
+  }
+
   save() {
-    PaymentService.save({
-      appId: this.state.appId,
-      description: this.state.description,
-      cost: fromMoney(this.state.cost),
-      type: this.state.type,
-      date: this.state.date,
-      paid: this.state.paid,
-    }).then(() => {
-      this.paymentsChanged()
-      Actions.pop({ refresh: { launchRefresh: true } })
-    }).catch(err => this.setState({ error: err }))
-  }
 
-  remove() {
-    PaymentService.remove(this.state.appId)
-      .then(() => {
-        this.paymentsChanged()
+    const { id, description, cost, type, date, plots, plotsPaid, singlePlot, fixedPayment, useCreditCard, card } = this.state
+
+    const arrDate = date.split('/')
+    const firstPayment = `${arrDate[0]}/01/${arrDate[1]}`
+
+    const payment = {
+      id,
+      description,
+      type,
+      plots: !fixedPayment && !singlePlot ? plots : 0,
+      plotsPaid: !fixedPayment && !singlePlot ? plotsPaid : 0,
+      firstPayment: firstPayment,
+      fixedPayment,
+      singlePlot: !fixedPayment && singlePlot ? true : false,
+      cost: fromReal(cost),
+      creditCardId: useCreditCard ? card.id : null
+    }
+
+    this.setState({ loading: true })
+
+    PaymentService.save(payment)
+      .then(res => {
+        console.warn('sucesso')
+        setTimeout(() => { Actions.refresh({ refreshPayments: true }) }, 500)
         Actions.pop()
-      }).catch(err => this.setState({ error: err }))
-  }
+      })
+      .catch(err => {
+        console.warn(err)
+        this.setState({ loading: false, error: err.message })
 
-  duplicate() {
-    PaymentService.save({
-      appId: 0,
-      description: this.state.description,
-      cost: fromMoney(this.state.cost),
-      type: this.state.type,
-      date: this.state.date,
-      paid: this.state.paid,
-    }).then(() => {
-      this.paymentsChanged()
-      Actions.pop()
-    }).catch(err => this.setState({ error: err }))
-  }
-
-  paymentsChanged() {
-    PaymentService.getAll()
-      .then(res => this.props.paymentsChanged(res))
-      .catch(err => console.warn(err))
+      })
   }
 
   render() {
     return (
-      <View style={{ marginTop: 80, alignItems: 'center', justifyContent: 'space-between', height: 400 }}>
+      <View style={{ marginTop: 20, alignItems: 'center', justifyContent: 'space-between' }}>
+        {this.state.loading ? <ActivityIndicator size="large" /> : null}
         <TextInput
           onChangeText={t => this.setState({ error: '', description: t })}
           value={this.state.description}
-          placeholder="Description"
+          placeholder="Descrição"
           style={styles.input}
         />
+        <View style={{ marginTop: 20 }} width={200} height={30}>
+          <Checkbox onCheck={(checked) => this.setState({ singlePlot: checked })} label="Parcela única ?" value="agree" checked={this.state.singlePlot} />
+        </View>
+
+        {this.state.singlePlot ? null :
+          <View style={{ marginTop: 20 }} width={200} height={30}>
+            <Checkbox onCheck={(checked) => this.setState({ fixedPayment: checked })} label="Mensal ?" value="agree" checked={this.state.fixedPayment} />
+          </View>
+        }
+
+        {this.state.cards.length ?
+          <View>
+            <View style={{ marginTop: 20 }} width={200} height={30}>
+              <Checkbox onCheck={(checked) => this.setState({ useCreditCard: checked })} label="Cartão de Crédito ?" value="agree" checked={this.state.useCreditCard} />
+            </View>
+
+            {this.state.useCreditCard ?
+              <View style={{ width: 200, borderBottomWidth: 1, alignItems: 'flex-end' }}>
+                <Picker
+                  selectedValue={this.state.card}
+                  style={{ height: 50, width: 200 }}
+                  onValueChange={(itemValue, index) => this.setState({ error: '', card: itemValue })}>
+                  {this.state.cards.map(c => <Picker.Item key={c.id} label={c.name} value={c} />)}
+                </Picker>
+              </View>
+              : null}
+
+          </View>
+          : null}
+
+        {this.state.fixedPayment || this.state.singlePlot
+          ? null :
+          <View>
+            <TextInput
+              onChangeText={t => this.setState({ error: '', plots: onlyInteger(t) })}
+              value={this.state.plots}
+              placeholder="N° de parcelas"
+              style={styles.input}
+            />
+
+            <TextInput
+              onChangeText={t => this.setState({ error: '', plotsPaid: onlyInteger(t) })}
+              value={this.state.plotsPaid}
+              placeholder="Nº de parcelas pagas"
+              style={styles.input}
+            />
+          </View>
+        }
+
         <TextInput
-          onChangeText={t => this.setState({ error: '', cost: fromMoneyString(t) })}
-          onBlur={t => this.setState({ cost: toMoney(this.state.cost) })}
+          onChangeText={t => this.setState({ error: '', cost: t ? fromMoneyString(t) : '' })}
+          onBlur={t => this.setState({ cost: this.state.cost ? toReal(this.state.cost) : '' })}
           value={this.state.cost}
-          placeholder="Cost"
+          placeholder="Valor Total"
           style={styles.input}
         />
+
         <View style={{ width: 200, borderBottomWidth: 1, alignItems: 'flex-end' }}>
           <Picker
             selectedValue={this.state.type}
             style={{ height: 50, width: 200 }}
             onValueChange={(itemValue, index) => this.setState({ error: '', type: itemValue })}>
-            <Picker.Item label="LOSS" value={PaymentType.LOSS} />
-            <Picker.Item label="GAIN" value={PaymentType.GAIN} />
+            <Picker.Item label="Despesa" value={PaymentType.Expense} />
+            <Picker.Item label="Renda" value={PaymentType.Income} />
           </Picker>
         </View>
-        <DatePicker
-          style={{ width: 200, marginTop: 30 }}
-          date={this.state.date}
-          mode="date"
-          placeholder="Pay day"
-          format="DD-MM-YYYY"
-          minDate="01-01-2000"
-          maxDate="01-01-2030"
-          confirmBtnText="Confirm"
-          cancelBtnText="Cancel"
-          customStyles={{
-            dateIcon: {
-              position: 'absolute',
-              left: 0,
-              top: 4,
-              marginLeft: 0
-            },
-            dateInput: {
-              marginLeft: 40
-            }
-          }}
-          onDateChange={(date) => { this.setState({ error: '', date: date }) }}
-        />
-        <View style={{ marginTop: 20 }} width={200} height={30}>
-          <Checkbox onCheck={(checked) => this.setState({ paid: checked })} label="Paid ?" value="agree" checked={this.state.paid} />
+        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 10 }}>
+          <Text style={{ marginRight: 10 }}>Primeiro Pagamento:</Text>
+          <Picker
+            mode="dropdown"
+            selectedValue={this.state.date}
+            style={{ height: 50, width: 140, alignContent: 'center', alignItems: 'center', justifyContent: 'center' }}
+            onValueChange={date => this.setState({ date: date })}>
+            {this.state.monthsYearsPicker.map((p, i) => <Picker.Item key={i} label={p} value={p} />)}
+          </Picker>
         </View>
-        <View style={{ marginTop: 30, justifyContent: 'space-between' }} height={120} width={200}>
-          <Button onPress={this.save} raised={true} color='#282' title='Save' />
-          {this.state.appId ?
-            <View style={{ marginTop: 10, justifyContent: 'space-between' }} height={80}>
-              <Button onPress={this.duplicate} raised={true} primary={true} title='Duplicate' />
-              <Button onPress={this.remove} raised={true} color='#C00' title='delete' />
-            </View>
-            : null}
+        <View style={{ marginTop: 20, justifyContent: 'space-between' }} width={200}>
+          <Button disabled={this.state.loading} onPress={() => this.save()} raised={true} color='#282' title='Save' />
         </View>
         <Text style={{ color: '#F33' }}>{this.state.error}</Text>
       </View>
     )
   }
 }
-
-const mapStateToProps = store => ({
-  payments: store.appState.payments
-})
-
-const mapDispatchToProps = dispatch => bindActionCreators({ paymentsChanged }, dispatch);
-
-export default connect(mapStateToProps, mapDispatchToProps)(NewPayment)

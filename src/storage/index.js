@@ -5,6 +5,8 @@ const keys = {
   PAYMENTS: '@CashFlow:PAYMENTS',
   PAYMENTS_ID: '@CashFlow:PAYMENTS:ID',
   TOKEN: '@CashFlow:TOKEN',
+  FUTURE_PAYMENTS: '@CashFlow:FUTURE_PAYMENTS',
+  USER: '@CashFlow:USER',
 }
 
 let currentToken = ''
@@ -16,7 +18,20 @@ export const TokenStorage = {
   getAsync: () => AsyncStorage.getItem(keys.TOKEN),
   save: async (token) => {
     currentToken = token
-    await AsyncStorage.setItem(keys.TOKEN, token)
+    if (token)
+      return await AsyncStorage.setItem(keys.TOKEN, token)
+    else
+      return await AsyncStorage.removeItem(keys.TOKEN)
+  }
+}
+
+export const UserStorage = {
+  get: async () => JSON.parse(await AsyncStorage.getItem(keys.USER)),
+  save: async user => {
+    if (user)
+      return await AsyncStorage.setItem(keys.USER, JSON.stringify(user))
+    else
+      return await AsyncStorage.removeItem(keys.USER)
   }
 }
 
@@ -61,5 +76,15 @@ export const PaymentService = {
     payments = payments ? JSON.parse(payments) : []
     payments = payments.filter(p => p.appId !== id)
     return await AsyncStorage.setItem(keys.PAYMENTS, JSON.stringify(payments))
+  }
+}
+
+export const PaymentStorage = {
+  getFuture: async () => JSON.parse(await AsyncStorage.getItem(keys.FUTURE_PAYMENTS)),
+  saveFuture: async (payments) => {
+    if (payments)
+      return await AsyncStorage.setItem(keys.FUTURE_PAYMENTS, JSON.stringify(payments))
+    else
+      return await AsyncStorage.removeItem(keys.FUTURE_PAYMENTS)
   }
 }
