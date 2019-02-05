@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { ActivityIndicator, Text, Button, Picker, View, TextInput } from 'react-native'
 import { Actions } from 'react-native-router-flux'
 import { Checkbox } from 'react-native-material-ui'
+import { TextInputMask } from 'react-native-masked-text'
 
 import { PaymentType } from '../utils/constants'
 import { CreditCardService, PaymentService } from '../services'
@@ -23,14 +24,15 @@ export default class NewPayment extends Component {
     const p = props.payment || { type: PaymentType.Expense }
     const now = new Date()
 
-    const date = (p.firstPayment || `01/01/${now.getFullYear()}`).split('/')
+    const paymentDate = p.firstPayment ? new Date(p.firstPayment) : now
+    const date = `${paymentDate.getMonth() + 1}/01/${paymentDate.getFullYear()}`.split('/')
 
     this.state = {
       id: p.id,
       description: p.description,
       cost: toReal(p.cost ? p.cost : '0'),
       type: p.type || PaymentType.Expense,
-      date: `${date[1]}/${date[2]}`,
+      date: `${date[0] > 9 ? date[0] : '0' + date[0]}/${date[2]}`,
       error: '',
       plots: p.plots ? p.plots + '' : '',
       plotsPaid: p.plotsPaid ? p.plotsPaid + '' : '',
@@ -144,13 +146,11 @@ export default class NewPayment extends Component {
           </View>
         }
 
-        <TextInput
-          onChangeText={t => this.setState({ error: '', cost: t ? fromMoneyString(t) : '' })}
-          onBlur={t => this.setState({ cost: this.state.cost ? toReal(this.state.cost) : '' })}
+        <TextInputMask type="money"
           value={this.state.cost}
-          placeholder="Valor Total"
           style={styles.input}
-        />
+          options={{ unit: 'R$ ' }}
+          onChangeText={t => this.setState({ error: '', cost: t })} />
 
         <View style={{ width: 200, borderBottomWidth: 1, alignItems: 'flex-end' }}>
           <Picker
