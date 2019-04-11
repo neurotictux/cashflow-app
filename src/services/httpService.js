@@ -2,7 +2,7 @@ import axios from 'axios'
 import { TokenStorage } from '../storage/index'
 import { Actions } from 'react-native-router-flux'
 
-const apiUrl = 'https://financemanagerweb.herokuapp.com/api'
+const apiUrl = 'https://cashfloweb.herokuapp.com/api'
 //const apiUrl = 'http://localhost:5000/api'
 
 axios.interceptors.response.use(response => response, err => {

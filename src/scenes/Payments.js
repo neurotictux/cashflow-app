@@ -12,10 +12,8 @@ export default class Payments extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      sum: '$ 0.00',
-      color: 'green',
-      modalVisible: true,
       payments: [],
+      filteredPayments: [],
       loading: true
     }
   }
@@ -29,7 +27,8 @@ export default class Payments extends Component {
     PaymentService.get()
       .then(res => {
         this.setState({
-          payments: res.map((p, i) => ({ key: i + '', value: p })),
+          payments: res,
+          filteredPayments: res.map((p, i) => ({ key: i + '', value: p })),
           loading: false
         })
       })
@@ -66,7 +65,18 @@ export default class Payments extends Component {
         { text: 'Sim', onPress: () => this.removePayment(p) },
       ],
       { cancelable: false },
-    );
+    )
+  }
+
+  filter(text) {
+    let filtered = null
+    if (text)
+      filtered = this.state.payments.filter(p => p.description.toUpperCase().includes(text.toUpperCase()))
+    else
+      filtered = this.state.payments
+    this.setState({
+      filteredPayments: filtered.map((p, i) => ({ key: i + '', value: p }))
+    })
   }
 
   componentWillReceiveProps(props) {
@@ -79,11 +89,12 @@ export default class Payments extends Component {
       <BaseViewComponent
         title="Pagamentos"
         menuSelected={index => this.menuSelected(index)}
-        loading={this.state.loading}>
-
+        loading={this.state.loading}
+        onSearchChanged={(val) => this.filter(val)}
+        onSearchClosed={() => this.filter()}>
         <FlatList
           style={{ height: '100%' }}
-          data={this.state.payments}
+          data={this.state.filteredPayments}
           renderItem={({ item }) =>
             <TouchableOpacity delayLongPress={500}
               onPress={() => Actions.newPayment({ payment: item.value, title: 'Editar Pagamento' })}
@@ -100,11 +111,3 @@ export default class Payments extends Component {
     )
   }
 }
-
-const styles = StyleSheet.create({
-  actionButtonIcon: {
-    fontSize: 20,
-    height: 22,
-    color: 'white',
-  },
-})

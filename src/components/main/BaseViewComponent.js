@@ -78,6 +78,8 @@ export default class BaseViewComponent extends DrawerLayoutAndroid {
             searchable={{
               autoFocus: false,
               placeholder: 'Busca...',
+              onChangeText: (val) => this.props.onSearchChanged ? this.props.onSearchChanged(val) : null,
+              onSearchClosed: () => this.props.onSearchClosed ? this.props.onSearchClosed() : null
             }}
             rightElement={{
               menu: {
