@@ -1,0 +1,5 @@
+{
+  "migrations-path": "src/sequelize/migrations",
+  "seeders-path": "src/sequelize/seeders",
+  "models-path": "src/sequelize/models"
+}
