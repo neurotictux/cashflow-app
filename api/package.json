@@ -3,8 +3,9 @@
     "start": "babel-node src/run.js",
     "dev": "nodemon --watch ./src --exec babel-node src/run.js",
     "test": "NODE_ENV=test node before.test.js && jest --coverage",
-    "pre-test": "node before.test.js && npm run migrate",
-    "migrate": "sequelize db:migrate --config=./src/sequelize/config.js --options-path=./src/sequelize/options.json"
+    "pre-test": "node before.test.js && npm run migrate && npm run seed",
+    "migrate": "sequelize db:migrate --config=./src/sequelize/config.js --options-path=./src/sequelize/options.json",
+    "seed": "sequelize db:seed:all --config=./src/sequelize/config.js --options-path=./src/sequelize/options.json"
   },
   "dependencies": {
     "express": "^4.16.4",

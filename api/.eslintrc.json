@@ -19,6 +19,7 @@
     "rules": {
         "semi": [2, "never"],
         "sort-vars": "error",
-        "quotes": ["error", "single"]
+        "quotes": ["error", "single"],
+        "no-func-assign": "error"
     }
 }
