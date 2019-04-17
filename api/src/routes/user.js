@@ -17,7 +17,7 @@ export default (app) => {
   })
 
   app.get('/api/user', (req, res) => {
-    User.findOne({ where: { userId: req.claims.id } })
+    User.findOne({ where: { id: req.claims.id } })
       .then(user => res.json(user ? { name: user.name, email: user.email } : null))
       .catch(() => res.status(500).json({ message: 'Ocorreu um erro no servidor' }))
   })

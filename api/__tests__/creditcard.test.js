@@ -7,22 +7,18 @@ let user = {
   'password': '123456'
 }
 
-beforeAll((done) => {
+beforeAll((done) =>
   request(app).post('/api/token').send(user)
-    .then(res => {
-      token = `Bearer ${res.body.token}`
-    })
+    .then(res => token = `Bearer ${res.body.token}`)
     .catch(err => { throw err })
-    .finally(() => done())
-})
+    .finally(() => done()))
 
 describe('Credit Cards', () => {
-  test('Cartões do usuário', (done) => {
+  test('Cartões do usuário', (done) =>
     request(app).get('/api/credit-card').set('Authorization', token)
       .then((response) => {
         expect(response.statusCode).toBe(200)
         expect(response.body.length).toBe(2)
         done()
-      })
-  })
+      }))
 })
