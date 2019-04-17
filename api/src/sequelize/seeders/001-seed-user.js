@@ -10,8 +10,6 @@ export default {
     name: 'user_mock_2',
     email: 'user_mock_2@mail.com',
     password: '123456',
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    lastAccess: new Date()
+    createdAt: new Date()
   }])
 }
