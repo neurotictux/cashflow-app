@@ -1,4 +1,4 @@
 */node_modules/
 */coverage/
 .env
-src/finance.test.sqlite
+*/finance.test.sqlite
