@@ -2,13 +2,15 @@
   "scripts": {
     "start": "babel-node src/run.js",
     "dev": "nodemon --watch ./src --exec babel-node src/run.js",
-    "test": "NODE_ENV=test node before.test.js && jest --coverage",
-    "pre-test": "node before.test.js && npm run migrate && npm run seed",
-    "migrate": "sequelize db:migrate --config=./src/sequelize/config.js --options-path=./src/sequelize/options.json",
-    "seed": "sequelize db:seed:all --config=./src/sequelize/config.js --options-path=./src/sequelize/options.json"
+    "test": "npm run pre-test && jest --coverage",
+    "pre-test": "npm run lint && node before.test.js && npm run migrate && npm run seed",
+    "migrate": "sequelize db:migrate --config=./src/config.js --options-path=./src/sequelize/options.json",
+    "seed": "sequelize db:seed:all --config=./src/config.js --options-path=./src/sequelize/options.json",
+    "lint": "eslint src --fix"
   },
   "dependencies": {
     "express": "^4.16.4",
+    "express-jwt": "^5.3.1",
     "pg": "^7.9.0",
     "pg-hstore": "^2.3.2",
     "sequelize": "^5.6.0"

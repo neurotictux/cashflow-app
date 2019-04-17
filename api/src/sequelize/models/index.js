@@ -3,7 +3,7 @@ import { Sequelize } from 'sequelize'
 import CreditCardProps from './creditCard'
 import UserProps from './user'
 import PaymentProps from './payment'
-import Config from '../config'
+import Config from '../../config'
 
 const sequelize = new Sequelize(Config[Config.NODE_ENV])
 
