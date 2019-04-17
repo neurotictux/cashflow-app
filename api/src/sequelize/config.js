@@ -1,4 +1,4 @@
-// require('babel-core/register')
+require('@babel/register')
 
 try {
   const dotenv = require('dotenv')
@@ -13,13 +13,11 @@ module.exports = {
     url: process.env.DATABASE_URL,
     dialectOptions: { ssl: true },
     dialect: 'postgres',
-    operatorsAliases: false,
     logging: true
   },
   test: {
     dialect: 'sqlite',
     storage: './finance.test.sqlite',
-    operatorsAliases: false,
     logging: false
   },
   prod: {
@@ -27,7 +25,6 @@ module.exports = {
     url: process.env.DATABASE_URL,
     dialectOptions: { ssl: true },
     dialect: 'postgres',
-    operatorsAliases: false,
     logging: true
   }
 }
