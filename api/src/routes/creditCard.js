@@ -1,5 +1,6 @@
 import { CreditCard } from '../sequelize/models'
 import { createCreditCardService } from '../services'
+import errorHandler from '../util/errorHandler'
 
 const repository = {
   getAll: (userId) => CreditCard.findAll({ where: { userId: userId } }),
@@ -11,28 +12,11 @@ const repository = {
 const service = createCreditCardService(repository)
 
 export default (app) => {
+  app.get('/api/credit-card', errorHandler((req, res) => service.getAll(req.claims.id).then(result => res.json(result))))
 
-  app.get('/api/credit-card', (req, res) => {
-    service.getAll(req.claims.id)
-      .then(result => res.json(result))
-      .catch(err => res.json(err))
-  })
+  app.post('/api/credit-card', errorHandler((req, res) => service.create(req.body, req.claims.id).then(result => res.json(result))))
 
-  app.post('/api/credit-card', (req, res) => {
-    service.create(req.body, req.claims.id)
-      .then(result => res.json(result))
-      .catch(err => res.json(err))
-  })
+  app.put('/api/credit-card', errorHandler((req, res) => service.update(req.body, req.claims.id).then(result => res.json(result))))
 
-  app.put('/api/credit-card', (req, res) => {
-    service.update(req.body, req.claims.id)
-      .then(result => res.json(result))
-      .catch(err => res.json(err))
-  })
-
-  app.delete('/api/credit-card/:id', (req, res) => {
-    service.remove(req.params.id, req.claims.id)
-      .then(result => res.json(result))
-      .catch(err => res.json(err))
-  })
+  app.delete('/api/credit-card/:id', errorHandler((req, res) => service.remove(req.params.id, req.claims.id).then(result => res.json(result))))
 }

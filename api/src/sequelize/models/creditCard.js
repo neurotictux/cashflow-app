@@ -9,8 +9,12 @@ export default {
       allowNull: false,
       type: DataTypes.INTEGER
     },
-    description: {
+    name: {
       allowNull: false,
+      type: DataTypes.STRING
+    },
+    description: {
+      allowNull: true,
       type: DataTypes.STRING
     },
     userId: {

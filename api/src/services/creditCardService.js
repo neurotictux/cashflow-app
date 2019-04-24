@@ -7,24 +7,24 @@ const validateCard = (card) => {
         throwValidationError('Cartão inválido.')
 
     if (!card.name)
-        throwValidationError('A nome do cartão é obrigatório.')
+        throwValidationError('O nome do cartão é obrigatório.')
 }
 
 export default (repository) => {
     if (!repository)
         throw 'Invalid parameter \'repository\''
     return {
-        getAll: (userId) => repository.getAll(userId),
-        create: (card, userId) => {
+        getAll: async (userId) => repository.getAll(userId),
+        create: async (card, userId) => {
             validateCard(card)
             card.userId = userId
-            return repository.create(card)
+            return await repository.create(card)
         },
-        update: (card, userId) => {
+        update: async (card, userId) => {
             validateCard(card)
             card.userId = userId
             return repository.update(card, userId)
         },
-        remove: (id, userId) => repository.remove(id, userId)
+        remove: async (id, userId) => repository.remove(id, userId)
     }
 }

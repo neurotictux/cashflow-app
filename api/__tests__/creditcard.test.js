@@ -23,12 +23,32 @@ describe('Credit Cards', () => {
         done()
       }))
 
+  test('Criar cartão sem nome', (done) =>
+    request(app).post('/api/credit-card')
+      .send({ name: '' })
+      .set('Authorization', token)
+      .then((response) => {
+        expect(response.statusCode).toBe(400)
+        expect(response.body.message).toBe('O nome do cartão é obrigatório.')
+        done()
+      }))
+
   test('Criar cartão', (done) =>
     request(app).post('/api/credit-card')
       .send({ name: 'Primeiro cartão teste mock' })
       .set('Authorization', token)
       .then((response) => {
         expect(response.statusCode).toBe(200)
+        done()
+      }))
+
+  test('Atualizar cartão sem nome', (done) =>
+    request(app).put('/api/credit-card')
+      .send({ id: 3, name: '' })
+      .set('Authorization', token)
+      .then((response) => {
+        expect(response.statusCode).toBe(400)
+        expect(response.body.message).toBe('O nome do cartão é obrigatório.')
         done()
       }))
 
