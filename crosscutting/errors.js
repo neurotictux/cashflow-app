@@ -1,5 +1,10 @@
-export const ErrorTypes = {
+const ErrorTypes = {
   VALIDATION: 1
 }
 
-export const throwValidationError = (message) => { throw { message, type: ErrorTypes.VALIDATION } }
+const throwValidationError = (message) => { throw { message, type: ErrorTypes.VALIDATION } }
+
+module.exports = {
+  ErrorTypes: ErrorTypes,
+  throwValidationError: throwValidationError
+}

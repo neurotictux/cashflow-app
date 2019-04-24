@@ -1,4 +1,6 @@
-import { throwValidationError } from '../crosscutting/errors'
+import erros from '../../../crosscutting/errors'
+
+const { throwValidationError } = erros
 
 const repository = {}
 
