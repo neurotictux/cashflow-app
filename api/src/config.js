@@ -6,7 +6,7 @@ try {
 } catch { }
 
 module.exports = {
-  NODE_ENV: process.env.NODE_ENV,
+  NODE_ENV: process.env.NODE_ENV || 'test',
   SECRET: process.env.SECRET,
   dev: {
     DATABASE_URI: process.env.DATABASE_URL,
