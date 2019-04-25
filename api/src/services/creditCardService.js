@@ -8,23 +8,32 @@ const validateCard = (card) => {
 
     if (!card.name)
         throwValidationError('O nome do cartão é obrigatório.')
+
+    if (card.description && typeof (card.description) !== 'string')
+        card.description = null
 }
 
 export default (repository) => {
     if (!repository)
         throw 'Invalid parameter \'repository\''
     return {
-        getAll: async (userId) => repository.getAll(userId),
-        create: async (card, userId) => {
+        getByUser: async (userId) => repository.getByUser(userId),
+        create: async (card) => {
             validateCard(card)
-            card.userId = userId
             return await repository.create(card)
         },
-        update: async (card, userId) => {
+        update: async (card) => {
             validateCard(card)
-            card.userId = userId
-            return repository.update(card, userId)
+            const cards = await repository.getByUser(card.userId)
+            if (!cards.filter(p => p.id === card.id).length)
+                throwValidationError('Cartão não localizado.')
+            return repository.update(card)
         },
-        remove: async (id, userId) => repository.remove(id, userId)
+        remove: async (card) => {
+            const cards = await repository.getByUser(card.userId)
+            if (!cards.filter(p => p.id === Number(card.id)).length)
+                throwValidationError('Cartão não localizado.')
+            return repository.remove(card)
+        }
     }
 }
