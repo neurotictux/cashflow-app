@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken'
 
 import { User } from '../sequelize/models'
 import { SECRET } from '../config'
+import errorHandler from '../util/errorHandler'
 
 export default (app) => {
   app.post('/api/token', (req, res) => {
@@ -18,7 +19,7 @@ export default (app) => {
 
   app.post('/api/user', (req, res) => {
     const { name, email, password } = req.body || {}
-    
+
     const user = { name, email, password, createdAt: new Date() }
     
     if (!email || !password)
@@ -36,4 +37,6 @@ export default (app) => {
       .then(user => res.json(user ? { name: user.name, email: user.email } : null))
       .catch(() => res.status(500).json({ message: 'Ocorreu um erro no servidor' }))
   })
+
+  app.get('/api/credit-card', errorHandler((req, res) => service.getByUser(req.claims.id).then(result => res.json(result))))
 }
