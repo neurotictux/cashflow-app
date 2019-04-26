@@ -13,7 +13,7 @@ beforeAll((done) =>
     .catch(err => { throw err })
     .finally(() => done()))
 
-describe('Credit Cards', () => {
+describe('Cartões de crédito', () => {
 
   test('Obter cartões do usuário', (done) =>
     request(app).get('/api/credit-card').set('Authorization', token)
