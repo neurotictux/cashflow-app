@@ -1,42 +1,59 @@
 import jwt from 'jsonwebtoken'
+import sha1 from 'sha1'
 
-import { User } from '../sequelize/models'
+import { throwValidationError } from '../../../crosscutting/errors'
 import { SECRET } from '../config'
 import errorHandler from '../util/errorHandler'
+import { UserRepository } from '../repository'
+import { createUserService } from '../services'
+
+const service = createUserService(UserRepository)
 
 export default (app) => {
-  app.post('/api/token', (req, res) => {
+  app.get('/api/user', errorHandler(async (req, res) => {
+    return service.getUserData(req.claims.id)
+      .then(user => res.json({
+        name: user.name,
+        email: user.email,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+        lastAccess: user.lastAccess
+      }))
+  }))
+
+  app.post('/api/token', errorHandler(async (req, res) => {
     const { email, password } = req.body || {}
     if (!email || !password)
-      return res.status(401).json({ message: 'Email/senha inválido.' })
-    User.findOne({ where: { email: email } }).then(user => {
-      if (user && user.password === password)
-        res.json({ token: jwt.sign({ id: user.id }, SECRET) })
-      else
-        res.status(401).json({ message: 'Email/senha inválido.' })
-    }).catch(() => res.status(500).json({ message: 'Ocorreu um erro no servidor' }))
-  })
+      throwValidationError('Email/senha inválido.')
+    const user = await service.getByEmail(email)
+    if (!user || user.password !== sha1(password))
+      throwValidationError('Email/senha inválido.')
+    return res.json({
+      token: jwt.sign({ id: user.id }, SECRET),
+      message: 'Token gerado com sucesso.'
+    })
+  }))
 
-  app.post('/api/user', (req, res) => {
-    const { name, email, password } = req.body || {}
+  app.post('/api/user', errorHandler(async (req, res) => {
+    const user = req.body || {}
+    user.id = null
+    const userDb = await service.create(user)
+    res.json({
+      token: jwt.sign({ id: userDb.id }, SECRET),
+      message: 'Usuário criado com sucesso.'
+    })
+  }))
 
-    const user = { name, email, password, createdAt: new Date() }
-    
-    if (!email || !password)
-    return res.status(401).json({ message: 'Email/senha inválido.' })
-    User.findOne({ where: { email: email } }).then(user => {
-      if (user && user.password === password)
-      res.json({ token: jwt.sign({ id: user.id }, SECRET) })
-      else
-      res.status(401).json({ message: 'Email/senha inválido.' })
-    }).catch(() => res.status(500).json({ message: 'Ocorreu um erro no servidor' }))
-  })
+  app.put('/api/user', errorHandler(async (req, res) => {
+    const user = req.body || {}
+    user.id = req.claims.id
+    return service.update(user).then(() => res.json({ message: 'Usuário alterado com sucesso.' }))
+  }))
 
-  app.get('/api/user', (req, res) => {
-    User.findOne({ where: { id: req.claims.id } })
-      .then(user => res.json(user ? { name: user.name, email: user.email } : null))
-      .catch(() => res.status(500).json({ message: 'Ocorreu um erro no servidor' }))
-  })
-
-  app.get('/api/credit-card', errorHandler((req, res) => service.getByUser(req.claims.id).then(result => res.json(result))))
+  app.put('/api/user-password', errorHandler(async (req, res) => {
+    const user = req.body || {}
+    user.id = req.claims.id
+    return service.updatePassword(user)
+      .then(() => res.json({ message: 'Senha alterada com sucesso.' }))
+  }))
 }
