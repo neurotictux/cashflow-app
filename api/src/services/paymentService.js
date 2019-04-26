@@ -7,13 +7,16 @@ const validatePayment = (payment) => {
   if (!payment)
     throwValidationError('Pagamento inválido.')
 
-  const { description, firstPaymentDate, installments, fixedPayment, creditCard } = payment
+  const { description, firstPaymentDate, installments, fixedPayment, creditCard, type } = payment
 
   if (!description)
     throwValidationError('A descrição é obrigatória.')
 
   if (!firstPaymentDate)
     throwValidationError('A data do primeiro pagamento é obrigatória.')
+
+  if (type !== 1 && type !== 2)
+    throwValidationError('O tipo do pagamento deve \'1\' para RENDA ou \'2\' para DESPESA.')
 
   if (!Array.isArray(installments) || !installments.length)
     throwValidationError('O pagamento deve ter pelo menos 1 parcela.')
@@ -49,7 +52,8 @@ export default (repository) => {
   if (!repository)
     throw 'Invalid parameter \'repository\''
   return {
-    create: (payment) => {
+    getByUser: (userId) => repository.getByUser(userId),
+    create: async (payment) => {
       validatePayment(payment)
       return repository.create(payment)
     }

@@ -1,17 +1,14 @@
-import { Payment } from '../sequelize/models'
+import { createPaymentService } from '../services'
+import errorHandler from '../util/errorHandler'
+import { PaymentRepository } from '../repository'
 
-const payments = [{}, {}]
+const service = createPaymentService(PaymentRepository)
 
 export default (app) => {
-  app.get('/api/payment', (req, res) => {
-    Payment.findAll({ where: { userId: req.claims.id } })
-      .then(result => res.json(result))
-      .catch(err => res.json(err))
-  })
-  app.get('/api/payment/:id', (req, res) => {
-    res.json(payments)
-    // db.Payment
-    //   .findAll(result => res.json(result))
-    //   .catch(err => res.json(err))
-  })
+  app.get('/api/payment', errorHandler((req, res) => service.getByUser(req.claims.id).then(result => res.json(result))))
+  app.post('/api/payment', errorHandler(async (req, res) => {
+    const payment = req.body || {}
+    payment.userId = req.claims.id
+    return service.create(payment).then(result => res.json(result))
+  }))
 }
