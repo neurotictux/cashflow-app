@@ -7,19 +7,41 @@ const validatePayment = (payment) => {
   if (!payment)
     throwValidationError('Pagamento inválido.')
 
-  if (!payment.description)
+  const { description, firstPaymentDate, installments, fixedPayment, creditCard } = payment
+
+  if (!description)
     throwValidationError('A descrição é obrigatória.')
 
-  if (!payment.firstPaymentDate)
+  if (!firstPaymentDate)
     throwValidationError('A data do primeiro pagamento é obrigatória.')
 
-  if (payment.installment <= 0)
+  if (!Array.isArray(installments) || !installments.length)
     throwValidationError('O pagamento deve ter pelo menos 1 parcela.')
 
-  if (payment.creditCard && payment.CreditCard.id) {
-    const card = repository.GetById(payment.CreditCard.id)
+  if (fixedPayment && installments.length > 1)
+    throwValidationError('Pagamento fixo não pode ter mais de 1 parcela.')
+
+  if (installments.map(p => p.number).filter((p, i, arr) => arr.indexOf(p) !== i).length)
+    throwValidationError('Há mais de uma parcela com o mesmo número de prestação.')
+
+  installments.forEach(p => {
+    if (!p.number || isNaN(Number(p.number)))
+      throwValidationError('Há parcelas sem número.')
+
+    if (!p.cost || isNaN(Number(p.cost)))
+      throwValidationError('Há parcelas sem valor.')
+
+    p.date = new Date(p.date || '')
+    if (p.date.toString() === 'Invalid Date')
+      throwValidationError('Há parcelas com data inválida.')
+  })
+
+  if (creditCard && creditCard.id) {
+    const card = repository.GetById(creditCard.id)
     if (!card)
       throwValidationError('Cartão não localizado.')
+    else if (card.userId !== payment.userId)
+      throwValidationError('Cartão não pertence ao usuário.')
   }
 }
 

@@ -46,10 +46,6 @@ export default {
     fixedPayment: {
       type: DataTypes.BOOLEAN,
       allowNull: true
-    },
-    SinglePlot: {
-      type: DataTypes.BOOLEAN,
-      allowNull: true
     }
   },
   Attributes: {
