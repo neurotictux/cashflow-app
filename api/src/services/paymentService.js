@@ -1,4 +1,5 @@
 import erros from '../../../crosscutting/errors'
+import { toDateFormat } from '../util/date'
 
 const { throwValidationError } = erros
 
@@ -6,13 +7,10 @@ const validatePayment = async (payment, creditCardRepository) => {
   if (!payment)
     throwValidationError('Pagamento inválido.')
 
-  const { description, firstPaymentDate, installments, fixedPayment, creditCard, type } = payment
+  const { description, installments, fixedPayment, creditCard, type } = payment
 
   if (!description)
     throwValidationError('A descrição é obrigatória.')
-
-  if (!firstPaymentDate)
-    throwValidationError('A data do primeiro pagamento é obrigatória.')
 
   if (type !== 1 && type !== 2)
     throwValidationError('O tipo do pagamento deve ser \'1\' para RENDA ou \'2\' para DESPESA.')
@@ -45,11 +43,41 @@ const validatePayment = async (payment, creditCardRepository) => {
   }
 }
 
+const toPaymentResult = (arr) => {
+  const payments = []
+  arr.forEach(p => {
+    const pay = {
+      id: p.id,
+      description: p.description,
+      userId: p.userId,
+      type: p.type,
+      creditCardId: p.creditCardId,
+      fixedPayment: p.fixedPayment,
+      invoice: p.invoice,
+      sync: p.sync,
+      installments: p.Installments.map(x => ({
+        id: x.id,
+        paymentId: x.paymentId,
+        cost: x.cost,
+        number: x.number,
+        date: x.date,
+        dateFormatted: toDateFormat(x.date, 'dd/MM/yy')
+      }))
+    }
+    payments.push(pay)
+  })
+  return payments
+}
+
 export default (repository, creditCardRepository) => {
   if (!repository || !creditCardRepository)
     throw 'Invalid parameter \'repository\''
   return {
     getByUser: (userId) => repository.getByUser(userId),
+    getEstimative: async (userId) => {
+      const payments = await repository.getByUser(userId)
+      return toPaymentResult(payments)
+    },
     create: async (payment) => {
       await validatePayment(payment, creditCardRepository)
       return repository.create(payment)

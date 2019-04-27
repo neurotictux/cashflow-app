@@ -22,10 +22,6 @@ export default {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    firstPaymentDate: {
-      type: DataTypes.DATE,
-      allowNull: false
-    },
     creditCardId: {
       type: DataTypes.INTEGER,
       allowNull: true,
@@ -34,6 +30,10 @@ export default {
     fixedPayment: {
       type: DataTypes.BOOLEAN,
       allowNull: true
+    },
+    invoice: {
+      allowNull: true,
+      type: DataTypes.BOOLEAN,
     },
     sync: {
       allowNull: true,

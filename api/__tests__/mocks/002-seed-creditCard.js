@@ -11,5 +11,11 @@ export default {
   }, {
     name: 'cartao_mock_4',
     userId: 2
+  }, {
+    name: 'Cartão 1',
+    userId: 4
+  }, {
+    name: 'Cartão 2',
+    userId: 4
   }])
 }

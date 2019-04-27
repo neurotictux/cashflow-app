@@ -32,16 +32,6 @@ describe('Pagamentos', () => {
         done()
       }))
 
-  test('Criar pagamento sem data do primeiro pagamento',
-    done => request(app).post('/api/payment')
-      .set('Authorization', token)
-      .send({ description: 'pagamento', firstPaymentDate: '' })
-      .then(response => {
-        expect(response.body.message).toBe('A data do primeiro pagamento é obrigatória.')
-        expect(response.statusCode).toBe(400)
-        done()
-      }))
-
   test('Criar pagamento com tipo inválido',
     done => request(app).post('/api/payment')
       .set('Authorization', token)
@@ -240,16 +230,6 @@ describe('Pagamentos', () => {
       .send({ description: '' })
       .then(response => {
         expect(response.body.message).toBe('A descrição é obrigatória.')
-        expect(response.statusCode).toBe(400)
-        done()
-      }))
-
-  test('Atualizar pagamento sem data do primeiro pagamento',
-    done => request(app).put('/api/payment')
-      .set('Authorization', token)
-      .send({ description: 'pagamento', firstPaymentDate: '' })
-      .then(response => {
-        expect(response.body.message).toBe('A data do primeiro pagamento é obrigatória.')
         expect(response.statusCode).toBe(400)
         done()
       }))

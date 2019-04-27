@@ -17,5 +17,10 @@ export default {
     email: 'user_mock_alterado@mail.com',
     password: sha1('123456'),
     createdAt: new Date()
+  }, {
+    name: 'estimate',
+    email: 'estimate@mail.com',
+    password: sha1('123456'),
+    createdAt: new Date()
   }])
 }

@@ -6,6 +6,7 @@ const service = createPaymentService(PaymentRepository, CreditCardRepository)
 
 export default (app) => {
   app.get('/api/payment', errorHandler((req, res) => service.getByUser(req.claims.id).then(result => res.json(result))))
+  app.get('/api/payment-estimative', errorHandler((req, res) => service.getEstimative(req.claims.id).then(result => res.json(result))))
   app.post('/api/payment', errorHandler(async (req, res) => {
     const payment = req.body || {}
     payment.userId = req.claims.id
