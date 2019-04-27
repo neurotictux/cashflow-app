@@ -1,9 +1,8 @@
 import erros from '../../../crosscutting/errors'
 
 const { throwValidationError } = erros
-const repository = {}
 
-const validatePayment = (payment) => {
+const validatePayment = async (payment, creditCardRepository) => {
   if (!payment)
     throwValidationError('Pagamento inválido.')
 
@@ -16,7 +15,7 @@ const validatePayment = (payment) => {
     throwValidationError('A data do primeiro pagamento é obrigatória.')
 
   if (type !== 1 && type !== 2)
-    throwValidationError('O tipo do pagamento deve \'1\' para RENDA ou \'2\' para DESPESA.')
+    throwValidationError('O tipo do pagamento deve ser \'1\' para RENDA ou \'2\' para DESPESA.')
 
   if (!Array.isArray(installments) || !installments.length)
     throwValidationError('O pagamento deve ter pelo menos 1 parcela.')
@@ -40,22 +39,33 @@ const validatePayment = (payment) => {
   })
 
   if (creditCard && creditCard.id) {
-    const card = repository.GetById(creditCard.id)
-    if (!card)
+    const cards = await creditCardRepository.getByUser(payment.userId)
+    if (!cards.filter(p => p.id === creditCard.id).length)
       throwValidationError('Cartão não localizado.')
-    else if (card.userId !== payment.userId)
-      throwValidationError('Cartão não pertence ao usuário.')
   }
 }
 
-export default (repository) => {
-  if (!repository)
+export default (repository, creditCardRepository) => {
+  if (!repository || !creditCardRepository)
     throw 'Invalid parameter \'repository\''
   return {
     getByUser: (userId) => repository.getByUser(userId),
     create: async (payment) => {
-      validatePayment(payment)
+      await validatePayment(payment, creditCardRepository)
       return repository.create(payment)
+    },
+    update: async (payment) => {
+      await validatePayment(payment, creditCardRepository)
+      const paymentDb = await repository.getById(payment.id)
+      if (!paymentDb || paymentDb.userId !== payment.userId)
+        throwValidationError('Pagamento não localizado.')
+      return repository.update(payment)
+    },
+    remove: async (payment) => {
+      const paymentDb = await repository.getById(payment.id)
+      if (!paymentDb || paymentDb.userId !== payment.userId)
+        throwValidationError('Pagamento não localizado.')
+      return repository.remove(payment)
     }
   }
 }

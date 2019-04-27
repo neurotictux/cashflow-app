@@ -34,6 +34,10 @@ export default {
     fixedPayment: {
       type: DataTypes.BOOLEAN,
       allowNull: true
+    },
+    sync: {
+      allowNull: true,
+      type: DataTypes.BOOLEAN,
     }
   },
   Attributes: {

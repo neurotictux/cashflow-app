@@ -21,6 +21,10 @@ export default {
       allowNull: false,
       type: DataTypes.INTEGER,
       references: { model: 'User', key: 'id' }
+    },
+    sync: {
+      allowNull: true,
+      type: DataTypes.BOOLEAN,
     }
   },
   Attributes: {
