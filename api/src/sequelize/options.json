@@ -1,5 +1,5 @@
 {
   "migrations-path": "src/sequelize/migrations",
-  "seeders-path": "src/sequelize/seeders",
+  "seeders-path": "__tests__/mocks",
   "models-path": "src/sequelize/models"
 }

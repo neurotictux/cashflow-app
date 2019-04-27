@@ -13,6 +13,8 @@ const User = sequelize.define(UserProps.TABLE_NAME, UserProps.Model, UserProps.A
 const Payment = sequelize.define(PaymentProps.TABLE_NAME, PaymentProps.Model, PaymentProps.Attributes)
 const Installment = sequelize.define(InstallmentProps.TABLE_NAME, InstallmentProps.Model, InstallmentProps.Attributes)
 
+Payment.hasMany(Installment, { foreignKey: 'paymentId' })
+
 export { CreditCard as CreditCard }
 export { User as User }
 export { Payment as Payment }

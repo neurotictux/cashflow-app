@@ -7,7 +7,7 @@ export default {
     creditCardId: 2,
     fixedPayment: false
   }, {
-    description: 'Payment 1',
+    description: 'Payment 2',
     userId: 1,
     Type: 2,
     firstPaymentDate: new Date(),

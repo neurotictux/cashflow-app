@@ -3,7 +3,7 @@ import app from '../src/app'
 
 let token = null
 let user = {
-  'email': 'user_mock_2@mail.com',
+  'email': 'user_mock_1@mail.com',
   'password': '123456'
 }
 
@@ -15,10 +15,10 @@ beforeAll((done) => request(app).post('/api/token').send(user)
 
 describe('Payments', () => {
   test('Get payments list',
-    (done) => request(app).get('/api/payment').set('Authorization', token)
-      .then((response) => {
+    done => request(app).get('/api/payment').set('Authorization', token)
+      .then(response => {
         expect(response.statusCode).toBe(200)
-        expect(response.body.length).toBe(2)
+        expect(response.body[0].Installments.length).toBe(4)
         done()
       }))
 })
