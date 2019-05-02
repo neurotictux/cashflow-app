@@ -23,7 +23,7 @@ const sendRequest = (method, url, headers, data) => {
   }).then(res => res.data)
     .catch(err => {
       throw {
-        message: err.response.data,
+        message: err.response.data.message,
         status: err.response.status
       }
     })

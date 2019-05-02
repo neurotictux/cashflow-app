@@ -7,15 +7,15 @@ const login = user =>
   httpService.postNotAuthenticated('/token', user)
     .then(res => {
       updateToken(res.token)
-      return httpService.get('/account')
-    }).catch(err => { throw err })
+      return httpService.get('/user')
+    })
 
 const createAccount = (account) =>
-  httpService.postNotAuthenticated('/account', account)
+  httpService.postNotAuthenticated('/user', account)
     .then(res => {
       updateToken(res.token)
-      return httpService.get('/account')
-    }).catch(err => { throw err })
+      return httpService.get('/user')
+    })
 
 const logout = () => updateToken(null)
 

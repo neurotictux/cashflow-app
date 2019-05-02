@@ -43,30 +43,66 @@ const validatePayment = async (payment, creditCardRepository) => {
   }
 }
 
-const toPaymentResult = (arr) => {
+const toPaymentResult = (arr, startDate, endDate) => {
+  const regex = /^\d{1,2}[/]\d{4}$/
+  const result = {}
+
+  if (!regex.test(startDate) || !regex.test(endDate))
+    return []
+
+  startDate = startDate.split('/')
+  startDate = { month: Number(startDate[0]), year: Number(startDate[1]) }
+  endDate = endDate.split('/')
+  endDate = { month: Number(endDate[0]), year: Number(endDate[1]) }
+
+  if (startDate.month < 1 || startDate.month > 12 || endDate.month < 1 || endDate.month > 12
+    || startDate.year > endDate.year || (endDate.year - startDate.year) > 5
+    || (startDate.year === endDate.year && endDate.month < startDate.month))
+    return []
+
+  const currDate = {
+    month: startDate.month,
+    year: startDate.year
+  }
+
+  do {
+    const curr = `${currDate.month > 9 ? '' : '0'}${currDate.month}/${currDate.year}`
+    result[curr] = []
+    currDate.month++
+    if (currDate.month > 12) {
+      currDate.month = 1
+      currDate.year++
+    }
+
+  } while (currDate.year < endDate.year
+    || (currDate.year === endDate.year && currDate.month <= endDate.month))
+
   const payments = []
+
   arr.forEach(p => {
-    const pay = {
-      id: p.id,
-      description: p.description,
-      userId: p.userId,
-      type: p.type,
-      creditCardId: p.creditCardId,
-      fixedPayment: p.fixedPayment,
-      invoice: p.invoice,
-      sync: p.sync,
-      installments: p.Installments.map(x => ({
-        id: x.id,
-        paymentId: x.paymentId,
+    p.Installments.forEach(x => {
+      payments.push({
+        id: p.id,
+        description: p.description,
+        userId: p.userId,
+        type: p.type,
+        creditCardId: p.creditCardId,
+        fixedPayment: p.fixedPayment,
+        invoice: p.invoice,
+        sync: p.sync,
         cost: x.cost,
         number: x.number,
         date: x.date,
-        dateFormatted: toDateFormat(x.date, 'dd/MM/yy')
-      }))
-    }
-    payments.push(pay)
+        dateFormatted: toDateFormat(x.date, 'dd/MM/yy'),
+        monthYear: toDateFormat(x.date, 'MM/yyyy')
+      })
+    })
   })
-  return payments
+  const fixed = payments.filter(p => p.fixedPayment)
+  for (let month in result)
+    result[month] = payments.filter(p => p.monthYear === month && !p.fixedPayment).concat(fixed)
+
+  return result
 }
 
 export default (repository, creditCardRepository) => {
@@ -74,9 +110,9 @@ export default (repository, creditCardRepository) => {
     throw 'Invalid parameter \'repository\''
   return {
     getByUser: (userId) => repository.getByUser(userId),
-    getEstimative: async (userId) => {
+    getEstimative: async (userId, startDate, endDate) => {
       const payments = await repository.getByUser(userId)
-      return toPaymentResult(payments)
+      return toPaymentResult(payments, startDate, endDate)
     },
     create: async (payment) => {
       await validatePayment(payment, creditCardRepository)
