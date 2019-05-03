@@ -48,7 +48,7 @@ const toPaymentResult = (arr, startDate, endDate) => {
   const result = {}
 
   if (!regex.test(startDate) || !regex.test(endDate))
-    return []
+    throwValidationError('Informe os parametros \'startDate\' e \'endDate\' no formato \'MM/yyyy\'.')
 
   startDate = startDate.split('/')
   startDate = { month: Number(startDate[0]), year: Number(startDate[1]) }
@@ -58,7 +58,7 @@ const toPaymentResult = (arr, startDate, endDate) => {
   if (startDate.month < 1 || startDate.month > 12 || endDate.month < 1 || endDate.month > 12
     || startDate.year > endDate.year || (endDate.year - startDate.year) > 5
     || (startDate.year === endDate.year && endDate.month < startDate.month))
-    return []
+    return {}
 
   const currDate = {
     month: startDate.month,
@@ -99,8 +99,21 @@ const toPaymentResult = (arr, startDate, endDate) => {
     })
   })
   const fixed = payments.filter(p => p.fixedPayment)
-  for (let month in result)
-    result[month] = payments.filter(p => p.monthYear === month && !p.fixedPayment).concat(fixed)
+  let accumulatedCost = 0
+  for (let month in result){
+    const list = payments.filter(p => p.monthYear === month && !p.fixedPayment).concat(fixed)
+    const costIncome = list.filter(p => p.type === 1).map(p => p.cost).reduce((sum, val) => sum + val)
+    const costExpense = list.filter(p => p.type === 2).map(p => p.cost).reduce((sum, val) => sum + val)
+    const total = costIncome - costExpense
+    accumulatedCost += total
+    result[month] = {
+      payments: list,
+      costIncome,
+      costExpense,
+      total,
+      accumulatedCost
+    }    
+  }
 
   return result
 }
