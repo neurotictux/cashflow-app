@@ -72,7 +72,7 @@ class IconTextInput extends React.Component {
           multiline={this.props.multiline}
           rowsMax={this.props.rowsMax}
           rows={this.props.rows}
-          variant="outlined"
+          variant={this.props.variant || 'standard'}
           className="teste"
           label={this.props.label}
           type={this.props.type || 'text'}
@@ -113,7 +113,8 @@ IconTextInput.propTypes = {
   label: PropTypes.string.isRequired,
   value: PropTypes.string,
   rowsMax: PropTypes.string,
-  multiline: PropTypes.bool
+  multiline: PropTypes.bool,
+  variant: PropTypes.string
 }
 
 export default IconTextInput

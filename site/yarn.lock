@@ -6319,10 +6319,17 @@ react-lifecycles-compat@^3.0.2, react-lifecycles-compat@^3.0.4:
   resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
   integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
 
-react-number-format@^4.0.5:
-  version "4.0.5"
-  resolved "https://registry.yarnpkg.com/react-number-format/-/react-number-format-4.0.5.tgz#26bbc6645c027c398564b2bda56ed6540810d572"
-  integrity sha512-RyPT0U7Y/Fbu0tcsokwZyySH7wnGU+J8VumtD3I4gWFUwylwcVsAs5rO6EkI/v9dKH6kYsUe0hdjqEKg7IlcGg==
+react-masked-text@^0.4.1:
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/react-masked-text/-/react-masked-text-0.4.1.tgz#be747a6680ea93d54b6552c9fbb472ab057b030d"
+  integrity sha512-M3V2IQcucxfZumFtsc3k7q1FWvsKd08fgtwgtByCueGV6k6UFm1XNgU+m6pLMHYtFuVPR0E6+j22o3zJhDGbdw==
+  dependencies:
+    tinymask "1.0.2"
+
+react-number-format@^4.0.7:
+  version "4.0.7"
+  resolved "https://registry.yarnpkg.com/react-number-format/-/react-number-format-4.0.7.tgz#b3294b95bcadfbbec1b7e86740c3950818f532bc"
+  integrity sha512-boRHwPzkNDuyqeQ9zyHp0XgVAqT5RyS+BsohOhiTz6VMxEQr3DuSuNdg0Q8c3CYTgNESYlxnH278DPqaQFO72w==
   dependencies:
     prop-types "^15.6.0"
 
@@ -7596,6 +7603,11 @@ timers-browserify@^2.0.4:
   integrity sha512-YvC1SV1XdOUaL6gx5CoGroT3Gu49pK9+TZ38ErPldOWW4j49GI1HKs9DV+KGq/w6y+LZ72W1c8cKz2vzY+qpzg==
   dependencies:
     setimmediate "^1.0.4"
+
+tinymask@1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/tinymask/-/tinymask-1.0.2.tgz#df3775a94087b0d3d056c256e8923c01b7ec0941"
+  integrity sha1-3zd1qUCHsNPQVsJW6JI8AbfsCUE=
 
 to-absolute-glob@^0.1.1:
   version "0.1.1"

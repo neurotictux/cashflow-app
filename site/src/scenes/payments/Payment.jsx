@@ -18,6 +18,7 @@ import DeleteIcon from '@material-ui/icons/Delete'
 import CardIcon from '@material-ui/icons/CreditCardOutlined'
 
 import CardMain from '../../components/main/CardMain'
+import InputMoney from '../../components/inputs/InputMoney'
 import EditPaymentModal from '../../components/modais/EditPaymentModal'
 import { paymentService } from '../../services/index'
 import { toReal, getDateStringEg } from '../../helpers/utils'
@@ -64,7 +65,7 @@ export default class Payment extends React.Component {
       useCreditCard: false,
       fixedPayment: false,
       card: null,
-      showModal: false
+      showModal: true
     }
   }
 
@@ -117,7 +118,7 @@ export default class Payment extends React.Component {
             <div style={styles.divNewPayment}>
               <Button variant="raised" color="primary" onClick={() => this.openEditNew()}>
                 Adicionar Pagamento
-            </Button>
+              </Button>
             </div>
             <Paper style={{ marginTop: '20px' }}>
               <List dense={true}>
@@ -166,7 +167,13 @@ export default class Payment extends React.Component {
           </div>
           :
           <div style={styles.noRecords}>
-            <span>Você não possui pagamentos cadastrados.</span>
+            <div>
+              <span>Você não possui pagamentos cadastrados.</span>
+            </div>
+
+            <div>
+              <InputMoney label="Valor"></InputMoney>
+            </div>
           </div>
         }
         <div style={styles.divNewPayment}>

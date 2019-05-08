@@ -12,12 +12,30 @@ import {
   InputLabel,
   Select,
   Checkbox,
-  MenuItem
+  MenuItem,
+  RadioGroup,
+  Radio
 } from '@material-ui/core'
 
+import TextInputMask from 'react-masked-text'
+
 import IconTextInput from '../main/IconTextInput'
+import InputMoney from '../inputs/InputMoney'
+
 import { getDateStringEg, getDateFromStringEg } from '../../helpers/utils'
 import { creditCardService, paymentService } from '../../services/index'
+
+const styles = {
+  maskInput: {
+    color: '#666',
+    backgroundColor: 'white',
+    border: 'solid 0',
+    borderBottom: 'solid 1px #666',
+    margin: '10px',
+    width: '100px',
+    marginRight: '20px'
+  }
+}
 
 export default class EditPaymentModal extends React.Component {
 
@@ -31,6 +49,7 @@ export default class EditPaymentModal extends React.Component {
       useCreditCard: false,
       fixedPayment: false,
       singlePlot: false,
+      installments: '48',
       card: [],
       firstPayment: getDateStringEg(new Date())
     }
@@ -97,14 +116,14 @@ export default class EditPaymentModal extends React.Component {
         <DialogTitle style={{ textAlign: 'center' }}>
           {this.props.payment.id > 0 ? 'Edição' : 'Novo'}</DialogTitle>
         <DialogContent>
-          <div style={{ textAlign: 'center' }} >
+          <div style={{ textAlign: 'start', color: '#666' }} >
 
             <IconTextInput
               label="Descrição"
               value={this.state.description}
               onChange={(e) => this.setState({ description: e.value, errorMessage: '' })}
             />
-            <FormControl style={{ marginLeft: '20px', marginTop: '10px' }}>
+            <FormControl style={{ width: '240px', marginLeft: '20px', marginTop: '10px' }}>
               <InputLabel htmlFor="select-tipo">Tipo</InputLabel>
               <Select
                 value={this.state.paymentType}
@@ -113,44 +132,48 @@ export default class EditPaymentModal extends React.Component {
                 <MenuItem key={2} value={2}>Despesa</MenuItem>
               </Select>
             </FormControl>
-            <br />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={this.state.singlePlot}
-                  onChange={(e, c) => this.setState({ singlePlot: c })}
+
+            <div style={{ marginRight: '10px', marginTop: '10px', color: '#666' }}>
+              <span>Valor:</span>
+              <TextInputMask
+                onChangeText={e => this.setState({ costText: e })}
+                kind="money"
+                value={this.state.costText}
+                style={styles.maskInput} />
+              <span>Data:</span>
+              <TextInputMask
+                onChangeText={e => this.setState({ firstPayment: e })}
+                kind="datetime"
+                value={this.state.firstPayment}
+                options={{ format: 'MM/YYYY' }}
+                style={styles.maskInput} />
+              <FormControlLabel label="Pagamento Fixo ?"
+                control={<Checkbox
+                  checked={this.state.fixedPayment}
+                  onChange={(e, c) => this.setState({ fixedPayment: c })}
                   color="primary"
-                />
-              }
-              label="Parcela única ?"
-            />
-            <br />
-            <div hidden={this.state.singlePlot}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={this.state.fixedPayment}
-                    onChange={(e, c) => this.setState({ fixedPayment: c })}
-                    color="primary"
-                  />
-                }
-                label="Fixo mensal ?"
+                />} />
+            </div>
+
+            <div hidden={this.state.fixedPayment} style={{ color: '#666' }}>
+              <FormControlLabel label="Valor por parcela"
+                control={<Checkbox
+                  checked={this.state.costByInstallment}
+                  onChange={(e, c) => this.setState({ costByInstallment: c })}
+                  color="primary"
+                />} />
+              <span>Qtd. Parcelas:</span>
+              <TextInputMask
+                onChangeText={e => this.setState({ installments: e })}
+                kind="only-numbers"
+                value={this.state.installments}
+                style={styles.maskInput} />
+              <IconTextInput
+                label="Quantidade de Parcelas"
+                value={this.state.installments}
+                type="number"
+                onChange={e => this.setState({ installments: e.value.replace(/[,.]/g, ''), errorMessage: '' })}
               />
-              <br />
-              <div hidden={this.state.fixedPayment}>
-                <IconTextInput
-                  label="Quantidade de Parcelas"
-                  value={this.state.plots}
-                  type="number"
-                  onChange={(e) => this.setState({ plots: e.value.replace('.', ''), errorMessage: '' })}
-                />
-                <IconTextInput style={{ marginLeft: '10px' }}
-                  label="Parcelas Pagas"
-                  value={this.state.plotsPaid}
-                  type="number"
-                  onChange={(e) => this.setState({ plotsPaid: e.value.replace('.', ''), errorMessage: '' })}
-                />
-              </div>
             </div>
             <div hidden={!this.state.cards.length}>
               <FormControlLabel
@@ -176,24 +199,6 @@ export default class EditPaymentModal extends React.Component {
                 : null
             }
 
-            <div>
-              <IconTextInput
-                label="Valor Total"
-                value={this.state.cost}
-                type="number"
-                onChange={(e) => this.setState({ cost: e.value, errorMessage: '' })}
-              />
-              <TextField style={{ marginLeft: '10px', marginTop: '10px' }}
-                id="date"
-                label="Primeiro Pagamento"
-                type="month"
-                onChange={(e) => this.setState({ firstPayment: e.target.value })}
-                defaultValue={this.state.firstPayment}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-              />
-            </div>
             <span style={{ color: '#d55', marginTop: '10px' }}>{this.state.errorMessage}</span>
           </div>
         </DialogContent>
