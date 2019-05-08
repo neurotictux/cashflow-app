@@ -1,22 +1,22 @@
 export default {
   up: (queryInterface) => queryInterface.bulkInsert('Installment', [{
     paymentId: 1,
-    cost: 25.80,
+    cost: 25,
     number: 1,
     date: new Date()
   }, {
     paymentId: 1,
-    cost: 25.80,
+    cost: 25,
     number: 2,
     date: new Date()
   }, {
     paymentId: 1,
-    cost: 25.80,
+    cost: 25,
     number: 3,
     date: new Date()
   }, {
     paymentId: 1,
-    cost: 25.80,
+    cost: 25,
     number: 4,
     date: new Date()
   }, { // Salário
@@ -26,7 +26,7 @@ export default {
     date: new Date('01/01/2019')
   }, { // Internet
     paymentId: 6,
-    cost: 85.63,
+    cost: 88,
     number: 1,
     date: new Date('01/03/2019')
   }, { // Computador

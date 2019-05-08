@@ -30,16 +30,16 @@ describe('Estimativas de Pagamentos', () => {
       }))
 
   test('Obter a estimativa enviando parâmetros corretos',
-    done => request(app).get('/api/payment-estimative?startDate=01/2019&endDate=03/2020').set('Authorization', token)
+    done => request(app).get('/api/payment-estimative?startDate=01/2019&endDate=12/2020').set('Authorization', token)
       .then(response => {
         expect(response.statusCode).toBe(200)
-        let sum = 15 * 2000 // Salário
-        sum -= 13 * 85.63 // Internet
-        sum -= 10 * 100 // Computador
-        sum -= 4 * 100 // Televisão
-        sum -= 4 * 100 // Balcão
+        let sum = 24 * 2000 // Salário - 30.000
+        sum -= 24 * 88 // Internet - 1.144
+        sum -= 10 * 100 // Computador - 1.000
+        sum -= 4 * 100 // Televisão - 400
+        sum -= 4 * 100 // Balcão - 400
 
-        const result = response.body['03/2020']
+        const result = response.body['12/2020']
         expect(result.accumulatedCost).toBe(sum)
         done()
       }))
