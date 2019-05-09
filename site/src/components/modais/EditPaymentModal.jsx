@@ -80,7 +80,8 @@ export default class EditPaymentModal extends React.Component {
     }
 
     if (useCreditCard)
-      payment.creditCardId = card
+      payment.creditCard = { id: card }
+    console.log(useCreditCard)
 
     if (payment.id)
       paymentService.update(payment)
@@ -93,16 +94,30 @@ export default class EditPaymentModal extends React.Component {
   }
 
   onEnter() {
-    const { description, singlePlot, firstPayment, fixedPayment, cost, type, plots, creditCardId, plotsPaid } = this.props.payment || {}
+    const { description,
+      Installments,
+      fixedPayment,
+      type,
+      creditCardId
+    } = this.props.payment || {}
+
+    console.log(this.props.payment)
+
+    const firstInstallment = (Installments || [])[0] || {}
+
     this.setState({
       description: description || '',
-      firstPayment: dateToString(firstPayment),
-      cost: cost ? cost.toString() : '0',
       paymentType: type || 2,
       card: creditCardId,
       useCreditCard: creditCardId ? true : false,
-      fixedPayment: fixedPayment ? true : false,
       showModal: true
+    })
+    this.updateInstallments({
+      costByInstallment: true,
+      qtdInstallments: (Installments || []).length,
+      costText: toReal(firstInstallment.cost),
+      fixedPayment,
+      firstPayment: dateToString(firstInstallment.date ? new Date(firstInstallment.date) : null),
     })
   }
 

@@ -21,7 +21,7 @@ import CardMain from '../../components/main/CardMain'
 import InputMoney from '../../components/inputs/InputMoney'
 import EditPaymentModal from '../../components/modais/EditPaymentModal'
 import { paymentService } from '../../services/index'
-import { toReal, getDateStringEg } from '../../helpers/utils'
+import { toReal, dateToString } from '../../helpers'
 
 const styles = {
   noRecords: {
@@ -65,7 +65,7 @@ export default class Payment extends React.Component {
       useCreditCard: false,
       fixedPayment: false,
       card: null,
-      showModal: true
+      showModal: false
     }
   }
 
@@ -93,7 +93,7 @@ export default class Payment extends React.Component {
     this.setState({
       payment: p || {},
       description: description || '',
-      firstPayment: getDateStringEg(firstPayment ? new Date(firstPayment) : new Date()),
+      firstPayment: dateToString(firstPayment),
       cost: cost ? cost.toString() : '0',
       paymentType: type || 2,
       plots: plots ? plots.toString() : '1',
