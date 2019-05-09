@@ -25,7 +25,7 @@ import TextInputMask from 'react-masked-text'
 import IconTextInput from '../main/IconTextInput'
 import InputMoney from '../inputs/InputMoney'
 
-import { getDateStringEg, getDateFromStringEg, toReal, toDateFormat } from '../../helpers'
+import { dateToString, getDateFromStringEg, toReal, toDateFormat } from '../../helpers'
 import { creditCardService, paymentService } from '../../services/index'
 
 const styles = {
@@ -51,8 +51,7 @@ export default class EditPaymentModal extends React.Component {
       paymentType: 2,
       useCreditCard: false,
       fixedPayment: false,
-      singlePlot: false,
-      qtdInstallments: 1,
+      qtdInstallments: 10,
       card: [],
       costByInstallment: true,
       costText: '',
@@ -66,19 +65,18 @@ export default class EditPaymentModal extends React.Component {
   }
 
   save() {
-    const { singlePlot, fixedPayment, description, firstPayment, cost, paymentType, plots, card, useCreditCard, plotsPaid } = this.state
+    const { installments, fixedPayment, description, firstPayment, paymentType, card, useCreditCard } = this.state
 
     const payment = {}
     payment.id = this.props.payment.id
     payment.description = description
-    payment.firstPayment = getDateFromStringEg(firstPayment)
-    payment.cost = cost ? Number(cost) : 0
-    payment.singlePlot = singlePlot
     payment.type = paymentType
-    if (!singlePlot) {
-      payment.fixedPayment = fixedPayment
-      payment.plots = plots && !fixedPayment ? Number(plots) : 0
-      payment.plotsPaid = plotsPaid && !fixedPayment ? Number(plotsPaid) : 0
+    payment.installments = installments
+    payment.fixedPayment = fixedPayment
+
+    if (!description || !installments.length) {
+      this.setState({ errorMessage: 'Preencha corretamente os campos.' })
+      return
     }
 
     if (useCreditCard)
@@ -91,29 +89,25 @@ export default class EditPaymentModal extends React.Component {
     else
       paymentService.create(payment)
         .then(() => this.props.onFinish())
-        .catch(err => this.setState({ errorMessage: err.error }))
+        .catch(err => this.setState({ errorMessage: err.message }))
   }
 
   onEnter() {
     const { description, singlePlot, firstPayment, fixedPayment, cost, type, plots, creditCardId, plotsPaid } = this.props.payment || {}
     this.setState({
       description: description || '',
-      firstPayment: '', //getDateStringEg(firstPayment ? new Date(firstPayment) : new Date()),
+      firstPayment: dateToString(firstPayment),
       cost: cost ? cost.toString() : '0',
       paymentType: type || 2,
-      plots: plots ? plots.toString() : '1',
       card: creditCardId,
       useCreditCard: creditCardId ? true : false,
-      plotsPaid: plotsPaid ? plotsPaid.toString() : '0',
       fixedPayment: fixedPayment ? true : false,
-      showModal: true,
-      singlePlot: singlePlot ? true : false,
+      showModal: true
     })
   }
 
   updateInstallments(data) {
-    const { costByInstallment, qtdInstallments, costText, firstPayment } = data
-    console.log(costByInstallment)
+    const { costByInstallment, qtdInstallments, costText, fixedPayment, firstPayment } = data
     const installments = []
     let cost = Number(data.costText.replace(/[^0-9,]/g, '').replace(',', '.') || 0)
     if (cost > 0 && qtdInstallments > 0 && /^[0-9]{2}\/[0-9]{2}\/[0-9]{4}$/.test(firstPayment)) {
@@ -121,27 +115,31 @@ export default class EditPaymentModal extends React.Component {
       let month = Number(firstPayment.substr(3, 2))
       let year = Number(firstPayment.substr(6, 4))
 
-      if (costByInstallment)
-        cost = cost / qtdInstallments
+      if (!fixedPayment) {
+        if (costByInstallment)
+          cost = cost / qtdInstallments
 
-      for (let i = 1; i <= qtdInstallments; i++) {
-        if (month > 12) {
-          month = 1
-          year++
+        for (let i = 1; i <= qtdInstallments; i++) {
+          if (month > 12) {
+            month = 1
+            year++
+          }
+          installments.push({ number: i, cost: cost, date: new Date(`${month}/${day}/${year}`) })
+          month++
         }
-        installments.push({ number: i, cost: cost, date: new Date(`${month}/${day}/${year}`) })
-        month++
       }
+      else
+        installments.push({ number: 1, cost: cost, date: new Date(`${month}/${day}/${year}`) })
     }
-
-    console.log(installments)
 
     this.setState({
       costByInstallment,
       qtdInstallments,
       costText,
       firstPayment,
-      installments
+      installments,
+      fixedPayment,
+      errorMessage: ''
     })
   }
 
@@ -192,9 +190,33 @@ export default class EditPaymentModal extends React.Component {
               <FormControlLabel label="Pagamento Fixo ?"
                 control={<Checkbox
                   checked={this.state.fixedPayment}
-                  onChange={(e, c) => this.setState({ fixedPayment: c })}
+                  onChange={(e, c) => this.updateInstallments({ ...this.state, fixedPayment: c })}
                   color="primary"
                 />} />
+            </div>
+
+            <div hidden={!this.state.cards.length}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={this.state.useCreditCard}
+                    onChange={(e, c) => this.setState({ useCreditCard: c, card: this.state.cards[0].id })}
+                    color="primary"
+                  />
+                }
+                label="Cartão de crédito"
+              />
+              {
+                this.state.cards.length && this.state.useCreditCard ?
+                  <FormControl style={{ marginLeft: '20px' }}>
+                    <InputLabel htmlFor="select-tipo">Cartão de crédito</InputLabel>
+                    <Select style={{ width: '200px' }} value={this.state.card}
+                      onChange={e => this.setState({ card: e.target.value })}>
+                      {this.state.cards.map(p => <MenuItem key={p.id} value={p.id}>{p.name}</MenuItem>)}
+                    </Select>
+                  </FormControl>
+                  : null
+              }
             </div>
 
             <div hidden={this.state.fixedPayment} style={{ color: '#666' }}>
@@ -211,30 +233,8 @@ export default class EditPaymentModal extends React.Component {
                 value={this.state.qtdInstallments}
                 style={styles.maskInput} />
             </div>
-            <div hidden={!this.state.cards.length}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={this.state.useCreditCard}
-                    onChange={(e, c) => this.setState({ useCreditCard: c, card: this.state.cards[0].id })}
-                    color="primary"
-                  />
-                }
-                label="Cartão de crédito ?"
-              />
-            </div>
 
-            {
-              this.state.cards.length && !this.state.useCreditCard ?
-                <FormControl style={{ marginLeft: '20px', marginTop: '10px' }}>
-                  <InputLabel htmlFor="select-tipo">Cartão de crédito</InputLabel>
-                  <Select style={{ width: '200px' }} value={this.state.card}
-                    onChange={e => this.setState({ card: e.target.value })}>
-                    {this.state.cards.map(p => <MenuItem key={p.id} value={p.id}>{p.name}</MenuItem>)}
-                  </Select>
-                </FormControl>
-                : null
-            }
+
 
             <div hidden={!this.state.installments.length || this.state.fixedPayment}
               style={{ textAlign: 'center', marginTop: '20px' }}>
@@ -252,8 +252,9 @@ export default class EditPaymentModal extends React.Component {
                 </List>
               </fieldset>
             </div>
-
-            <span style={{ color: '#d55', marginTop: '10px' }}>{this.state.errorMessage}</span>
+            <div style={{ textAlign: 'center', color: '#d55', marginTop: '20px' }}>
+              <span style={{}}>{this.state.errorMessage}</span>
+            </div>
           </div>
         </DialogContent>
         <DialogActions>

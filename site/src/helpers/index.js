@@ -2,7 +2,7 @@ export { toDateFormat } from './date'
 export {
   Months,
   getDateFromStringEg,
-  getDateStringEg,
+  dateToString,
   getMonthYear,
   isSameMonth,
   toReal

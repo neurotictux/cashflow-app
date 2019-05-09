@@ -1,12 +1,14 @@
 export const Months = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
 
-export const getDateStringEg = (date) => {
+export const dateToString = (date) => {
   date = date || new Date()
+  let day = date.getDate()
+  day = day > 9 ? day : '0' + day
 
-  let month = (date.getMonth() + 1) + ''
-  month = month.length === 1 ? '0' + month : month
+  let month = date.getMonth() + 1
+  month = month > 9 ? month : '0' + month
 
-  return `${month}/${date.getFullYear()}`
+  return `${day}/${month}/${date.getFullYear()}`
 }
 
 export const getDateFromStringEg = (value) => {
