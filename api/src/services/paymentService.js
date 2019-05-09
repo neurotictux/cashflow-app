@@ -30,6 +30,7 @@ const validatePayment = async (payment, creditCardRepository) => {
 
     if (!p.cost || isNaN(Number(p.cost)))
       throwValidationError('Há parcelas sem valor.')
+    p.cost = parseFloat((p.cost).toFixed(2))
 
     p.date = new Date(p.date || '')
     if (p.date.toString() === 'Invalid Date')
@@ -100,19 +101,20 @@ const toPaymentResult = (arr, startDate, endDate) => {
   })
   const fixed = payments.filter(p => p.fixedPayment)
   let accumulatedCost = 0
-  for (let month in result){
+  const toCost = (val) => parseFloat((val).toFixed(2))
+  for (let month in result) {
     const list = payments.filter(p => p.monthYear === month && !p.fixedPayment).concat(fixed)
-    const costIncome = list.filter(p => p.type === 1).map(p => p.cost).reduce((sum, val) => sum + val)
-    const costExpense = list.filter(p => p.type === 2).map(p => p.cost).reduce((sum, val) => sum + val)
-    const total = costIncome - costExpense
+    const costIncome = toCost(list.filter(p => p.type === 1).map(p => p.cost).reduce((sum, val) => sum + val))
+    const costExpense = toCost(list.filter(p => p.type === 2).map(p => p.cost).reduce((sum, val) => sum + val))
+    const total = toCost(costIncome - costExpense)
     accumulatedCost += total
     result[month] = {
       payments: list,
       costIncome,
       costExpense,
       total,
-      accumulatedCost
-    }    
+      accumulatedCost: toCost(accumulatedCost)
+    }
   }
 
   return result
