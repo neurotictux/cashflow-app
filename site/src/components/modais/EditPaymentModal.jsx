@@ -57,7 +57,7 @@ export default class EditPaymentModal extends React.Component {
       costByInstallment: true,
       costText: '',
       installments: [],
-      firstPayment: ''
+      firstPayment: '05/05/2018'
     }
   }
 
@@ -113,20 +113,23 @@ export default class EditPaymentModal extends React.Component {
 
   updateInstallments(data) {
     const { costByInstallment, qtdInstallments, costText, firstPayment } = data
+    console.log(costByInstallment)
     const installments = []
-    const cost = Number(data.costText.replace(/[^0-9,]/g, '').replace(',', '.') || 0)
+    let cost = Number(data.costText.replace(/[^0-9,]/g, '').replace(',', '.') || 0)
     if (cost > 0 && qtdInstallments > 0 && /^[0-9]{2}\/[0-9]{2}\/[0-9]{4}$/.test(firstPayment)) {
       let day = Number(firstPayment.substr(0, 2))
-      let month = Number(firstPayment.substr(3, 2)) - 1
+      let month = Number(firstPayment.substr(3, 2))
       let year = Number(firstPayment.substr(6, 4))
+
+      if (costByInstallment)
+        cost = cost / qtdInstallments
+
       for (let i = 1; i <= qtdInstallments; i++) {
-        if (month > 11) {
-          month = 0
+        if (month > 12) {
+          month = 1
           year++
         }
-        console.log(`${day}/${month}/${year}`)
-        installments.push({ number: i, cost: cost, date: new Date(`${day}/${month}/${year}`) })
-        console.log({ number: i, cost: cost, date: new Date(`${day}/${month}/${year}`) })
+        installments.push({ number: i, cost: cost, date: new Date(`${month}/${day}/${year}`) })
         month++
       }
     }
@@ -198,7 +201,7 @@ export default class EditPaymentModal extends React.Component {
               <FormControlLabel label="Valor por parcela"
                 control={<Checkbox
                   checked={this.state.costByInstallment}
-                  onChange={e => this.updateInstallments({ ...this.state, costByInstallment: e })}
+                  onChange={(e, c) => this.updateInstallments({ ...this.state, costByInstallment: c })}
                   color="primary"
                 />} />
               <span>Qtd. Parcelas:</span>
@@ -233,7 +236,8 @@ export default class EditPaymentModal extends React.Component {
                 : null
             }
 
-            <div hidden={!this.state.installments.length} style={{ textAlign: 'center', marginTop: '20px' }}>
+            <div hidden={!this.state.installments.length || this.state.fixedPayment}
+              style={{ textAlign: 'center', marginTop: '20px' }}>
               <fieldset style={{ borderColor: '#ddd' }}>
                 <legend style={{ fontSize: '16px' }}>PARCELAS</legend>
                 <List component="nav">
