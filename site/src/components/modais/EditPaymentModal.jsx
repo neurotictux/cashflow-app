@@ -17,7 +17,8 @@ import {
   Radio,
   List,
   ListItem,
-  ListItemText
+  ListItemText,
+  CircularProgress
 } from '@material-ui/core'
 
 import TextInputMask from 'react-masked-text'
@@ -47,7 +48,7 @@ export default class EditPaymentModal extends React.Component {
     this.state = {
       payment: {},
       description: '',
-      cards: [],
+      cards: this.props.cards,
       paymentType: 2,
       useCreditCard: false,
       fixedPayment: false,
@@ -56,12 +57,82 @@ export default class EditPaymentModal extends React.Component {
       costByInstallment: true,
       costText: '',
       installments: [],
-      firstPayment: '05/05/2018'
+      firstPayment: '',
+      loading: false
     }
   }
 
   componentDidMount() {
-    creditCardService.get().then(res => this.setState({ cards: res, card: res[0] ? res[0].id : null }))
+    const {
+      description,
+      Installments,
+      fixedPayment,
+      type,
+      creditCardId
+    } = this.props.payment || {}
+
+    const firstInstallment = (Installments || [])[0] || {}
+    const qtdInstallments = (Installments || []).length || 1
+    const costs = (Installments || []).map(p => p.cost)
+
+    this.setState({
+      useCreditCard: creditCardId > 0,
+      description: description || '',
+      paymentType: type || 2,
+      card: creditCardId,
+      useCreditCard: creditCardId ? true : false,
+      showModal: true
+    })
+    this.updateInstallments({
+      costByInstallment: false,
+      qtdInstallments,
+      costText: toReal(costs.length ? costs.reduce((a, b) => a + b) : 0),
+      fixedPayment,
+      firstPayment: dateToString(firstInstallment.date ? new Date(firstInstallment.date) : null),
+    })
+  }
+
+  updateInstallments(data) {
+    const { costByInstallment, qtdInstallments, costText, fixedPayment, firstPayment } = data
+    const installments = []
+    let cost = Number((costText || '').replace(/[^0-9,]/g, '').replace(',', '.') || 0)
+    if (cost > 0 && qtdInstallments > 0 && /^[0-9]{2}\/[0-9]{2}\/[0-9]{4}$/.test(firstPayment)) {
+      let day = Number(firstPayment.substr(0, 2))
+      let month = Number(firstPayment.substr(3, 2))
+      let year = Number(firstPayment.substr(6, 4))
+
+      if (!fixedPayment) {
+        let firstCost = cost
+        if (!costByInstallment) {
+          const total = cost
+          cost = parseFloat(Number(cost / qtdInstallments).toFixed(2))
+          const sum = parseFloat(Number(cost * qtdInstallments).toFixed(2))
+          firstCost = cost + (total > sum ? total - sum : sum - total)
+        }
+
+        for (let i = 1; i <= qtdInstallments; i++) {
+          if (month > 12) {
+            month = 1
+            year++
+          }
+          installments.push({ number: i, cost: cost, date: new Date(`${month}/${day}/${year}`) })
+          month++
+        }
+        installments[0].cost = firstCost
+      }
+      else
+        installments.push({ number: 1, cost: cost, date: new Date(`${month}/${day}/${year}`) })
+    }
+
+    this.setState({
+      costByInstallment,
+      qtdInstallments,
+      costText,
+      firstPayment,
+      installments,
+      fixedPayment,
+      errorMessage: ''
+    })
   }
 
   save() {
@@ -81,81 +152,17 @@ export default class EditPaymentModal extends React.Component {
 
     if (useCreditCard)
       payment.creditCard = { id: card }
-    console.log(useCreditCard)
+
+    this.setState({ loading: true })
 
     if (payment.id)
       paymentService.update(payment)
         .then(() => this.props.onFinish())
-        .catch(err => this.setState({ errorMessage: err.error }))
+        .catch(err => this.setState({ loading: false, errorMessage: err.error }))
     else
       paymentService.create(payment)
         .then(() => this.props.onFinish())
-        .catch(err => this.setState({ errorMessage: err.message }))
-  }
-
-  onEnter() {
-    const { description,
-      Installments,
-      fixedPayment,
-      type,
-      creditCardId
-    } = this.props.payment || {}
-
-    console.log(this.props.payment)
-
-    const firstInstallment = (Installments || [])[0] || {}
-
-    this.setState({
-      description: description || '',
-      paymentType: type || 2,
-      card: creditCardId,
-      useCreditCard: creditCardId ? true : false,
-      showModal: true
-    })
-    this.updateInstallments({
-      costByInstallment: true,
-      qtdInstallments: (Installments || []).length,
-      costText: toReal(firstInstallment.cost),
-      fixedPayment,
-      firstPayment: dateToString(firstInstallment.date ? new Date(firstInstallment.date) : null),
-    })
-  }
-
-  updateInstallments(data) {
-    const { costByInstallment, qtdInstallments, costText, fixedPayment, firstPayment } = data
-    const installments = []
-    let cost = Number(data.costText.replace(/[^0-9,]/g, '').replace(',', '.') || 0)
-    if (cost > 0 && qtdInstallments > 0 && /^[0-9]{2}\/[0-9]{2}\/[0-9]{4}$/.test(firstPayment)) {
-      let day = Number(firstPayment.substr(0, 2))
-      let month = Number(firstPayment.substr(3, 2))
-      let year = Number(firstPayment.substr(6, 4))
-
-      if (!fixedPayment) {
-        if (costByInstallment)
-          cost = cost / qtdInstallments
-
-        for (let i = 1; i <= qtdInstallments; i++) {
-          if (month > 12) {
-            month = 1
-            year++
-          }
-          installments.push({ number: i, cost: cost, date: new Date(`${month}/${day}/${year}`) })
-          month++
-        }
-      }
-      else
-        installments.push({ number: 1, cost: cost, date: new Date(`${month}/${day}/${year}`) })
-    }
-
-    this.setState({
-      costByInstallment,
-      qtdInstallments,
-      costText,
-      firstPayment,
-      installments,
-      fixedPayment,
-      errorMessage: ''
-    })
+        .catch(err => this.setState({ loading: false, errorMessage: err.message }))
   }
 
   render() {
@@ -163,7 +170,6 @@ export default class EditPaymentModal extends React.Component {
       <Dialog
         open={this.props.open}
         onClose={() => this.props.onClose()}
-        onEnter={() => this.onEnter()}
         transitionDuration={300}
         TransitionComponent={Zoom}>
         <DialogTitle style={{ textAlign: 'center' }}>
@@ -175,7 +181,7 @@ export default class EditPaymentModal extends React.Component {
             <IconTextInput
               label="Descrição"
               value={this.state.description}
-              onChange={(e) => this.setState({ description: e.value, errorMessage: '' })}
+              onChange={e => this.setState({ description: e.value, errorMessage: '' })}
             />
             <FormControl style={{ width: '240px', marginLeft: '20px', marginTop: '10px' }}>
               <InputLabel htmlFor="select-tipo">Tipo</InputLabel>
@@ -214,7 +220,7 @@ export default class EditPaymentModal extends React.Component {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={this.state.useCreditCard}
+                    defaultChecked={this.state.useCreditCard}
                     onChange={(e, c) => this.setState({ useCreditCard: c, card: this.state.cards[0].id })}
                     color="primary"
                   />
@@ -237,7 +243,7 @@ export default class EditPaymentModal extends React.Component {
             <div hidden={this.state.fixedPayment} style={{ color: '#666' }}>
               <FormControlLabel label="Valor por parcela"
                 control={<Checkbox
-                  checked={this.state.costByInstallment}
+                  defaultChecked={this.state.costByInstallment}
                   onChange={(e, c) => this.updateInstallments({ ...this.state, costByInstallment: c })}
                   color="primary"
                 />} />
@@ -249,7 +255,9 @@ export default class EditPaymentModal extends React.Component {
                 style={styles.maskInput} />
             </div>
 
-
+            <div style={{ textAlign: 'center', color: '#d55', marginTop: '20px' }}>
+              <span style={{}}>{this.state.errorMessage}</span>
+            </div>
 
             <div hidden={!this.state.installments.length || this.state.fixedPayment}
               style={{ textAlign: 'center', marginTop: '20px' }}>
@@ -267,14 +275,14 @@ export default class EditPaymentModal extends React.Component {
                 </List>
               </fieldset>
             </div>
-            <div style={{ textAlign: 'center', color: '#d55', marginTop: '20px' }}>
-              <span style={{}}>{this.state.errorMessage}</span>
-            </div>
           </div>
         </DialogContent>
         <DialogActions>
+          <div hidden={!this.state.loading}>
+            <CircularProgress size={30} />
+          </div>
           <Button onClick={() => this.props.onClose()} variant="raised" autoFocus>cancelar</Button>
-          <Button onClick={() => this.save()} color="primary" variant="raised" autoFocus>salvar</Button>
+          <Button disabled={this.state.loading} onClick={() => this.save()} color="primary" variant="raised" autoFocus>salvar</Button>
         </DialogActions>
       </Dialog>
     )

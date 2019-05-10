@@ -20,7 +20,7 @@ import CardIcon from '@material-ui/icons/CreditCardOutlined'
 import CardMain from '../../components/main/CardMain'
 import InputMoney from '../../components/inputs/InputMoney'
 import EditPaymentModal from '../../components/modais/EditPaymentModal'
-import { paymentService } from '../../services/index'
+import { paymentService, creditCardService } from '../../services/index'
 import { toReal, dateToString } from '../../helpers'
 
 const styles = {
@@ -71,6 +71,7 @@ export default class Payment extends React.Component {
 
   componentDidMount() {
     this.refresh()
+    creditCardService.get().then(res => this.setState({ cards: res }))
   }
 
   refresh() {
@@ -181,7 +182,14 @@ export default class Payment extends React.Component {
             Adicionar Pagamento
           </Button>
         </div>
-        <EditPaymentModal onFinish={() => this.onFinish()} open={this.state.showModal} payment={this.state.payment} onClose={() => this.setState({ showModal: false })} />
+        {this.state.showModal ?
+          <EditPaymentModal
+            onFinish={() => this.onFinish()}
+            cards={this.state.cards}
+            open={this.state.showModal}
+            payment={this.state.payment}
+            onClose={() => this.setState({ showModal: false }) } />
+          : null}
       </CardMain>
     )
   }
