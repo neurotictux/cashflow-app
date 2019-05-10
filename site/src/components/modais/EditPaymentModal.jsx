@@ -18,7 +18,10 @@ import {
   List,
   ListItem,
   ListItemText,
-  CircularProgress
+  CircularProgress,
+  GridList,
+  GridListTile,
+  GridListTileBar
 } from '@material-ui/core'
 
 import TextInputMask from 'react-masked-text'
@@ -58,7 +61,8 @@ export default class EditPaymentModal extends React.Component {
       costText: '',
       installments: [],
       firstPayment: '',
-      loading: false
+      loading: false,
+      paidInstallments: []
     }
   }
 
@@ -74,6 +78,7 @@ export default class EditPaymentModal extends React.Component {
     const firstInstallment = (Installments || [])[0] || {}
     const qtdInstallments = (Installments || []).length || 1
     const costs = (Installments || []).map(p => p.cost)
+    const paidInstallments = (Installments || []).filter(p => p.paid).map(p => p.number)
 
     this.setState({
       useCreditCard: creditCardId > 0,
@@ -81,7 +86,8 @@ export default class EditPaymentModal extends React.Component {
       paymentType: type || 2,
       card: creditCardId,
       useCreditCard: creditCardId ? true : false,
-      showModal: true
+      showModal: true,
+      paidInstallments
     })
     this.updateInstallments({
       costByInstallment: false,
@@ -171,115 +177,131 @@ export default class EditPaymentModal extends React.Component {
         open={this.props.open}
         onClose={() => this.props.onClose()}
         transitionDuration={300}
-        TransitionComponent={Zoom}>
+        TransitionComponent={Zoom}
+        maxWidth="lg"
+        fullWidth>
         <DialogTitle style={{ textAlign: 'center' }}>
           {this.props.payment.id > 0 ? 'Editar Pagamento' : 'Novo Pagamento'}
         </DialogTitle>
         <DialogContent>
           <div style={{ textAlign: 'start', color: '#666', fontFamily: '"Roboto", "Helvetica", "Arial", "sans-serif"' }} >
 
-            <IconTextInput
-              label="Descrição"
-              value={this.state.description}
-              onChange={e => this.setState({ description: e.value, errorMessage: '' })}
-            />
-            <FormControl style={{ width: '240px', marginLeft: '20px', marginTop: '10px' }}>
-              <InputLabel htmlFor="select-tipo">Tipo</InputLabel>
-              <Select
-                value={this.state.paymentType || 2}
-                color="red"
-                onChange={e => this.setState({ paymentType: e.target.value })}>
-                <MenuItem key={1} value={1}><span style={{ color: 'green', fontWeight: 'bold' }}>RENDA</span></MenuItem>
-                <MenuItem key={2} value={2}><span style={{ color: 'red', fontWeight: 'bold' }}>DESPESA</span></MenuItem>
-              </Select>
-            </FormControl>
+            <GridList cellHeight={300} cols={5}>
+              <GridListTile cols={3}>
 
-            <div style={{ marginRight: '10px', marginTop: '10px', color: '#666' }}>
-              <span>Valor:</span>
-              <TextInputMask
-                onChangeText={e => this.updateInstallments({ ...this.state, costText: e })}
-                kind="money"
-                value={this.state.costText}
-                style={styles.maskInput} />
-              <span>Data:</span>
-              <TextInputMask
-                onChangeText={e => this.updateInstallments({ ...this.state, firstPayment: e })}
-                kind="datetime"
-                value={this.state.firstPayment}
-                options={{ format: 'dd/MM/YYYY' }}
-                style={styles.maskInput} />
-              <FormControlLabel label="Pagamento Fixo ?"
-                control={<Checkbox
-                  checked={this.state.fixedPayment}
-                  onChange={(e, c) => this.updateInstallments({ ...this.state, fixedPayment: c })}
-                  color="primary"
-                />} />
-            </div>
+                <IconTextInput
+                  label="Descrição"
+                  value={this.state.description}
+                  onChange={e => this.setState({ description: e.value, errorMessage: '' })}
+                />
+                <FormControl style={{ width: '200px', marginLeft: '20px', marginTop: '10px' }}>
+                  <InputLabel htmlFor="select-tipo">Tipo</InputLabel>
+                  <Select
+                    value={this.state.paymentType || 2}
+                    color="red"
+                    onChange={e => this.setState({ paymentType: e.target.value })}>
+                    <MenuItem key={1} value={1}><span style={{ color: 'green', fontWeight: 'bold' }}>RENDA</span></MenuItem>
+                    <MenuItem key={2} value={2}><span style={{ color: 'red', fontWeight: 'bold' }}>DESPESA</span></MenuItem>
+                  </Select>
+                </FormControl>
 
-            <div hidden={!this.state.cards.length}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    defaultChecked={this.state.useCreditCard}
-                    onChange={(e, c) => this.setState({ useCreditCard: c, card: this.state.cards[0].id })}
-                    color="primary"
-                  />
-                }
-                label="Cartão de crédito"
-              />
-              {
-                this.state.cards.length && this.state.useCreditCard ?
-                  <FormControl style={{ marginLeft: '20px' }}>
-                    <InputLabel htmlFor="select-tipo">Cartão de crédito</InputLabel>
-                    <Select style={{ width: '200px' }} value={this.state.card}
-                      onChange={e => this.setState({ card: e.target.value })}>
-                      {this.state.cards.map(p => <MenuItem key={p.id} value={p.id}>{p.name}</MenuItem>)}
-                    </Select>
-                  </FormControl>
-                  : null
-              }
-            </div>
+                <div style={{ marginRight: '10px', marginTop: '10px', color: '#666' }}>
+                  <span>Valor:</span>
+                  <TextInputMask
+                    onChangeText={e => this.updateInstallments({ ...this.state, costText: e })}
+                    kind="money"
+                    value={this.state.costText}
+                    style={styles.maskInput} />
+                  <span>Data:</span>
+                  <TextInputMask
+                    onChangeText={e => this.updateInstallments({ ...this.state, firstPayment: e })}
+                    kind="datetime"
+                    value={this.state.firstPayment}
+                    options={{ format: 'dd/MM/YYYY' }}
+                    style={styles.maskInput} />
+                  <FormControlLabel label="Pagamento Fixo ?"
+                    control={<Checkbox
+                      checked={this.state.fixedPayment}
+                      onChange={(e, c) => this.updateInstallments({ ...this.state, fixedPayment: c })}
+                      color="primary"
+                    />} />
+                </div>
 
-            <div hidden={this.state.fixedPayment} style={{ color: '#666' }}>
-              <FormControlLabel label="Valor por parcela"
-                control={<Checkbox
-                  defaultChecked={this.state.costByInstallment}
-                  onChange={(e, c) => this.updateInstallments({ ...this.state, costByInstallment: c })}
-                  color="primary"
-                />} />
-              <span>Qtd. Parcelas:</span>
-              <TextInputMask
-                onChangeText={e => this.updateInstallments({ ...this.state, qtdInstallments: e })}
-                kind="only-numbers"
-                value={this.state.qtdInstallments}
-                style={styles.maskInput} />
-            </div>
-
-            <div style={{ textAlign: 'center', color: '#d55', marginTop: '20px' }}>
-              <span>{this.state.errorMessage}</span>
-            </div>
-
-            <div hidden={!this.state.installments.length || this.state.fixedPayment}
-              style={{ textAlign: 'center', marginTop: '20px' }}>
-              <fieldset style={{ borderColor: '#ddd' }}>
-                <legend style={{ fontSize: '16px' }}>PARCELAS</legend>
-                <List component="nav">
-                  {this.state.installments.map((p, i) =>
-                    <ListItem style={{ padding: '0px', color: '#666', borderBottom: '1px solid #666' }} key={i}>
-                      <ListItemText primary={p.number}></ListItemText>
-                      <ListItemText primary={toReal(p.cost)}></ListItemText>
-                      <ListItemText primary={toDateFormat(p.date, 'dd/MM/yyyy')}></ListItemText>
+                <div hidden={!this.state.cards.length}>
+                  <FormControlLabel
+                    control={
                       <Checkbox
-                        defaultChecked={this.state.costByInstallment}
-                        onChange={(e, c) => this.updateInstallments({ ...this.state, costByInstallment: c })}
+                        defaultChecked={this.state.useCreditCard}
+                        onChange={(e, c) => this.setState({ useCreditCard: c, card: this.state.cards[0].id })}
                         color="primary"
                       />
-                    </ListItem>
-                  )}
+                    }
+                    label="Cartão de crédito"
+                  />
+                  {
+                    this.state.cards.length && this.state.useCreditCard ?
+                      <FormControl style={{ marginLeft: '20px' }}>
+                        <InputLabel htmlFor="select-tipo">Cartão de crédito</InputLabel>
+                        <Select style={{ width: '200px' }} value={this.state.card}
+                          onChange={e => this.setState({ card: e.target.value })}>
+                          {this.state.cards.map(p => <MenuItem key={p.id} value={p.id}>{p.name}</MenuItem>)}
+                        </Select>
+                      </FormControl>
+                      : null
+                  }
+                </div>
 
-                </List>
-              </fieldset>
-            </div>
+                <div hidden={this.state.fixedPayment} style={{ color: '#666' }}>
+                  <FormControlLabel label="Valor por parcela"
+                    control={<Checkbox
+                      defaultChecked={this.state.costByInstallment}
+                      onChange={(e, c) => this.updateInstallments({ ...this.state, costByInstallment: c })}
+                      color="primary"
+                    />} />
+                  <span>Qtd. Parcelas:</span>
+                  <TextInputMask
+                    onChangeText={e => this.updateInstallments({ ...this.state, qtdInstallments: e })}
+                    kind="only-numbers"
+                    value={this.state.qtdInstallments}
+                    style={styles.maskInput} />
+                </div>
+
+                <div style={{ textAlign: 'center', color: '#d55', marginTop: '20px' }}>
+                  <span>{this.state.errorMessage}</span>
+                </div>
+
+              </GridListTile>
+              <GridListTile cols={2}>
+
+                <div hidden={!this.state.installments.length || this.state.fixedPayment}
+                  style={{ textAlign: 'center', marginTop: '20px' }}>
+                  <fieldset style={{ borderColor: '#ddd' }}>
+                    <legend style={{ fontSize: '16px' }}>PARCELAS</legend>
+                    <List component="nav" style={{ height: '240px', overflowY: 'scroll' }}>
+                      <ListItem style={{ padding: '0px', color: '#666', borderBottom: '1px solid #666' }}>
+                        <ListItemText style={{ fontSize: '10px' }} primary="N°"></ListItemText>
+                        <ListItemText primary="VALOR"></ListItemText>
+                        <ListItemText primary="DATA"></ListItemText>
+                        <ListItemText primary="PAGA?"></ListItemText>
+                      </ListItem>
+                      {this.state.installments.map((p, i) =>
+                        <ListItem style={{ padding: '0px', color: '#666', borderBottom: '1px solid #666' }} key={i}>
+                          <ListItemText primary={p.number}></ListItemText>
+                          <ListItemText primary={toReal(p.cost)}></ListItemText>
+                          <ListItemText primary={toDateFormat(p.date, 'dd/MM/yyyy')}></ListItemText>
+                          <Checkbox
+                            checked={this.state.paidInstallments.indexOf(p.number) !== -1}
+                            // onChange={(e, c) => this.updateInstallments({ ...this.state, costByInstallment: c })}
+                            onChange={(e, c) => console.log(p)}
+                            color="primary"
+                          />
+                        </ListItem>
+                      )}
+                    </List>
+                  </fieldset>
+                </div>
+              </GridListTile>
+            </GridList>
           </div>
         </DialogContent>
         <DialogActions>

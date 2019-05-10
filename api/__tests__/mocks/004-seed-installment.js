@@ -33,22 +33,26 @@ export default {
     paymentId: 7,
     cost: 100,
     number: 1,
-    date: new Date('05/01/2019')
+    date: new Date('05/01/2019'),
+    paid: true
   }, {
     paymentId: 7,
     cost: 100,
     number: 2,
-    date: new Date('06/01/2019')
+    date: new Date('06/01/2019'),
+    paid: true
   }, {
     paymentId: 7,
     cost: 100,
     number: 3,
-    date: new Date('07/01/2019')
+    date: new Date('07/01/2019'),
+    paid: true
   }, {
     paymentId: 7,
     cost: 100,
     number: 4,
-    date: new Date('08/01/2019')
+    date: new Date('08/01/2019'),
+    paid: true
   }, {
     paymentId: 7,
     cost: 100,
@@ -83,12 +87,14 @@ export default {
     paymentId: 8,
     cost: 100,
     number: 1,
-    date: new Date('11/01/2019')
+    date: new Date('11/01/2019'),
+    paid: true
   }, {
     paymentId: 8,
     cost: 100,
     number: 2,
-    date: new Date('12/01/2019')
+    date: new Date('12/01/2019'),
+    paid: true
   }, {
     paymentId: 8,
     cost: 100,

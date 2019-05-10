@@ -56,14 +56,12 @@ class Login extends React.Component {
     this.setState({ loading: true })
     if (e)
       e.preventDefault()
-      console.log('Login')
     authService.login({
       email: this.state.email,
       password: this.state.password
     }).then(user => {
-      console.log(user)
       setTimeout(() => this.setState({ loading: false }), 500)
-      // setTimeout(() => this.props.userChanged(user), 600)
+      setTimeout(() => this.props.userChanged(user), 600)
     }).catch(err => {
       setTimeout(() => this.setState({
         errorMessage: err.status === 401 ? 'Email ou Senha inválidos.' : err.message,
