@@ -25,6 +25,10 @@ export default {
     date: {
       type: DataTypes.DATE,
       allowNull: false
+    },
+    paid: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true
     }
   },
   Attributes: {

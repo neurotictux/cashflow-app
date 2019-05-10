@@ -94,6 +94,7 @@ const toPaymentResult = (arr, startDate, endDate) => {
         cost: x.cost,
         number: x.number,
         date: x.date,
+        paid: x.paid,
         dateFormatted: toDateFormat(x.date, 'dd/MM/yy'),
         monthYear: toDateFormat(x.date, 'MM/yyyy')
       })

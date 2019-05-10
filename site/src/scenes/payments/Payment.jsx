@@ -97,10 +97,8 @@ export default class Payment extends React.Component {
       firstPayment: dateToString(firstPayment),
       cost: cost ? cost.toString() : '0',
       paymentType: type || 2,
-      plots: plots ? plots.toString() : '1',
       card: creditCardId,
       useCreditCard: creditCardId ? true : false,
-      plotsPaid: plotsPaid ? plotsPaid.toString() : '0',
       fixedPayment: fixedPayment ? true : false,
       showModal: true
     })
@@ -148,7 +146,7 @@ export default class Payment extends React.Component {
                       style={{ width: '200px' }}
                       secondary={
                         <React.Fragment>
-                          {p.fixedPayment ? 'Fixo Mensal' : `${p.plotsPaid}/${p.plots}`}
+                          {p.fixedPayment ? 'Fixo Mensal' : `${p.Installments.filter(p => p.paid).length}/${p.Installments.length}`}
                           <CreditCardComponent card={p.creditCard} />
                         </React.Fragment>
                       }
@@ -182,14 +180,16 @@ export default class Payment extends React.Component {
             Adicionar Pagamento
           </Button>
         </div>
-        {this.state.showModal ?
-          <EditPaymentModal
-            onFinish={() => this.onFinish()}
-            cards={this.state.cards}
-            open={this.state.showModal}
-            payment={this.state.payment}
-            onClose={() => this.setState({ showModal: false }) } />
-          : null}
+        {
+          this.state.showModal ?
+            <EditPaymentModal
+              onFinish={() => this.onFinish()}
+              cards={this.state.cards}
+              open={this.state.showModal}
+              payment={this.state.payment}
+              onClose={() => this.setState({ showModal: false })} />
+            : null
+        }
       </CardMain>
     )
   }

@@ -256,7 +256,7 @@ export default class EditPaymentModal extends React.Component {
             </div>
 
             <div style={{ textAlign: 'center', color: '#d55', marginTop: '20px' }}>
-              <span style={{}}>{this.state.errorMessage}</span>
+              <span>{this.state.errorMessage}</span>
             </div>
 
             <div hidden={!this.state.installments.length || this.state.fixedPayment}
@@ -269,6 +269,11 @@ export default class EditPaymentModal extends React.Component {
                       <ListItemText primary={p.number}></ListItemText>
                       <ListItemText primary={toReal(p.cost)}></ListItemText>
                       <ListItemText primary={toDateFormat(p.date, 'dd/MM/yyyy')}></ListItemText>
+                      <Checkbox
+                        defaultChecked={this.state.costByInstallment}
+                        onChange={(e, c) => this.updateInstallments({ ...this.state, costByInstallment: c })}
+                        color="primary"
+                      />
                     </ListItem>
                   )}
 
