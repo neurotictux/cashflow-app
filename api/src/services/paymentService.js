@@ -44,7 +44,7 @@ const validatePayment = async (payment, creditCardRepository) => {
   }
 }
 
-const toPaymentResult = (arr, startDate, endDate) => {
+const toPaymentResult = (arr, startDate, endDate, cards) => {
   const regex = /^\d{1,2}[/]\d{4}$/
   const result = {}
 
@@ -87,7 +87,7 @@ const toPaymentResult = (arr, startDate, endDate) => {
         description: p.description,
         userId: p.userId,
         type: p.type,
-        creditCardId: p.creditCardId,
+        creditCard: cards.find(x => x.id === p.creditCardId),
         fixedPayment: p.fixedPayment,
         invoice: p.invoice,
         sync: p.sync,
@@ -95,6 +95,7 @@ const toPaymentResult = (arr, startDate, endDate) => {
         number: x.number,
         date: x.date,
         paid: x.paid,
+        qtdInstallments: p.Installments.length,
         dateFormatted: toDateFormat(x.date, 'dd/MM/yy'),
         monthYear: toDateFormat(x.date, 'MM/yyyy')
       })
@@ -128,7 +129,8 @@ export default (repository, creditCardRepository) => {
     getByUser: (userId) => repository.getByUser(userId),
     getEstimative: async (userId, startDate, endDate) => {
       const payments = await repository.getByUser(userId)
-      return toPaymentResult(payments, startDate, endDate)
+      const cards = await creditCardRepository.getByUser(userId)
+      return toPaymentResult(payments, startDate, endDate, cards)
     },
     create: async (payment) => {
       await validatePayment(payment, creditCardRepository)

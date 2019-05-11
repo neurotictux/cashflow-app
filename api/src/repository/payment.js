@@ -6,13 +6,14 @@ export default {
   create: async (payment) => {
     const transaction = await sequelize.transaction()
     try {
-      const { description, firstPaymentDate, installments, fixedPayment, creditCard, type, userId } = payment
+      const { invoice, description, firstPaymentDate, installments, fixedPayment, creditCard, type, userId } = payment
       const paymentDb = await Payment.create({
         description,
         firstPaymentDate,
         fixedPayment,
         creditCardId: creditCard ? creditCard.id : null,
         type,
+        invoice,
         userId
       }, { transaction: transaction })
       for (let i of installments) {
@@ -34,11 +35,12 @@ export default {
   update: async (payment) => {
     const transaction = await sequelize.transaction()
     try {
-      const { id, description, firstPaymentDate, installments, fixedPayment, creditCard, type } = payment
+      const { id, invoice, description, firstPaymentDate, installments, fixedPayment, creditCard, type } = payment
       await Payment.update({
         description,
         firstPaymentDate,
         fixedPayment,
+        invoice,
         creditCardId: creditCard ? creditCard.id : null,
         type
       }, { transaction: transaction, where: { id: id } })

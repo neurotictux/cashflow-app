@@ -72,7 +72,8 @@ export default class EditPaymentModal extends React.Component {
       Installments,
       fixedPayment,
       type,
-      creditCardId
+      creditCardId,
+      invoice
     } = this.props.payment || {}
 
     const firstInstallment = (Installments || [])[0] || {}
@@ -87,7 +88,8 @@ export default class EditPaymentModal extends React.Component {
       card: creditCardId,
       useCreditCard: creditCardId ? true : false,
       showModal: true,
-      paidInstallments
+      paidInstallments,
+      invoice
     })
     this.updateInstallments({
       costByInstallment: false,
@@ -100,7 +102,7 @@ export default class EditPaymentModal extends React.Component {
   }
 
   updateInstallments(data) {
-    const { paidInstallments, costByInstallment, qtdInstallments, costText, fixedPayment, firstPayment } = data
+    const { payment, paidInstallments, costByInstallment, qtdInstallments, costText, fixedPayment, firstPayment } = data
     const installments = []
     let cost = Number((costText || '').replace(/[^0-9,]/g, '').replace(',', '.') || 0)
     if (cost > 0 && qtdInstallments > 0 && /^[0-9]{2}\/[0-9]{2}\/[0-9]{4}$/.test(firstPayment)) {
@@ -153,7 +155,7 @@ export default class EditPaymentModal extends React.Component {
   }
 
   save() {
-    const { installments, fixedPayment, description, firstPayment, paymentType, card, useCreditCard } = this.state
+    const { invoice, installments, fixedPayment, description, firstPayment, paymentType, card, useCreditCard } = this.state
 
     const payment = {}
     payment.id = this.props.payment.id
@@ -161,6 +163,7 @@ export default class EditPaymentModal extends React.Component {
     payment.type = paymentType
     payment.installments = installments
     payment.fixedPayment = fixedPayment
+    payment.invoice = invoice
 
     if (!description || !installments.length) {
       this.setState({ errorMessage: 'Preencha corretamente os campos.' })
@@ -251,13 +254,21 @@ export default class EditPaymentModal extends React.Component {
                   />
                   {
                     this.state.cards.length && this.state.useCreditCard ?
-                      <FormControl style={{ marginLeft: '20px' }}>
-                        <InputLabel htmlFor="select-tipo">Cartão de crédito</InputLabel>
-                        <Select style={{ width: '200px' }} value={this.state.card}
-                          onChange={e => this.setState({ card: e.target.value })}>
-                          {this.state.cards.map(p => <MenuItem key={p.id} value={p.id}>{p.name}</MenuItem>)}
-                        </Select>
-                      </FormControl>
+                      <span>
+                        <FormControl style={{ marginLeft: '20px', marginRight: '20px' }}>
+                          <InputLabel htmlFor="select-tipo">Cartão de crédito</InputLabel>
+                          <Select style={{ width: '160px' }} value={this.state.card}
+                            onChange={e => this.setState({ card: e.target.value })}>
+                            {this.state.cards.map(p => <MenuItem key={p.id} value={p.id}>{p.name}</MenuItem>)}
+                          </Select>
+                        </FormControl>
+                        <FormControlLabel label="Fatura"
+                          control={<Checkbox
+                            defaultChecked={this.state.invoice}
+                            onChange={(e, c) => this.setState({ invoice: c })}
+                            color="primary"
+                          />} />
+                      </span>
                       : null
                   }
                 </div>
