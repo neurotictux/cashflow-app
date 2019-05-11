@@ -15,7 +15,7 @@ export default {
       references: { model: 'Payment', key: 'id' }
     },
     cost: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.DECIMAL(10, 2),
       allowNull: false
     },
     number: {
