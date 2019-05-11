@@ -40,6 +40,23 @@ const styles = {
   }
 }
 
+
+class ButtonTest extends React.Component {
+  constructor() {
+    super()
+    this.state = { contador: 0 }
+  }
+  render() {
+    return (
+      <button onClick={() => this.setState({ contador: this.state.contador + 1 })}>
+        {`${this.state.contador} Contar`}
+      </button>
+    )
+  }
+}
+
+// const ContextTest = 
+
 const CreditCardComponent = (props) => {
   if (!props.card)
     return null
@@ -114,6 +131,7 @@ export default class Payment extends React.Component {
       <CardMain title="Pagamentos" loading={this.state.loading}>
         {this.state.payments.length ?
           <div>
+            <ButtonTest />
             <div style={styles.divNewPayment}>
               <Button variant="raised" color="primary" onClick={() => this.openEditNew()}>
                 Adicionar Pagamento

@@ -48,7 +48,8 @@ export default {
           number: i.number,
           cost: i.cost,
           date: i.date,
-          paymentId: id
+          paymentId: id,
+          paid: i.paid
         }, { transaction: transaction })
       }
       transaction.commit()

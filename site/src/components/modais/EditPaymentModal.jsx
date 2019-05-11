@@ -94,12 +94,13 @@ export default class EditPaymentModal extends React.Component {
       qtdInstallments,
       costText: toReal(costs.length ? costs.reduce((a, b) => a + b) : 0),
       fixedPayment,
+      paidInstallments,
       firstPayment: dateToString(firstInstallment.date ? new Date(firstInstallment.date) : null),
     })
   }
 
   updateInstallments(data) {
-    const { costByInstallment, qtdInstallments, costText, fixedPayment, firstPayment } = data
+    const { paidInstallments, costByInstallment, qtdInstallments, costText, fixedPayment, firstPayment } = data
     const installments = []
     let cost = Number((costText || '').replace(/[^0-9,]/g, '').replace(',', '.') || 0)
     if (cost > 0 && qtdInstallments > 0 && /^[0-9]{2}\/[0-9]{2}\/[0-9]{4}$/.test(firstPayment)) {
@@ -121,7 +122,12 @@ export default class EditPaymentModal extends React.Component {
             month = 1
             year++
           }
-          installments.push({ number: i, cost: cost, date: new Date(`${month}/${day}/${year}`) })
+          installments.push({
+            number: i,
+            cost: cost,
+            date: new Date(`${month}/${day}/${year}`),
+            paid: paidInstallments.indexOf(i) !== -1
+          })
           month++
         }
         installments[0].cost = firstCost
@@ -139,6 +145,11 @@ export default class EditPaymentModal extends React.Component {
       fixedPayment,
       errorMessage: ''
     })
+  }
+
+  paidChanged(installment, paid) {
+    installment.paid = paid
+    this.setState({ installments: this.state.installments })
   }
 
   save() {
@@ -290,9 +301,8 @@ export default class EditPaymentModal extends React.Component {
                           <ListItemText primary={toReal(p.cost)}></ListItemText>
                           <ListItemText primary={toDateFormat(p.date, 'dd/MM/yyyy')}></ListItemText>
                           <Checkbox
-                            checked={this.state.paidInstallments.indexOf(p.number) !== -1}
-                            // onChange={(e, c) => this.updateInstallments({ ...this.state, costByInstallment: c })}
-                            onChange={(e, c) => console.log(p)}
+                            checked={p.paid}
+                            onChange={(e, c) => this.paidChanged(p, c)}
                             color="primary"
                           />
                         </ListItem>
