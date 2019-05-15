@@ -1,6 +1,8 @@
 const webpack = require('webpack')
 const path = require('path')
 const ProgressBar = require('progress-bar-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const CleanWebpackPlugin = require('clean-webpack-plugin')
 
 module.exports = {
   entry: './src/App.jsx',
@@ -25,11 +27,16 @@ module.exports = {
   output: {
     path: path.join(__dirname, '..', 'api', 'public'),
     publicPath: '/',
-    filename: 'bundle.js'
+    filename: `bundle${(new Date()).getTime()}.js`
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
-    new ProgressBar()
+    new ProgressBar(),
+    new HtmlWebpackPlugin({
+      template: __dirname + '/dist/index.html',
+      title: 'Finanças'
+    }),
+    new CleanWebpackPlugin()
   ],
   devServer: {
     contentBase: './dist',

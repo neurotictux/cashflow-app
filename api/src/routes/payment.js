@@ -1,5 +1,5 @@
 import { createPaymentService } from '../services'
-import errorHandler from '../util/errorHandler'
+import { errorHandler } from '../util'
 import { PaymentRepository, CreditCardRepository } from '../repository'
 
 const service = createPaymentService(PaymentRepository, CreditCardRepository)

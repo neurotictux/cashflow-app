@@ -1,6 +1,6 @@
-import { ErrorTypes } from '../../../crosscutting/errors'
+import { ErrorTypes } from './'
 
-export default fn => (req, res, next) => {
+export const errorHandler = fn => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch(err => {
     if (typeof (err) === 'string')
       res.status(500).json({ message: err })

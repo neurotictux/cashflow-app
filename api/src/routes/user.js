@@ -1,9 +1,8 @@
 import jwt from 'jsonwebtoken'
 import sha1 from 'sha1'
 
-import { throwValidationError } from '../../../crosscutting/errors'
 import { SECRET } from '../config'
-import errorHandler from '../util/errorHandler'
+import { errorHandler, throwValidationError } from '../util'
 import { UserRepository } from '../repository'
 import { createUserService } from '../services'
 

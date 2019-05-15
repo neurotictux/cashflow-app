@@ -1,7 +1,4 @@
-import erros from '../../../crosscutting/errors'
-import { toDateFormat } from '../util/date'
-
-const { throwValidationError } = erros
+import { toDateFormat, throwValidationError } from '../util'
 
 const validatePayment = async (payment, creditCardRepository) => {
   if (!payment)
@@ -126,7 +123,11 @@ export default (repository, creditCardRepository) => {
   if (!repository || !creditCardRepository)
     throw 'Invalid parameter \'repository\''
   return {
-    getByUser: (userId) => repository.getByUser(userId),
+    getByUser: async (userId) => {
+      const pays = await repository.getByUser(userId)
+      console.log(JSON.stringify(pays))
+      return pays
+    },
     getEstimative: async (userId, startDate, endDate) => {
       const payments = await repository.getByUser(userId)
       const cards = await creditCardRepository.getByUser(userId)

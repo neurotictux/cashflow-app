@@ -1,6 +1,4 @@
-import erros from '../../../crosscutting/errors'
-
-const { throwValidationError } = erros
+import { throwValidationError } from '../util'
 
 const validateCard = (card) => {
     if (!card)

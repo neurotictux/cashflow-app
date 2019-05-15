@@ -4,9 +4,13 @@ import CreditCardProps from './creditCard'
 import UserProps from './user'
 import PaymentProps from './payment'
 import InstallmentProps from './installment'
-import Config from '../../config'
+import Config, { NODE_ENV } from '../../config'
 
-const sequelize = new Sequelize(Config[Config.NODE_ENV])
+const DbConfig = Config[NODE_ENV]
+
+const sequelize = NODE_ENV === 'test' ?
+  new Sequelize(DbConfig)
+  : new Sequelize(DbConfig.DATABASE_URI, DbConfig)
 
 const CreditCard = sequelize.define(CreditCardProps.TABLE_NAME, CreditCardProps.Model, CreditCardProps.Attributes)
 const User = sequelize.define(UserProps.TABLE_NAME, UserProps.Model, UserProps.Attributes)

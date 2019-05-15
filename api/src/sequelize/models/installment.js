@@ -16,7 +16,8 @@ export default {
     },
     cost: {
       type: DataTypes.DECIMAL(10, 2),
-      allowNull: false
+      allowNull: false,
+      get() { return Number(this.getDataValue('cost')) }
     },
     number: {
       type: DataTypes.INTEGER,

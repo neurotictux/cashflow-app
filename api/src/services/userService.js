@@ -1,4 +1,4 @@
-import { throwValidationError } from '../../../crosscutting/errors'
+import { throwValidationError } from '../util'
 
 const emailRegex = /^[a-zA-Z0-9!#$.%&*()_]{3,20}@[a-zA-Z0-9]{1,20}[.][a-zA-Z0-9]{1,20}([.][a-zA-Z0-9]{1,20})?$/
 
