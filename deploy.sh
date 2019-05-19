@@ -9,13 +9,16 @@ cd api
 
 for i in *
 do
-  if  [[ "$i" =~ "node_modules" ]]; then
-    echo "$i ignorado!"
-  else
-    `cp -r $i ../../$DEPLOY_PATH/$i`
-    echo "$i copiado!"
-  fi
+  case "$i" in
+      node_modules|"")
+      echo "$i ignorado!"    
+    ;;
+      *)
+        `cp -r $i ../../$DEPLOY_PATH/$i`
+      ;;
+  esac
 done
+
 cd ../..
 cd $DEPLOY_PATH
 git init

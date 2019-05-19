@@ -19,59 +19,84 @@ import { paymentService } from '../../services/index'
 import { toReal, getMonthYear } from '../../helpers/utils'
 import { Colors } from '../../helpers/themes'
 
-const styles = {
-  title: {
-
-  }
-}
-
 class Invoices extends React.Component {
   constructor(props) {
     super(props)
     const cards = []
+    let total = 0
     props.payments.forEach(p => {
-      if (p.creditCard && !cards.find(x => x.id === p.creditCard))
+      if (p.creditCard && !cards.find(x => x.id === p.creditCard.id))
         cards.push(p.creditCard)
+      total += p.cost
     })
-    cards.forEach(p => {
-      p.payments = props.payments.filter(x => x.creditCard && x.creditCard.id === p.id)
+    cards.forEach(c => {
+      const pays = props.payments.filter(x => x.creditCard && x.creditCard.id === c.id)
+      c.payments = pays
+      c.cost = pays.length ? pays.map(p => p.cost).reduce((sum, p) => sum + p) : 0
     })
-    this.state = { showing: false, cards }
+    this.state = { showing: false, cards, total }
   }
 
   render() {
     const { cards, showing } = this.state
     return (
-      <div style={{ marginLeft: '50px', color: '#666' }}>
-        <span onClick={() => this.setState({ showing: !this.state.showing })}
-          style={{ cursor: 'pointer', fontWeight: 'bold' }}>FATURAS</span>
-        <div hidden={!showing} style={{ marginLeft: '50px' }}>
-          {cards.map((c, j) =>
-            <div key={j}>
-              <span>{c.name}</span>
-              <List dense={true} style={{ marginLeft: '50px' }}>
-                {c.payments.map((p, k) =>
-                  <ListItem key={k}>
-                    <GridList cellHeight={18} cols={5} style={{ width: '100%' }}>
-                      <GridListTile cols={3}>
-                        <span>{p.description}</span>
-                      </GridListTile>
-                      <GridListTile cols={1} style={{ textAlign: 'center' }}>
-                        <span style={{ fontFamily: '"Roboto", "Helvetica", "Arial", "sans-serif"' }}>{p.fixedPayment ? '' : `${p.number}/${p.qtdInstallments}`}</span>
-                      </GridListTile>
-                      <GridListTile cols={1}>
-                        <Typography component="span" color={p.type === 1 ? 'primary' : 'secondary'}>
-                          {toReal(p.cost)}
-                        </Typography>
-                      </GridListTile>
-                    </GridList>
-                  </ListItem>
-                )}
-              </List>
-            </div>
-          )}
-        </div>
-      </div>
+      this.state.cards.length ?
+        <fieldset style={{ marginLeft: '10px', marginRight: '30px', color: '#666' }}>
+          <legend>
+            <span onClick={() => this.setState({ showing: !this.state.showing })}
+              style={{ cursor: 'pointer', fontWeight: 'bold' }}>FATURAS</span>
+          </legend>
+          <div hidden={!showing} style={{ marginLeft: '50px' }}>
+            {cards.map((c, j) =>
+              <div key={j}>
+                <span style={{ fontWeight: 'bold' }}>{c.name}</span>
+                <List dense={true} style={{ marginLeft: '50px' }}>
+                  {c.payments.map((p, k) =>
+                    <ListItem key={k}>
+                      <GridList cellHeight={18} cols={5} style={{ width: '100%' }}>
+                        <GridListTile cols={3}>
+                          <span>{p.description}</span>
+                        </GridListTile>
+                        <GridListTile cols={1} style={{ textAlign: 'center' }}>
+                          <span style={{ fontFamily: '"Roboto", "Helvetica", "Arial", "sans-serif"' }}>{p.fixedPayment ? '' : `${p.number}/${p.qtdInstallments}`}</span>
+                        </GridListTile>
+                        <GridListTile cols={1} style={{ textAlign: 'center' }}>
+                          <Typography component="span" color={p.type === 1 ? 'primary' : 'secondary'}>
+                            {toReal(p.cost)}
+                          </Typography>
+                        </GridListTile>
+                      </GridList>
+                    </ListItem>
+                  )}
+                </List>
+                <div style={{ textAlign: 'right' }}>
+                  <span style={{
+                    fontSize: '12px',
+                    color: Colors.AppRed,
+                    marginTop: '6px',
+                    padding: '3px',
+                    fontWeight: 'bold'
+                  }}>
+                    {toReal(c.cost)}
+                  </span>
+                </div>
+                <hr />
+              </div>
+            )}
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <span style={{
+              fontSize: '14px',
+              color: Colors.AppRed,
+              marginTop: '6px',
+              padding: '3px',
+              fontWeight: 'bold'
+            }}>
+              {toReal(this.state.total)}
+            </span>
+          </div>
+        </fieldset>
+        : null
     )
   }
 }
@@ -111,14 +136,11 @@ export default class Payment extends React.Component {
     paymentService.getFuture(this.state.startDate, `${endDate.month}/${endDate.year}`)
       .then(res => {
         const dates = Object.keys(res)
-        const cards = []
         let total = 0
         dates.forEach(d => {
           res[d].payments.sort((a, b) => a.description > b.description ? 1 : a.description < b.description ? -1 : 0)
-
           total += res[d].total
         })
-        console.log(res[dates[0]])
         setTimeout(() => {
           this.setState({ totalCost: total, loading: false, payments: res, dates })
         }, 300)
@@ -165,7 +187,6 @@ export default class Payment extends React.Component {
 
                   <div hidden={!this.state.hiddenMonths[d]}>
                     <Invoices payments={payments.filter(p => p.invoice)} />
-
                     <List dense={true}>
                       {payments.filter(p => !p.invoice).map((p, j) =>
                         <ListItem key={j}>
@@ -186,16 +207,20 @@ export default class Payment extends React.Component {
                             <GridListTile cols={1} style={{ textAlign: 'center' }}>
                               <span style={{ fontFamily: '"Roboto", "Helvetica", "Arial", "sans-serif"' }}>{p.fixedPayment ? '' : `${p.number}/${p.qtdInstallments}`}</span>
                             </GridListTile>
-                            <GridListTile cols={1}>
-                              <Typography component="span" color={p.type === 1 ? 'primary' : 'secondary'}>
+                            <GridListTile cols={1} style={{ textAlign: 'end' }}>
+                              <span style={{
+                                color: p.type === 2 ? Colors.AppRed : Colors.AppGreen,
+                                fontSize: '14px',
+                                marginRight: '10px'
+                              }}>
                                 {toReal(p.cost)}
-                              </Typography>
+                              </span>
                             </GridListTile>
                           </GridList>
                         </ListItem>
                       )}
                     </List>
-                    <ListItemText style={{ textAlign: 'end' }}>
+                    <ListItemText style={{ textAlign: 'end', marginTop: '20px' }}>
                       <Typography component="span"
                         color={'secondary'}>
                         {`${toReal(costExpense)}`}
@@ -205,20 +230,26 @@ export default class Payment extends React.Component {
                         {`${toReal(costIncome)}`}
                       </Typography>
                       <span style={{
-                        border: `solid 1px ${total < 0 ? Colors.AppRed : Colors.AppGreen}`,
                         color: total < 0 ? Colors.AppRed : Colors.AppGreen,
                         marginTop: '6px',
-                        padding: '3px'
+                        padding: '3px',
+                        fontSize: '14px',
+                        fontWeight: 'bold'
                       }}>
-                        {`= ${toReal(total)}`}
+                        {toReal(total)}
                       </span>
                     </ListItemText>
                   </div>
                   <div style={{ textAlign: 'center' }}>
-                    <Typography component="span"
-                      color={total < 0 ? 'secondary' : 'primary'}>
-                      {`${toReal(accumulatedCost)}`}
-                    </Typography>
+                    <span style={{
+                      color: accumulatedCost < 0 ? Colors.AppRed : Colors.AppGreen,
+                      marginTop: '6px',
+                      padding: '3px',
+                      fontWeight: 'bold',
+                      fontSize: '14px'
+                    }}>
+                      {toReal(accumulatedCost)}
+                    </span>
                   </div>
                   <hr />
                 </ListItemText>
@@ -226,9 +257,14 @@ export default class Payment extends React.Component {
             }
             )}
           </List>
-          <div style={{ textAlign: 'center', fontSize: '20px', marginBottom: '20px' }}>
+          <div style={{
+            textAlign: 'center',
+            fontSize: '20px',
+            marginBottom: '20px',
+            fontWeight: 'bold'
+          }}>
             <span>Total:</span>
-            <Typography component="span" style={{ fontSize: '30px' }}
+            <Typography component="span" style={{ fontSize: '30px', fontWeight: 'bold' }}
               color={this.state.totalCost < 0 ? 'secondary' : 'primary'}>
               {toReal(this.state.totalCost)}
             </Typography>
