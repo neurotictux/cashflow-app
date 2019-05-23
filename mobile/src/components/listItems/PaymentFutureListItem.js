@@ -37,6 +37,7 @@ export default class PaymentFutureListItem extends React.Component {
     this.state = {
       details: false
     }
+    console.log(props.payments)
   }
 
   render() {
@@ -68,12 +69,12 @@ export default class PaymentFutureListItem extends React.Component {
             </View>
             <View style={styles.rowSum}>
               <Text style={{ fontSize: fontSize }}>Resto: </Text>
-              <Text style={this.props.payments.cost < 0 ? styles.moneyExpense : styles.moneyIncome}>{toReal(this.props.payments.cost)}</Text>
+              <Text style={this.props.payments.total < 0 ? styles.moneyExpense : styles.moneyIncome}>{toReal(this.props.payments.total)}</Text>
             </View>
           </FadeInView>
           : null}
         <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-          <Text style={this.props.payments.acumulatedCost < 0 ? styles.moneyExpense : styles.moneyIncome}>{toReal(this.props.payments.acumulatedCost)}</Text>
+          <Text style={this.props.payments.accumulatedCost < 0 ? styles.moneyExpense : styles.moneyIncome}>{toReal(this.props.payments.accumulatedCost)}</Text>
           <Button text=" " onPress={() => this.setState({ details: !this.state.details })}
             icon={<Icon
               name={this.state.details ? 'chevron-up' : 'chevron-down'}

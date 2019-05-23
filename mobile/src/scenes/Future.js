@@ -1,7 +1,6 @@
 import React from 'react'
 import { Text, View, FlatList, Dimensions, Picker } from 'react-native'
 import { Actions } from 'react-native-router-flux'
-import DatePicker from 'react-native-datepicker'
 
 import { PaymentService } from '../services'
 import { PaymentFutureListItem, BaseViewComponent } from '../components'
@@ -31,6 +30,7 @@ export default class Future extends React.Component {
   componentDidMount() {
     PaymentStorage.getFuture()
       .then(res => {
+        console.log(res)
         if (res) {
           const months = Object.keys(res)
           const maxDateStored = months[months.length - 1]
@@ -53,14 +53,15 @@ export default class Future extends React.Component {
     let filtro = null
     if (forecastAt) {
       const date = forecastAt.split('/')
-      filtro = `${date[0]}/01/${date[1]}`
+      filtro = `${date[0]}/${date[1]}`
     }
 
     if (!this.state.loading)
       this.setState({ loading: true })
 
-    PaymentService.getFuture(filtro)
+    PaymentService.getFuture('05/2019', '12/2020')
       .then(res => {
+        console.log(res)
         const months = Object.keys(res)
         this.setState({
           months: months,

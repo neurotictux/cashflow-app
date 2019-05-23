@@ -2,7 +2,7 @@ import React from 'react'
 import { ActivityIndicator, Text, View, TextInput, Button } from 'react-native'
 import { Actions } from 'react-native-router-flux'
 
-import { TokenService } from '../services'
+import { accountService } from '../services'
 import { TokenStorage, UserStorage } from '../storage'
 
 const styles = {
@@ -34,7 +34,7 @@ export default class Login extends React.Component {
 
   login() {
     this.setState({ loading: true, error: '' })
-    TokenService.post(this.state.email, this.state.password)
+    accountService.token(this.state.email, this.state.password)
       .then(res => {
         this.setState({ loading: false, error: '' })
         UserStorage.save({ email: this.state.email })
@@ -42,15 +42,20 @@ export default class Login extends React.Component {
       })
       .catch(err => this.setState({
         loading: false,
-        error: err.status === 401 ? 'Email/Senha inválidos.' : err.message || 'Erro desconhecido'
+        error: err.message || 'Erro desconhecido'
       }))
   }
 
   render() {
     return (
       <View style={{ alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-        <TextInput value={this.state.email} onChangeText={e => this.setState({ email: e })} style={styles.input} placeholder="Email" />
-        <TextInput secureTextEntry={true} onChangeText={e => this.setState({ password: e })} style={styles.input} placeholder="Senha" />
+        <TextInput value={this.state.email}
+          onChangeText={e => this.setState({ email: e })}
+          style={styles.input} placeholder="Email" />
+        <TextInput secureTextEntry={true}
+          onChangeText={e => this.setState({ password: e })}
+          style={styles.input}
+          placeholder="Senha" />
         <View style={{ marginTop: 40 }}>
           {
             this.state.loading ?

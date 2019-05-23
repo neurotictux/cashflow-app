@@ -1,7 +1,8 @@
 import httpService from './httpService'
 
-const get = () => httpService.get(`/payment`)
-const getFuture = (forecastAt) => httpService.get(`/payment/FuturePayments?forecastAt=${forecastAt}`)
+const get = () => httpService.get('/payment')
+const getFuture = (startDate, endDate) =>
+  httpService.get(`/payment-estimative?startDate=${startDate}&endDate=${endDate}`)
 const create = (p) => httpService.post('/payment', p)
 const update = (p) => httpService.put('/payment', p)
 const remove = (id) => httpService.delete(`/payment/${id}`)
