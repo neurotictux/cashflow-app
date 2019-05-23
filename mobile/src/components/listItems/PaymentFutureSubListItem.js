@@ -1,21 +1,21 @@
 import React from 'react'
 import { Text, View, TouchableHighlight } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
+import PropTypes from 'prop-types'
 
 import { toReal } from '../../utils/string'
 import { Colors, PaymentType } from '../../utils/constants'
 import { FadeInView } from './..'
 
-export default class PaymentFutureSubListItem extends React.Component {
+class PaymentFutureSubListItem extends React.Component {
 
   constructor(props) {
     super(props)
-    this.state = {
-      details: false
-    }
+    this.state = { details: false }
   }
 
   render() {
+    const { payment } = this.props
     return (
       <View style={{ borderBottomColor: '#ccc', borderBottomWidth: 1 }}>
         <View style={{ marginLeft: 10, flexDirection: 'row' }}>
@@ -24,7 +24,7 @@ export default class PaymentFutureSubListItem extends React.Component {
           </View>
           <View style={{ width: 30 }}>
             <Text style={{ fontSize: 10 }}>
-              {this.props.payment.plots ? `${this.props.payment.plotsPaid}/${this.props.payment.plots}` : ''}
+              {payment.qtdInstallments > 1 ? `${payment.number}/${payment.qtdInstallments}` : ''}
             </Text>
           </View>
           <View style={{ width: 90 }}>
@@ -65,3 +65,9 @@ export default class PaymentFutureSubListItem extends React.Component {
     )
   }
 }
+
+PaymentFutureSubListItem.propTypes = {
+  payment: PropTypes.object.isRequired
+}
+
+export default PaymentFutureSubListItem

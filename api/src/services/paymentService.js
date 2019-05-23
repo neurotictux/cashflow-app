@@ -98,9 +98,11 @@ const toPaymentResult = (arr, startDate, endDate, cards) => {
       })
     })
   })
+  
   const fixed = payments.filter(p => p.fixedPayment)
   let accumulatedCost = 0
   const toCost = (val) => parseFloat((val).toFixed(2))
+
   for (let month in result) {
     const list = payments.filter(p => p.monthYear === month && !p.fixedPayment).concat(fixed)
     const costIncome = toCost(list.filter(p => p.type === 1).map(p => p.cost).reduce((sum, val) => sum + val))

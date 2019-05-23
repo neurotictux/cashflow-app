@@ -3,14 +3,14 @@ import { ActivityIndicator, Dimensions, View, Text, DrawerLayoutAndroid } from '
 import { Button, Toolbar } from 'react-native-material-ui'
 import PropTypes from 'prop-types'
 import { Actions } from 'react-native-router-flux'
-import { } from 'react-native-material-ui'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 
 import { UserStorage } from '../../storage'
 
 const screenHeight = Dimensions.get('window').height
+const appDrawer = 'appDrawer'
 
-export default class BaseViewComponent extends DrawerLayoutAndroid {
+class BaseViewComponent extends DrawerLayoutAndroid {
 
   constructor(props) {
     super(props)
@@ -67,7 +67,7 @@ export default class BaseViewComponent extends DrawerLayoutAndroid {
     return (
       <DrawerLayoutAndroid
         drawerWidth={200}
-        ref="appDrawer"
+        ref={appDrawer}
         drawerPosition={DrawerLayoutAndroid.positions.Left}
         renderNavigationView={() => navigationView}>
         <View onLayout={e => this.changeHeight(e.nativeEvent.layout.height)}>
@@ -83,7 +83,7 @@ export default class BaseViewComponent extends DrawerLayoutAndroid {
             }}
             rightElement={{
               menu: {
-                icon: "more-vert",
+                icon: 'more-vert',
                 labels: ['Refresh', 'Logout']
               }
             }}
@@ -104,3 +104,5 @@ BaseViewComponent.propTypes = {
   menuSelected: PropTypes.func,
   loading: PropTypes.bool
 }
+
+export default BaseViewComponent
