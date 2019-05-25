@@ -1,0 +1,9 @@
+{
+    "name": "mod-cross-cutting",
+    "version": "0.0.1",
+    "main": "index.js",
+    "license": "MIT",
+    "devDependencies": {
+        "eslint": "^5.16.0"
+    }
+}

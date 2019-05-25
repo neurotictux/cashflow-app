@@ -1,0 +1,1 @@
+export { validatePayment } from './payment'
