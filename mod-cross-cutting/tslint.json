@@ -1,0 +1,37 @@
+{
+    "defaultSeverity": "error",
+    "extends": [
+        "tslint:recommended"
+    ],
+    "linterOptions": {
+        "exclude": [
+            "dist"
+        ]
+    },
+    "jsRules": {},
+    "rules": {
+        "curly": false,
+        "semicolon": [true, "never"],
+        "quotemark": [true, "single"],
+        "eofline":false,
+        "trailing-comma": false,
+        "require-jsdoc": "error",
+        "semi": [
+            2,
+            "never"
+        ],
+        "sort-vars": "error",
+        "quotes": [
+            "error",
+            "single"
+        ],
+        "no-func-assign": "error",
+        "max-len": [
+            "error",
+            {
+                "code": 150
+            }
+        ]
+    },
+    "rulesDirectory": []
+}
