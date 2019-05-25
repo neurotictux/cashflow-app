@@ -1,4 +1,5 @@
-import { toDateFormat, throwValidationError } from '../util'
+import { toDateFormat } from 'mod-cross-cutting'
+import { throwValidationError } from '../util'
 
 const validatePayment = async (payment, creditCardRepository) => {
   if (!payment)
@@ -98,7 +99,7 @@ const toPaymentResult = (arr, startDate, endDate, cards) => {
       })
     })
   })
-  
+
   const fixed = payments.filter(p => p.fixedPayment)
   let accumulatedCost = 0
   const toCost = (val) => parseFloat((val).toFixed(2))
@@ -127,7 +128,6 @@ export default (repository, creditCardRepository) => {
   return {
     getByUser: async (userId) => {
       const pays = await repository.getByUser(userId)
-      console.log(JSON.stringify(pays))
       return pays
     },
     getEstimative: async (userId, startDate, endDate) => {
