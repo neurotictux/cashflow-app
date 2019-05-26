@@ -4,3 +4,4 @@
 */finance.test.sqlite
 deploy_folder
 *-error.log
+*/dist/
