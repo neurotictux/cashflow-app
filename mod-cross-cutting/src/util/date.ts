@@ -6,7 +6,7 @@
  * @param {String} format Formato em que a data deve ser retornada
  * @returns {String} Data formatada
  */
-export const toDateFormat = (date: Date, format: string): string => {
+export const toDateFormat = (date: Date | null, format: string): string => {
   if (!date || !format || date.toString() === 'Invalid Date')
     return 'Invalid Date'
   const year = String(date.getFullYear())

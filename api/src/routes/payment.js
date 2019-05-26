@@ -1,8 +1,8 @@
-import { createPaymentService } from '../services'
+import { PaymentService } from 'mod-cross-cutting'
 import { errorHandler } from '../util'
 import { PaymentRepository, CreditCardRepository } from '../repository'
 
-const service = createPaymentService(PaymentRepository, CreditCardRepository)
+const service = new PaymentService(PaymentRepository, CreditCardRepository)
 
 export default (app) => {
   app.get('/api/payment', errorHandler((req, res) => service.getByUser(req.claims.id).then(result => res.json(result))))
