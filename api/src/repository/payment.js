@@ -1,8 +1,8 @@
 import { Payment, Installment, sequelize } from '../sequelize/models'
 
 export default {
-  getById: (id) => Payment.findOne({ where: { id: id }, include: [Installment] }),
-  getByUser: (userId) => Payment.findAll({ where: { userId: userId }, include: [Installment] }),
+  getById: (id) => Payment.findOne({ where: { id: id }, include: [{ model: Installment, as: 'installments' }] }),
+  getByUser: (userId) => Payment.findAll({ where: { userId: userId }, include: [{ model: Installment, as: 'installments' }] }),
   create: async (payment) => {
     const transaction = await sequelize.transaction()
     try {
@@ -26,7 +26,7 @@ export default {
         }, { transaction: transaction })
       }
       transaction.commit()
-      return Payment.findOne({ where: { id: paymentDb.id }, include: [Installment] })
+      return Payment.findOne({ where: { id: paymentDb.id }, include: [{ model: Installment, as: 'installments' }] })
     } catch (ex) {
       transaction.rollback()
       throw ex
@@ -55,7 +55,7 @@ export default {
         }, { transaction: transaction })
       }
       transaction.commit()
-      return Payment.findOne({ where: { id: id }, include: [Installment] })
+      return Payment.findOne({ where: { id: id }, include: [{ model: Installment, as: 'installments' }] })
     } catch (ex) {
       transaction.rollback()
       throw ex

@@ -1,12 +1,12 @@
 import jwt from 'jsonwebtoken'
 import sha1 from 'sha1'
+import { UserService } from 'mod-cross-cutting'
 
 import { SECRET } from '../config'
 import { errorHandler, throwValidationError } from '../util'
 import { UserRepository } from '../repository'
-import { createUserService } from '../services'
 
-const service = createUserService(UserRepository)
+const service = new UserService(UserRepository)
 
 export default (app) => {
   app.get('/api/user', errorHandler(async (req, res) => {

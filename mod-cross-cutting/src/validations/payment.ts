@@ -1,10 +1,8 @@
+import { ICreditCardRepository } from '../models'
+import { Payment } from '../models'
 import { throwValidationError } from '../util'
 
-/**
- * @param {Object} payment 
- * @param {Object} creditCardRepository 
- */
-export const validatePayment = async (payment, creditCardRepository) => {
+export const validatePayment = async (payment: Payment, creditCardRepository: ICreditCardRepository) => {
   if (!payment)
     throwValidationError('Pagamento inválido.')
 

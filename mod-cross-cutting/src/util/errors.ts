@@ -7,7 +7,7 @@ export const ErrorTypes = {
 
 /**
  *
- * @param {String} message
+ * @param {String} msg
  */
 export const throwValidationError = (message: string) => { throw { message, type: ErrorTypes.VALIDATION } }
 

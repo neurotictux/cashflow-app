@@ -16,6 +16,9 @@
         "eofline":false,
         "trailing-comma": false,
         "require-jsdoc": "error",
+        "arrow-parens": false,
+        "max-line-length": [true, 130],
+        "object-literal-sort-keys": false,
         "semi": [
             2,
             "never"
