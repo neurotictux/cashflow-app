@@ -1,4 +1,4 @@
-import { CreditCardService } from 'mod-cross-cutting'
+import { CreditCardService } from 'cashflow-cross-cutting'
 
 import { errorHandler } from '../util'
 import { CreditCardRepository } from '../repository'

@@ -1,4 +1,4 @@
-import { PaymentService } from 'mod-cross-cutting'
+import { PaymentService } from 'cashflow-cross-cutting'
 import { errorHandler } from '../util'
 import { PaymentRepository, CreditCardRepository } from '../repository'
 
