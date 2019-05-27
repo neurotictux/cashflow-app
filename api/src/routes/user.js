@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 import sha1 from 'sha1'
-import { UserService } from 'mod-cross-cutting'
+import { UserService } from 'cashflow-cross-cutting'
 
 import { SECRET } from '../config'
 import { errorHandler, throwValidationError } from '../util'

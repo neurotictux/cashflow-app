@@ -1,0 +1,21 @@
+{
+    "name": "cashflow-cross-cutting",
+    "version": "1.0.1",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "repository": {
+        "url": "https://github.com/santossgabriel/cashflow-app/tree/master/cashflow-cross-cutting",
+        "type": "git"
+    },
+    "author": {
+        "name": "Gabriel Santos da Rosa"
+    },
+    "license": "MIT",
+    "scripts": {
+        "build": "tsc"
+    },
+    "devDependencies": {
+        "tslint": "^5.16.0",
+        "typescript": "^3.4.5"
+    }
+}

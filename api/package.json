@@ -2,6 +2,7 @@
   "scripts": {
     "start": "babel-node src/run.js",
     "dev": "nodemon --watch ./src --exec babel-node src/run.js",
+    "site": "node runsite.js",
     "test": "npm run pre-test && jest --runInBand --coverage",
     "pre-test": "node before.test.js && npm run migrate && npm run seed",
     "migrate": "sequelize db:migrate --config=./src/config.js --options-path=./src/sequelize/options.json",
@@ -10,9 +11,9 @@
   },
   "dependencies": {
     "body-parser": "^1.18.3",
+    "cashflow-cross-cutting": "^1.0.0",
     "express": "^4.16.4",
     "jsonwebtoken": "^8.5.1",
-    "mod-cross-cutting": "file:../mod-cross-cutting",
     "moment": "^2.24.0",
     "pg": "^7.9.0",
     "pg-hstore": "^2.3.2",
