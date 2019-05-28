@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
 import { View, Text } from 'react-native'
-import { Card } from 'react-native-material-ui'
 
-import { toReal, toDate, isSameMonth, monthName } from '../../utils/string'
+import { toReal } from '../../utils/string'
 import { PaymentType, Colors } from '../../utils/constants'
 
 export default class PaymentListItem extends Component {

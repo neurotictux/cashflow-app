@@ -1,5 +1,5 @@
-import { PAYMENTS_CHANGED } from "../actions/actionTypes";
-import { toDate } from "../utils/string";
+import { PAYMENTS_CHANGED } from '../actions/actionTypes'
+import { toDate } from '../utils/string'
 
 const initialState = {
   payments: [],
@@ -17,6 +17,6 @@ export const appReducer = (state = initialState, action) => {
         dates: sorted
       }
     default:
-      return state;
+      return state
   }
 }

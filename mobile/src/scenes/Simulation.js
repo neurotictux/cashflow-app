@@ -63,7 +63,7 @@ export default class Simulation extends Component {
         number: i,
         value: toMoney((parcela - descontoFgts))
       })
-      parcela -= interest;
+      parcela -= interest
     }
 
     this.setState({

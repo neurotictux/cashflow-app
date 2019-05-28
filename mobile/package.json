@@ -5,10 +5,12 @@
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "test": "jest",
-    "react-devtools": "react-devtools"
+    "react-devtools": "react-devtools",
+    "lint": "eslint src/** --fix"
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "cashflow-cross-cutting": "^1.0.2",
     "prop-types": "^15.6.2",
     "react": "16.4.1",
     "react-native": "0.56.0",
