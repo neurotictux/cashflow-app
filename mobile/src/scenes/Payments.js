@@ -1,11 +1,15 @@
 import React, { Component } from 'react'
-import { TouchableOpacity, Alert, FlatList, StyleSheet, } from 'react-native'
+import { TouchableOpacity, Alert, FlatList } from 'react-native'
 import { Card } from 'react-native-material-ui'
 import { Actions } from 'react-native-router-flux'
 import ActionButton from 'react-native-action-button'
+import { PaymentService } from 'cashflow-cross-cutting'
 
+import { PaymentStorage } from '../storage'
 import { PaymentListItem, BaseViewComponent } from '../components'
-import { PaymentService } from '../services'
+
+const paymentService = new PaymentService(PaymentStorage)
+// console.log(paymentService.)
 
 export default class Payments extends Component {
 
@@ -24,7 +28,7 @@ export default class Payments extends Component {
 
   refresh() {
     this.setState({ loading: true })
-    PaymentService.get()
+    paymentService.get()
       .then(res => {
         this.setState({
           payments: res,
@@ -47,7 +51,7 @@ export default class Payments extends Component {
   }
 
   removePayment(p) {
-    PaymentService.remove(p.id)
+    paymentService.remove(p.id)
       .then(() => this.refresh())
       .catch(err => console.warn(err))
   }

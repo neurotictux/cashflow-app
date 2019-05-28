@@ -3,8 +3,12 @@ import { Animated } from 'react-native'
 import PropTypes from 'prop-types'
 
 export default class FadeInView extends React.Component {
-  state = {
-    fadeAnim: new Animated.Value(0)
+
+  constructor(props) {
+    super(props)
+    this.state = {
+      fadeAnim: new Animated.Value(0)
+    }
   }
 
   componentDidMount() {
@@ -27,7 +31,9 @@ export default class FadeInView extends React.Component {
 }
 
 FadeInView.propTypes = {
-  duration: PropTypes.number
+  duration: PropTypes.number,
+  children: PropTypes.node,
+  style: PropTypes.object
 }
 
 FadeInView.defaultProps = {

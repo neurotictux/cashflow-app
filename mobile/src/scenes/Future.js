@@ -1,10 +1,10 @@
 import React from 'react'
 import { Text, View, FlatList, Dimensions, Picker } from 'react-native'
 import { Actions } from 'react-native-router-flux'
+import { PaymentService } from 'cashflow-cross-cutting'
 
-import { PaymentService } from '../services'
 import { PaymentFutureListItem, BaseViewComponent } from '../components'
-import { PaymentStorage, TokenStorage } from '../storage'
+import { TokenStorage } from '../storage'
 import { toDate, currentMonth, generatePickerMonthYear } from '../utils/string'
 
 const screenHeight = Dimensions.get('window').height
@@ -28,24 +28,24 @@ export default class Future extends React.Component {
   }
 
   componentDidMount() {
-    PaymentStorage.getFuture()
-      .then(res => {
-        console.log(res)
-        if (res) {
-          const months = Object.keys(res)
-          const maxDateStored = months[months.length - 1]
-          this.setState({
-            months: months,
-            payments: res,
-            forecastAt: maxDateStored,
-            maxDateStored: maxDateStored,
-            loading: false,
-            filteredMonths: this.filteredMonths(null, months)
-          })
-        }
-        else
-          this.refresh()
-      })
+    // this.refresh()
+    // PaymentStorage.getFuture()
+    //   .then(res => {
+    //     if (res) {
+    //       const months = Object.keys(res)
+    //       const maxDateStored = months[months.length - 1]
+    //       this.setState({
+    //         months: months,
+    //         payments: res,
+    //         forecastAt: maxDateStored,
+    //         maxDateStored: maxDateStored,
+    //         loading: false,
+    //         filteredMonths: this.filteredMonths(null, months)
+    //       })
+    //     }
+    //     else
+    //       this.refresh()
+    //   }).catch(() => { })
   }
 
   refresh(forecastAt) {
@@ -61,7 +61,7 @@ export default class Future extends React.Component {
 
     PaymentService.getFuture('05/2019', '12/2020')
       .then(res => {
-        console.log(res)
+        // console.log(res)
         const months = Object.keys(res)
         this.setState({
           months: months,
@@ -70,10 +70,10 @@ export default class Future extends React.Component {
           forecastAt: forecastAt,
           filteredMonths: this.filteredMonths(forecastAt, months)
         })
-        PaymentStorage.saveFuture(res)
+        // PaymentStorage.saveFuture(res)
       })
       .catch(err => {
-        console.warn(err)
+        // console.warn(err)
         if (err.status !== 401)
           this.setState({ loading: false })
       })
@@ -92,7 +92,7 @@ export default class Future extends React.Component {
         this.refresh()
         break
       case 1:
-        PaymentStorage.saveFuture(null)
+        // PaymentStorage.saveFuture(null)
         TokenStorage.save(null).then(() => Actions.login())
         break
     }

@@ -6,7 +6,6 @@ const apiUrl = 'https://appcashflow.herokuapp.com/api'
 // const apiUrl = 'http://localhost:5000/api'
 
 axios.interceptors.response.use(response => response, err => {
-  // console.log(err)
   const { request, status } = err.response
   if (status === 401 && !request.responseURL.endsWith('/api/token')) {
     TokenStorage.save(null)
