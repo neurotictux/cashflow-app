@@ -12,7 +12,7 @@ import { Router, Scene } from 'react-native-router-flux'
 import { COLOR, ThemeContext, getTheme } from 'react-native-material-ui'
 
 import { Store } from './src/store'
-import { Login, NewPayment, Payments, Simulation, Future } from './src/scenes'
+import { Login, NewPayment, Cards, Payments, Simulation, Future } from './src/scenes'
 
 const uiTheme = {
   palette: {
@@ -43,7 +43,6 @@ export default class App extends Component {
                 component={Payments}
                 title="Pagamentos"
                 hideNavBar={true}
-                initial
               />
               <Scene key="newPayment"
                 component={NewPayment}
@@ -57,6 +56,12 @@ export default class App extends Component {
                 title="Pagamentos Futuros"
                 hideNavBar={true}
                 type='reset'
+              />
+              <Scene key="cards"
+                component={Cards}
+                title="Cartões de Crédito"
+                hideNavBar={true}
+                initial
               />
             </Scene>
           </Router>
