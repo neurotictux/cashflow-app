@@ -5,7 +5,7 @@ import PropTypes from 'prop-types'
 import { Actions } from 'react-native-router-flux'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 
-import { UserStorage } from '../../storage'
+// import { UserStorage } from '../../storage'
 
 const screenHeight = Dimensions.get('window').height
 const appDrawer = 'appDrawer'
@@ -17,15 +17,15 @@ class BaseViewComponent extends DrawerLayoutAndroid {
 
     this.state = {
       maxHeightList: screenHeight,
-      user: {}
+      user: {email: 'teste@mail.com'}
     }
   }
 
   componentDidMount() {
-    UserStorage.get().then(user => {
-      if (user)
-        this.setState({ user: user })
-    })
+    // UserStorage.get().then(user => {
+    //   if (user)
+    //     this.setState({ user: user })
+    // })
   }
 
   menuSelected(idx) {

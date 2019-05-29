@@ -5,11 +5,10 @@ import { Actions } from 'react-native-router-flux'
 import ActionButton from 'react-native-action-button'
 import { PaymentService } from 'cashflow-cross-cutting'
 
-import { PaymentStorage } from '../storage'
+import { PaymentStorage, creditCardStorage } from '../storage'
 import { PaymentListItem, BaseViewComponent } from '../components'
 
-const paymentService = new PaymentService(PaymentStorage)
-// console.log(paymentService.)
+const paymentService = new PaymentService(PaymentStorage, creditCardStorage)
 
 export default class Payments extends Component {
 
@@ -23,7 +22,7 @@ export default class Payments extends Component {
   }
 
   componentDidMount() {
-    this.refresh()
+    // this.refresh()
   }
 
   refresh() {

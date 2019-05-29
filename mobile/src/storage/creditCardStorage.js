@@ -9,12 +9,12 @@ const getByUser = async () => {
 const create = async (card) => {
   const cards = (await getByUser())
   card.appId = 1
-  cards.array.forEach(e => {
+  cards.forEach(e => {
     if (e.appId >= card.appId)
       card.appId = e.appId + 1
   })
   cards.push(card)
-  await AsyncStorage.setItem(KEY, cards)
+  await AsyncStorage.setItem(KEY, JSON.stringify(cards))
   return cards
 }
 
@@ -25,16 +25,24 @@ const update = async (card) => {
     card.sync = 'U'
   cards.push(card)
   cards.sort((a, b) => a.appId < b.appId ? -1 : a.appId > b.appId ? 1 : 0)
-  await AsyncStorage.setItem(KEY, cards)
+  await AsyncStorage.setItem(KEY, JSON.stringify(cards))
   return cards
 }
 
-const remove = (card) => {
-  card.sync = 'D'
-  return update(card)
+const remove = async (card) => {
+  if (card.id) {
+    card.sync = 'D'
+    return update(card)
+  } else {
+    console.log(card)
+    const cards = (await getByUser()).filter(p => p.appId !== card.appId)
+    cards.sort((a, b) => a.appId < b.appId ? -1 : a.appId > b.appId ? 1 : 0)
+    await AsyncStorage.setItem(KEY, JSON.stringify(cards))
+    return cards
+  }
 }
 
-export const PaymentStorage = {
+export const creditCardStorage = {
   getByUser,
   create,
   update,
