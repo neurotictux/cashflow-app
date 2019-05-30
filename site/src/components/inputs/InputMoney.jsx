@@ -52,7 +52,6 @@ export default class InputMoney extends React.Component {
     }
 
     costChanged(val) {
-        console.log(val)
         this.setState({
             cost: Number(val.replace(/[^0-9,]/g, '').replace(',', '.'))
         })

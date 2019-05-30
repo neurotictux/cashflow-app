@@ -22,6 +22,7 @@ import InputMoney from '../../components/inputs/InputMoney'
 import EditPaymentModal from '../../components/modais/EditPaymentModal'
 import { paymentService, creditCardService } from '../../services/index'
 import { toReal, dateToString } from '../../helpers'
+import IconTextInput from '../../components/main/IconTextInput'
 
 const styles = {
   noRecords: {
@@ -65,7 +66,8 @@ export default class Payment extends React.Component {
       useCreditCard: false,
       fixedPayment: false,
       card: null,
-      showModal: false
+      showModal: false,
+      filtro: ''
     }
   }
 
@@ -78,7 +80,12 @@ export default class Payment extends React.Component {
     this.setState({ loading: true, errorMessage: '' })
     paymentService.get().then(res => {
       setTimeout(() => {
-        this.setState({ loading: false, payments: res })
+        this.setState({
+          loading: false,
+          payments: res,
+          filtro: '',
+          filteredPayments: res
+        })
       }, 300)
     })
   }
@@ -90,7 +97,7 @@ export default class Payment extends React.Component {
   }
 
   openEditNew(p) {
-    const { description, firstPayment, fixedPayment, cost, type, plots, creditCardId, plotsPaid } = p || {}
+    const { description, firstPayment, fixedPayment, cost, type, creditCardId } = p || {}
     this.setState({
       payment: p || {},
       description: description || '',
@@ -110,9 +117,10 @@ export default class Payment extends React.Component {
   }
 
   render() {
+    const { payments, filtro } = this.state
     return (
       <CardMain title="Pagamentos" loading={this.state.loading}>
-        {this.state.payments.length ?
+        {payments.length ?
           <div>
             <div style={styles.divNewPayment}>
               <Button variant="raised" color="primary" onClick={() => this.openEditNew()}>
@@ -120,8 +128,16 @@ export default class Payment extends React.Component {
               </Button>
             </div>
             <Paper style={{ marginTop: '20px' }}>
+
+              <div style={{ textAlign: 'center' }}>
+                <IconTextInput
+                  label="Filtro"
+                  onChange={e => this.setState({ filtro: e.value.toUpperCase() })}
+                />
+              </div>
+
               <List dense={true}>
-                {this.state.payments.map(p =>
+                {payments.filter(p => !filtro || !p.description || p.description.toUpperCase().indexOf(filtro) !== -1).map(p =>
                   <ListItem button key={p.id}
                     onClick={() => this.openEditNew(p)}>
                     <ListItemAvatar>
@@ -146,7 +162,7 @@ export default class Payment extends React.Component {
                       style={{ width: '200px' }}
                       secondary={
                         <React.Fragment>
-                          {p.fixedPayment ? 'Fixo Mensal' : `${p.Installments.filter(p => p.paid).length}/${p.Installments.length}`}
+                          {p.fixedPayment ? 'Fixo Mensal' : `${p.installments.filter(p => p.paid).length}/${p.installments.length}`}
                           <CreditCardComponent card={p.creditCard} />
                         </React.Fragment>
                       }
