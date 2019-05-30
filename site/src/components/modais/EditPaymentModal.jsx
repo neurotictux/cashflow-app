@@ -69,17 +69,17 @@ export default class EditPaymentModal extends React.Component {
   componentDidMount() {
     const {
       description,
-      Installments,
+      installments,
       fixedPayment,
       type,
       creditCardId,
       invoice
     } = this.props.payment || {}
 
-    const firstInstallment = (Installments || [])[0] || {}
-    const qtdInstallments = (Installments || []).length || 1
-    const costs = (Installments || []).map(p => p.cost)
-    const paidInstallments = (Installments || []).filter(p => p.paid).map(p => p.number)
+    const firstInstallment = (installments || [])[0] || {}
+    const qtdInstallments = (installments || []).length || 1
+    const costs = (installments || []).map(p => p.cost)
+    const paidInstallments = (installments || []).filter(p => p.paid).map(p => p.number)
 
     this.setState({
       useCreditCard: creditCardId > 0,
