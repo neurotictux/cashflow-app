@@ -2,12 +2,13 @@ import { AsyncStorage } from 'react-native'
 
 const KEY = '@CashFlow:CARDS'
 
-const getByUser = async () => {
-  return JSON.parse(await AsyncStorage.getItem(KEY)) || []
+const getAll = async () => {
+  const payments = JSON.parse(await AsyncStorage.getItem(KEY)) || []
+  return payments.filter(p => p.sync !== 'D')
 }
 
 const create = async (card) => {
-  const cards = (await getByUser())
+  const cards = (await getAll())
   card.appId = 1
   cards.forEach(e => {
     if (e.appId >= card.appId)
@@ -19,7 +20,7 @@ const create = async (card) => {
 }
 
 const update = async (card) => {
-  const cards = (await getByUser()).filter(p => p.appId !== card.appId)
+  const cards = (await getAll()).filter(p => p.appId !== card.appId)
   card.updatedAt = new Date()
   if (card.sync !== 'D')
     card.sync = 'U'
@@ -34,8 +35,7 @@ const remove = async (card) => {
     card.sync = 'D'
     return update(card)
   } else {
-    console.log(card)
-    const cards = (await getByUser()).filter(p => p.appId !== card.appId)
+    const cards = (await getAll()).filter(p => p.appId !== card.appId)
     cards.sort((a, b) => a.appId < b.appId ? -1 : a.appId > b.appId ? 1 : 0)
     await AsyncStorage.setItem(KEY, JSON.stringify(cards))
     return cards
@@ -43,7 +43,7 @@ const remove = async (card) => {
 }
 
 export const creditCardStorage = {
-  getByUser,
+  getAll,
   create,
   update,
   remove

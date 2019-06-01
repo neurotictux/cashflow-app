@@ -43,6 +43,7 @@ export default class App extends Component {
                 component={Payments}
                 title="Pagamentos"
                 hideNavBar={true}
+                initial
               />
               <Scene key="newPayment"
                 component={NewPayment}
@@ -61,7 +62,6 @@ export default class App extends Component {
                 component={Cards}
                 title="Cartões de Crédito"
                 hideNavBar={true}
-                initial
               />
             </Scene>
           </Router>

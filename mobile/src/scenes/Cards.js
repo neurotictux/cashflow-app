@@ -20,7 +20,7 @@ export default class Cards extends React.Component {
   }
 
   componentDidMount() {
-    creditCardStorage.getByUser().then(cards => this.setState({ cards }))
+    creditCardStorage.getAll().then(cards => this.setState({ cards }))
   }
 
   save() {

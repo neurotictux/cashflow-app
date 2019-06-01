@@ -34,7 +34,7 @@ const remove = (payment) => {
   return update(payment)
 }
 
-export const PaymentStorage = {
+export const paymentStorage = {
   getByUser,
   create,
   update,
