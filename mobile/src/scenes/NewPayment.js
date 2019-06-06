@@ -23,47 +23,45 @@ const styles = {
     borderBottomColor: '#000',
     borderBottomWidth: 1
   }
-}
+}, REQUIRED_FIELD = 'Campo obrigatório'
 
 class FormNewPayment extends Component {
 
   constructor(props) {
     super(props)
     const now = new Date()
-    const p = props.payment || { type: PaymentType.Expense }
     this.state = {
-      description: p.description || '',
-      cost: toReal(0),
-      qtdInstallments: '',
-      payment: {},
       cards: [],
-      type: p.type || PaymentType.Expense,
-      paymentType: 2,
-      useCreditCard: false,
-      fixedPayment: false,
-      error: '',
-      card: [],
-      costByInstallment: true,
-      costText: '',
-      installments: [],
       firstPayment: '',
       loading: false,
-      paidInstallments: [],
+      costText: props.values.cost || 0,
       monthsYearsPicker: generatePickerMonthYear('01/' + (now.getFullYear() - 1), 5)
     }
   }
 
-  componentDidMount() {
+  componentDidMountt() {
 
-    creditCardStorage.getAll().then(cards => {
-      this.setState({ cards })
-    })
+    const { setFieldValue } = this.props
+    const { type, monthsYearsPicker } = this.state
+    setFieldValue('type', type)
+    setFieldValue('teste', 'olá')
+    setFieldValue('monthYear', monthsYearsPicker[0])
+
+    // setTimeout(() => {
+    //   console.log('resetando')
+    //   this.props.resetForm({ 'description': 'funcionou...' })
+    // }, 1000)
+
+
+    creditCardStorage.getAll().then(cards => this.setState({ cards }))
+
+    console.log(this.state)
 
     const {
       description,
       installments,
       fixedPayment,
-      type,
+      // type,
       creditCardId,
       invoice
     } = this.props.payment || {}
@@ -178,13 +176,13 @@ class FormNewPayment extends Component {
   }
 
   render() {
-    const { touched, errors, setFieldValue } = this.props
+    const { touched, errors, values, setFieldValue } = this.props
     return (
       <View style={{ marginTop: 20, alignItems: 'center', justifyContent: 'space-between' }}>
         {this.state.loading ? <ActivityIndicator size="large" /> : null}
         <TextInput
-          onChangeText={t => this.props.setFieldValue('description', t)}
-          value={this.props.description}
+          onChangeText={t => setFieldValue('description', t)}
+          value={values.description}
           placeholder="Descrição"
           style={styles.input}
         />
@@ -192,31 +190,38 @@ class FormNewPayment extends Component {
         <ErrorForm touched={touched.description} text={errors.description} />
 
         <View style={{ marginTop: 20 }} width={200} height={30}>
-          <Checkbox onCheck={checked => this.setState({ fixedPayment: checked })} label="Mensal Fixo ?" value="agree" checked={this.state.fixedPayment} />
+          <Checkbox
+            label="Mensal Fixo ?"
+            value="agree"
+            checked={values.fixedPayment}
+            onCheck={checked => setFieldValue('fixedPayment', checked)} />
         </View>
 
         <TextInputMask type="money"
-          value={this.state.cost}
+          value={this.state.costText}
           style={styles.input}
           options={{ unit: 'R$ ' }}
-          onChangeText={t => { this.setState({ cost: t }); setFieldValue('cost', fromReal(t) || '') }} />
+          onChangeText={t => { this.setState({ costText: t }); setFieldValue('cost', fromReal(t)) }} />
 
         <ErrorForm touched={touched.cost} text={errors.cost} />
 
         {this.state.fixedPayment ? null :
-          <TextInput
-            onChangeText={t => setFieldValue('qtdInstallments', onlyInteger(t) || '')}
-            value={this.props.qtdInstallments}
-            placeholder="N° de parcelas"
-            style={styles.input}
-          />
+          <>
+            <TextInput
+              onChangeText={t => setFieldValue('qtdInstallments', onlyInteger(t) || '')}
+              value={values.qtdInstallments}
+              placeholder="N° de parcelas"
+              style={styles.input}
+            />
+            <ErrorForm touched={touched.qtdInstallments} text={errors.qtdInstallments} />
+          </>
         }
 
         <View style={{ width: 200, borderBottomWidth: 1, alignItems: 'flex-end' }}>
           <Picker
-            selectedValue={this.state.type}
+            selectedValue={values.type}
             style={{ height: 50, width: 200 }}
-            onValueChange={itemValue => this.setState({ error: '', type: itemValue })}>
+            onValueChange={itemValue => setFieldValue('type', itemValue)}>
             <Picker.Item color="red" label="Despesa" value={PaymentType.Expense} />
             <Picker.Item color="green" label="Renda" value={PaymentType.Income} />
           </Picker>
@@ -266,12 +271,26 @@ FormNewPayment.propTypes = {
 }
 
 export default withFormik({
-  mapPropsToValues: () => ({ cost: '', description: '', qtdInstallments: '' }),
-  handleSubmit: (values) => console.log(values),
+
+  mapPropsToValues: ({ payment }) => ({
+    cost: payment.cost || 0,
+    description: payment.description || '',
+    type: payment.type || PaymentType.Expense,
+    installments: payment.installments || [],
+    qtdInstallments: ((payment.installments || []).length || '') + '',
+    useCreditCard: payment.creditCardId,
+    fixedPayment: payment.fixedPayment,
+    paidInstallments: []
+  }),
+  handleSubmit: values => console.log(values),
   validateOnChange: true,
   validationSchema: object().shape({
-    description: string().required('Informe a descrição'),
-    cost: string().required('Informe o valor'),
-    qtdInstallments: string().required('Informe o valor')
+    description: string().required(REQUIRED_FIELD),
+    cost: number().test('len', 'Informe um valor maior que zero', (val) => {
+      return val > 0
+    }).required(REQUIRED_FIELD),
+    qtdInstallments: string().test('len', 'Informe um valor entre 1 e 48', (val) => {
+      return val > 0 && val <= 48
+    }).required(REQUIRED_FIELD)
   })
 })(FormNewPayment)

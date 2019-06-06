@@ -102,13 +102,17 @@ export default class Payments extends Component {
             <TouchableOpacity delayLongPress={500}
               onPress={() => Actions.newPayment({ payment: item.value, title: 'Editar Pagamento' })}
               onLongPress={() => this.openDialog(item.value)}>
-              <Card >
+              <Card>
                 <PaymentListItem payment={item.value} />
               </Card>
             </TouchableOpacity>}
         />
 
-        <ActionButton onPress={() => Actions.newPayment({ payment: {}, title: 'Novo Pagamento' })} offsetX={10} offsetY={10} buttonColor="#282" />
+        <ActionButton
+          onPress={() => Actions.newPayment({
+            payment: {},
+            title: 'Novo Pagamento'
+          })} offsetX={10} offsetY={10} buttonColor="#282" />
       </BaseViewComponent>
 
     )
