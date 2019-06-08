@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
-import { ActivityIndicator, Text, Button, Picker, View, TextInput } from 'react-native'
+import { Platform, ActivityIndicator, KeyboardAvoidingView, Text, Button, Picker, View, TextInput } from 'react-native'
 import { Actions } from 'react-native-router-flux'
 import { Checkbox } from 'react-native-material-ui'
 import { TextInputMask } from 'react-native-masked-text'
@@ -10,18 +10,20 @@ import { object, string, number } from 'yup'
 import { PaymentType } from '../utils/constants'
 import { validatePayment } from '../validations/payment'
 import { creditCardStorage, paymentStorage } from '../storage'
-import { fromReal, onlyInteger, toReal, generatePickerMonthYear } from '../utils/string'
+import { fromReal, onlyInteger, toDateFormat, toReal, generatePickerMonthYear } from '../utils/string'
 
 import { PaymentService } from 'cashflow-cross-cutting'
 
-import { ErrorForm } from '../components'
+import { ErrorForm, TextInputLayout } from '../components'
 
 const styles = {
   input: {
     width: 200,
-    borderColor: '#000',
     borderBottomColor: '#000',
-    borderBottomWidth: 1
+    borderBottomWidth: 1,
+    fontSize: 20,
+    padding: 3,
+    margin: 0
   }
 }, REQUIRED_FIELD = 'Campo obrigatório'
 
@@ -178,18 +180,21 @@ class FormNewPayment extends Component {
   render() {
     const { touched, errors, values, setFieldValue } = this.props
     return (
-      <View style={{ marginTop: 20, alignItems: 'center', justifyContent: 'space-between' }}>
+      <KeyboardAvoidingView enabled
+        behavior={Platform.select({
+          ios: 'padding',
+          android: null,
+        })}
+        style={{ marginTop: 20, alignItems: 'center', justifyContent: 'space-between' }}>
         {this.state.loading ? <ActivityIndicator size="large" /> : null}
-        <TextInput
-          onChangeText={t => setFieldValue('description', t)}
+
+        <TextInputLayout label="Descrição"
+          error={errors.description}
           value={values.description}
-          placeholder="Descrição"
-          style={styles.input}
-        />
+          touched={touched.description}
+          onChangeText={t => setFieldValue('description', t)} />
 
-        <ErrorForm touched={touched.description} text={errors.description} />
-
-        <View style={{ marginTop: 20 }} width={200} height={30}>
+        <View width={200} height={30}>
           <Checkbox
             label="Mensal Fixo ?"
             value="agree"
@@ -251,9 +256,9 @@ class FormNewPayment extends Component {
           <Text style={{ marginRight: 10 }}>Data:</Text>
           <Picker
             mode="dropdown"
-            selectedValue={this.state.date}
+            selectedValue={values.date}
             style={{ height: 50, width: 140, alignContent: 'center', alignItems: 'center', justifyContent: 'center' }}
-            onValueChange={date => this.setState({ date: date })}>
+            onValueChange={date => setFieldValue('date', date)}>
             {this.state.monthsYearsPicker.map((p, i) => <Picker.Item key={i} label={p} value={p} />)}
           </Picker>
         </View>
@@ -261,7 +266,7 @@ class FormNewPayment extends Component {
           <Button disabled={this.state.loading} onPress={() => this.props.handleSubmit()} raised={true} color='#282' title='Save' />
         </View>
         <Text style={{ color: '#F33' }}>{this.state.error}</Text>
-      </View>
+      </KeyboardAvoidingView>
     )
   }
 }
@@ -271,18 +276,40 @@ FormNewPayment.propTypes = {
 }
 
 export default withFormik({
-
-  mapPropsToValues: ({ payment }) => ({
-    cost: payment.cost || 0,
-    description: payment.description || '',
-    type: payment.type || PaymentType.Expense,
-    installments: payment.installments || [],
-    qtdInstallments: ((payment.installments || []).length || '') + '',
-    useCreditCard: payment.creditCardId,
-    fixedPayment: payment.fixedPayment,
-    paidInstallments: []
-  }),
-  handleSubmit: values => console.log(values),
+  mapPropsToValues: ({ payment }) => {
+    const installments = payment.installments || []
+    const date = installments[0] ? installments[0].date : new Date()
+    return {
+      cost: payment.cost || 0,
+      description: payment.description || '',
+      type: payment.type || PaymentType.Expense,
+      installments: installments,
+      qtdInstallments: (installments.length || '') + '',
+      useCreditCard: payment.creditCardId,
+      fixedPayment: payment.fixedPayment,
+      date: toDateFormat(date)
+    }
+  },
+  handleSubmit: values => {
+    const monthYear = values.date.split('/')
+    let month = Number(monthYear[0])
+    let year = Number(monthYear[1])
+    values.installments = []
+    values.qtdInstallments = values.fixedPayment ? 1 : values.qtdInstallments || 1
+    for (let i = 1; i <= values.qtdInstallments; i++) {
+      values.installments.push({
+        number: i,
+        cost: values.cost,
+        date: new Date(`${month}/01/${year}`)
+      })
+      month++
+      if (month > 12) {
+        year++
+        month = 1
+      }
+    }
+    console.log(values)
+  },
   validateOnChange: true,
   validationSchema: object().shape({
     description: string().required(REQUIRED_FIELD),
@@ -291,6 +318,7 @@ export default withFormik({
     }).required(REQUIRED_FIELD),
     qtdInstallments: string().test('len', 'Informe um valor entre 1 e 48', (val) => {
       return val > 0 && val <= 48
-    }).required(REQUIRED_FIELD)
+    }).required(REQUIRED_FIELD),
+    date: string().required(REQUIRED_FIELD)
   })
 })(FormNewPayment)

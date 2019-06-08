@@ -1,6 +1,7 @@
 // Inputs
 export { default as PatternTextInput } from './inputs/PatternTextInput'
 export { default as ErrorForm } from './inputs/ErrorForm'
+export { default as TextInputLayout } from './inputs/TextInputLayout'
 
 // List Items
 export { default as PaymentListItem } from './listItems/PaymentListItem'
