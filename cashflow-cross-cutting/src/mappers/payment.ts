@@ -70,8 +70,10 @@ export const paymentEstimateResult = (arr: Payment[], startDateStr: string, endD
   const result: any = {}
   monthsYear.forEach(m => {
     const list = payments.filter(p => p.monthYear === m && !p.fixedPayment).concat(fixed)
-    const costIncome = toCost(list.filter(p => p.type === 1).map(p => p.cost).reduce((sum, val) => sum + val))
-    const costExpense = toCost(list.filter(p => p.type === 2).map(p => p.cost).reduce((sum, val) => sum + val))
+    const incomeValues = list.filter(p => p.type === 1).map(p => p.cost)
+    const expenseValues = list.filter(p => p.type === 2).map(p => p.cost)
+    const costIncome = incomeValues.length ? toCost(incomeValues.reduce((sum, val) => sum + val)) : 0
+    const costExpense = expenseValues.length ? toCost(expenseValues.reduce((sum, val) => sum + val)) : 0
     const total = toCost(costIncome - costExpense)
     accumulatedCost += total
     result[m] = {

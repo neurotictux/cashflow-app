@@ -35,7 +35,7 @@ class FormNewPayment extends Component {
     super(props)
     const now = new Date()
     this.state = {
-      cards: [],
+      cards: [{ id: 0, name: 'SELECIONE...' }],
       firstPayment: '',
       loading: false,
       costText: props.values.cost || 0,
@@ -45,7 +45,13 @@ class FormNewPayment extends Component {
 
   componentDidMount() {
     creditCardService.get()
-      .then(cards => this.setState({ cards }))
+      .then(cards => {
+        cards = [{ id: '_0', name: 'SELECIONE...' }].concat(cards)
+        this.setState({ cards })
+        const card = cards.find(p => p.id === this.props.values.creditCardId)
+        if (card)
+          this.props.setFieldValue('creditCard', card)
+      })
       .catch(err => console.warn(err))
   }
 
@@ -101,13 +107,12 @@ class FormNewPayment extends Component {
             </Picker>
           </View>
 
-          {this.state.cards.length ?
+          {this.state.cards.length > 1 ?
             <View style={{ width: 200, borderBottomWidth: 1, alignItems: 'flex-end' }}>
               <Picker
-                selectedValue={values.card}
+                selectedValue={values.creditCard}
                 style={{ height: 50, width: 200 }}
-                onValueChange={itemValue => setFieldValue('card', itemValue)}>
-                <Picker.Item label="SELECIONE ..." value={{ id: 0 }} />
+                onValueChange={itemValue => setFieldValue('creditCard', itemValue)}>
                 {this.state.cards.map(c => <Picker.Item key={c.id} label={c.name} value={c} />)}
               </Picker>
             </View>
@@ -134,16 +139,22 @@ class FormNewPayment extends Component {
 }
 
 FormNewPayment.propTypes = {
-  payment: PropTypes.object
+  payment: PropTypes.object,
+  touched: PropTypes.object,
+  errors: PropTypes.object,
+  values: PropTypes.object,
+  setFieldValue: PropTypes.func,
+  isSubmitting: PropTypes.bool,
+  handleSubmit: PropTypes.func
 }
 
 export default withFormik({
   mapPropsToValues: ({ payment }) => {
     const installments = payment.installments || []
     const date = installments[0] ? installments[0].date : new Date()
-    payment.cost
     return {
       id: payment.id,
+      creditCardId: payment.creditCardId,
       cost: installments[0].cost || 0,
       description: payment.description || '',
       type: payment.type || PaymentType.Expense,
@@ -151,7 +162,8 @@ export default withFormik({
       qtdInstallments: (installments.length || '') + '',
       useCreditCard: payment.creditCardId,
       fixedPayment: payment.fixedPayment,
-      date: toDateFormat(date, 'MM/yyyy')
+      date: toDateFormat(date, 'MM/yyyy'),
+      card: { id: 0 }
     }
   },
   displayName: 'TESTE PAGAMENTo',
@@ -160,6 +172,8 @@ export default withFormik({
     let month = Number(monthYear[0])
     let year = Number(monthYear[1])
     values.installments = []
+    if (values.creditCard && !values.creditCard.id || values.creditCard.id === '_0')
+      values.creditCard = null
     values.qtdInstallments = values.fixedPayment ? 1 : values.qtdInstallments || 1
     for (let i = 1; i <= values.qtdInstallments; i++) {
       values.installments.push({
@@ -176,7 +190,7 @@ export default withFormik({
     paymentService.save(values)
       .then(() => {
         setSubmitting(false)
-        setTimeout(() => Actions.refresh({ refreshPayments: true }), 500)
+        setTimeout(() => Actions.refresh({ refreshPayments: true }), 200)
         Actions.pop()
       }).catch(err => {
         setSubmitting(false)
