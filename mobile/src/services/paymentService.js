@@ -1,11 +1,15 @@
 import httpService from './httpService'
 
-export default {
-  getAll: () => httpService.get('/payments'),
-  save: payment => {
+const get = () => httpService.get('/payment')
+const getFuture = (startDate, endDate) => httpService.get(`/payment-estimative?startDate=${startDate}&endDate=${endDate}`)
+const create = (q) => httpService.post('/payment', q)
+const update = (q) => httpService.put('/payment', q)
+const remove = (id) => httpService.delete(`/payment/${id}`)
 
-    // return payment.id ?
-    //   httpService.put('/payments', payment)
-    //   : httpService.post('/payments', payment)
-  }
+export default {
+  get,
+  getFuture,
+  create,
+  update,
+  remove
 }

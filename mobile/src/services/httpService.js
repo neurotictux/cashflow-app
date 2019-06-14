@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { TokenStorage } from '../storage/index'
+import { tokenStorage } from '../storage/index'
 import { Actions } from 'react-native-router-flux'
 
 const apiUrl = 'https://appcashflow.herokuapp.com/api'
@@ -8,14 +8,19 @@ const apiUrl = 'https://appcashflow.herokuapp.com/api'
 axios.interceptors.response.use(response => response, err => {
   const { request, status } = err.response
   if (status === 401 && !request.responseURL.endsWith('/api/token')) {
-    TokenStorage.save(null)
+    tokenStorage.save(null)
     Actions.reset()
     Actions.login()
   }
   return Promise.reject(err)
 })
 
-const sendRequest = (method, url, headers, data) => {
+const sendRequest = async (method, url, useToken, data) => {
+  let headers
+  if (useToken) {
+    headers = { Authorization: `Bearer ${await tokenStorage.get()}` }
+  }
+
   return axios({
     method: method,
     headers: headers,
@@ -30,13 +35,11 @@ const sendRequest = (method, url, headers, data) => {
     })
 }
 
-const getHeaders = () => ({ Authorization: `Bearer ${TokenStorage.get()}` })
-
 export default {
   getNotAuthenticated: (url) => sendRequest('get', url),
-  postWithoutToken: (url, body) => sendRequest('post', url, null, body),
-  get: (url) => sendRequest('get', url, getHeaders()),
-  post: (url, body) => sendRequest('post', url, getHeaders(), body),
-  put: (url, body) => sendRequest('put', url, getHeaders(), body),
-  delete: (url, body) => sendRequest('delete', url, getHeaders(), body)
+  postWithoutToken: (url, body) => sendRequest('post', url, false, body),
+  get: (url) => sendRequest('get', url, true),
+  post: (url, body) => sendRequest('post', url, true, body),
+  put: (url, body) => sendRequest('put', url, true, body),
+  delete: (url, body) => sendRequest('delete', url, true, body)
 }
