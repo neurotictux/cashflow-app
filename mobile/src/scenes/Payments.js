@@ -7,8 +7,7 @@ import { PaymentService } from 'cashflow-cross-cutting'
 
 import { paymentStorage, creditCardStorage } from '../storage'
 import { PaymentListItem, BaseViewComponent } from '../components'
-
-const paymentService = new PaymentService(paymentStorage, creditCardStorage)
+import { paymentService } from '../services'
 
 export default class Payments extends Component {
 
@@ -22,7 +21,7 @@ export default class Payments extends Component {
   }
 
   componentDidMount() {
-    // this.refresh()
+    this.refresh()
   }
 
   refresh() {

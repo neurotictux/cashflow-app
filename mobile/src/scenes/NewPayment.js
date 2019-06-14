@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import {
   Platform, ActivityIndicator, KeyboardAvoidingView,
-  Text, Button, Picker, View, TextInput
+  Text, Button, Picker, View
 } from 'react-native'
 import { Actions } from 'react-native-router-flux'
 import { Checkbox, Card } from 'react-native-material-ui'
@@ -50,7 +50,7 @@ class FormNewPayment extends Component {
   }
 
   render() {
-    const { touched, errors, values, setFieldValue } = this.props
+    const { touched, errors, values, setFieldValue, isSubmitting, handleSubmit } = this.props
     return (
       <Card style={{ flex: 1 }}>
         <KeyboardAvoidingView enabled
@@ -59,7 +59,7 @@ class FormNewPayment extends Component {
             android: null,
           })}
           style={{ marginTop: 20, alignItems: 'center', justifyContent: 'space-between' }}>
-          {this.state.loading ? <ActivityIndicator size="large" /> : null}
+          {isSubmitting ? <ActivityIndicator size="large" /> : null}
 
           <TextInputLayout label="Descrição"
             error={errors.description}
@@ -84,15 +84,11 @@ class FormNewPayment extends Component {
           <ErrorForm touched={touched.cost} text={errors.cost} />
 
           {values.fixedPayment ? null :
-            <>
-              <TextInput
-                onChangeText={t => setFieldValue('qtdInstallments', onlyInteger(t) || '')}
-                value={values.qtdInstallments}
-                placeholder="N° de parcelas"
-                style={styles.input}
-              />
-              <ErrorForm touched={touched.qtdInstallments} text={errors.qtdInstallments} />
-            </>
+            <TextInputLayout label="N° de parcelas"
+              error={errors.qtdInstallments}
+              value={values.qtdInstallments}
+              touched={touched.qtdInstallments}
+              onChangeText={t => setFieldValue('qtdInstallments', onlyInteger(t) || '')} />
           }
 
           <View style={{ width: 200, borderBottomWidth: 1, alignItems: 'flex-end' }}>
@@ -128,9 +124,9 @@ class FormNewPayment extends Component {
             </Picker>
           </View>
           <View style={{ marginTop: 20, justifyContent: 'space-between' }} width={200}>
-            <Button disabled={this.state.loading} onPress={() => this.props.handleSubmit()} raised={true} color='#282' title='Save' />
+            <Button disabled={isSubmitting} onPress={() => handleSubmit()} raised={true} color='#282' title='Save' />
           </View>
-          <Text style={{ color: '#F33' }}>{this.state.error}</Text>
+          <ErrorForm touched={true} text={values.apiError} />
         </KeyboardAvoidingView>
       </Card>
     )
@@ -145,8 +141,10 @@ export default withFormik({
   mapPropsToValues: ({ payment }) => {
     const installments = payment.installments || []
     const date = installments[0] ? installments[0].date : new Date()
+    payment.cost
     return {
-      cost: payment.cost || 0,
+      id: payment.id,
+      cost: installments[0].cost || 0,
       description: payment.description || '',
       type: payment.type || PaymentType.Expense,
       installments: installments,
@@ -156,7 +154,8 @@ export default withFormik({
       date: toDateFormat(date, 'MM/yyyy')
     }
   },
-  handleSubmit: values => {
+  displayName: 'TESTE PAGAMENTo',
+  handleSubmit: (values, { setFieldValue, setSubmitting }) => {
     const monthYear = values.date.split('/')
     let month = Number(monthYear[0])
     let year = Number(monthYear[1])
@@ -174,12 +173,20 @@ export default withFormik({
         month = 1
       }
     }
-    console.log(values)
+    paymentService.save(values)
+      .then(() => {
+        setSubmitting(false)
+        setTimeout(() => Actions.refresh({ refreshPayments: true }), 500)
+        Actions.pop()
+      }).catch(err => {
+        setSubmitting(false)
+        setFieldValue('apiError', err.message)
+      })
   },
   validateOnChange: true,
   validationSchema: object().shape({
     description: string().required(REQUIRED_FIELD),
-    cost: number().test('len', 'Informe um valor maior que zero', (val) => {
+    cost: number().test('length', 'Informe um valor maior que zero', (val) => {
       return val > 0
     }).required(REQUIRED_FIELD),
     qtdInstallments: string().test('len', 'Informe um valor entre 1 e 48', (val) => {

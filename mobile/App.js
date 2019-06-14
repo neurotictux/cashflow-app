@@ -43,12 +43,11 @@ export default class App extends Component {
                 component={Payments}
                 title="Pagamentos"
                 hideNavBar={true}
+                initial
               />
               <Scene key="newPayment"
                 component={NewPayment}
                 title="Novo Pagamento"
-                payment={{ description: 'teste' }}
-                initial
               />
               <Scene key="simulation"
                 component={Simulation}
