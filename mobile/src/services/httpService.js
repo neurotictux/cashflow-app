@@ -1,14 +1,14 @@
 import axios from 'axios'
-import { tokenStorage } from '../storage/index'
+import { userStorage } from '../storage'
 import { Actions } from 'react-native-router-flux'
 
-const apiUrl = 'https://appcashflow.herokuapp.com/api'
-// const apiUrl = 'http://localhost:5000/api'
+// const apiUrl = 'https://appcashflow.herokuapp.com/api'
+const apiUrl = 'http://localhost:3000/api'
 
 axios.interceptors.response.use(response => response, err => {
   const { request, status } = err.response
   if (status === 401 && !request.responseURL.endsWith('/api/token')) {
-    tokenStorage.save(null)
+    userStorage.saveToken(null)
     Actions.reset()
     Actions.login()
   }
@@ -18,19 +18,17 @@ axios.interceptors.response.use(response => response, err => {
 const sendRequest = async (method, url, useToken, data) => {
   let headers
   if (useToken) {
-    headers = { Authorization: `Bearer ${await tokenStorage.get()}` }
+    headers = { Authorization: `Bearer ${await userStorage.get()}` }
   }
 
-  return axios({
-    method: method,
-    headers: headers,
-    url: apiUrl + url,
-    data: data
-  }).then(res => res.data)
+  const req = { method, headers, url: apiUrl + url, data }
+
+  return axios(req).then(res => res.data)
     .catch(err => {
+      const { data, status } = err.response || { status: -1, data: { message: 'Erro desconhecido.' } }
       throw {
-        message: err.response.status === 400 ? err.response.data.message : err.response.data,
-        status: err.response.status
+        message: status === 400 ? data.message : data,
+        status: status
       }
     })
 }

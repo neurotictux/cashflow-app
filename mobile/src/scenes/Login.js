@@ -3,7 +3,9 @@ import { ActivityIndicator, Text, View, TextInput, Button } from 'react-native'
 import { Actions } from 'react-native-router-flux'
 
 import { accountService } from '../services'
-import { TokenStorage, UserStorage } from '../storage'
+import { userStorage } from '../storage'
+
+import { ErrorForm } from '../components'
 
 const styles = {
   input: {
@@ -22,13 +24,12 @@ export default class Login extends React.Component {
   }
 
   componentDidMount() {
-    UserStorage.get().then(user => {
-      if (user && user.email)
-        this.setState({ email: user.email })
-    })
-    TokenStorage.getAsync().then(token => {
+    userStorage.get().then(({ email, token }) => {
       if (token)
         Actions.futurePayments()
+      else if (email) {
+        this.setState({ email: email })
+      }
     })
   }
 
@@ -37,12 +38,18 @@ export default class Login extends React.Component {
     accountService.token(this.state.email, this.state.password)
       .then(res => {
         this.setState({ loading: false, error: '' })
-        UserStorage.save({ email: this.state.email })
-        TokenStorage.save(res.token).then(() => Actions.futurePayments())
+        const user = {
+          email: this.state.email,
+          token: res.token
+        }
+        userStorage.save(user).then(() => {
+          console.log('Actions.futurePayments()')
+          Actions.futurePayments()
+        })
       })
       .catch(err => this.setState({
         loading: false,
-        error: err.message || 'Erro desconhecido'
+        error: err.message
       }))
   }
 
@@ -64,7 +71,7 @@ export default class Login extends React.Component {
               <Button onPress={() => this.login()} title="Entrar" raised={true} color='#282'></Button>
           }
         </View>
-        <Text style={{ color: '#C00', marginTop: 10 }}>{this.state.error}</Text>
+        <ErrorForm style={{ marginTop: 10 }} touched={true} text={this.state.error} />
       </View>
     )
   }

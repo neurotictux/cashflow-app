@@ -38,12 +38,12 @@ export default class App extends Component {
                 title="Login"
                 hideNavBar={true}
                 type='reset'
+                initial
               />
               <Scene key="payments"
                 component={Payments}
                 title="Pagamentos"
                 hideNavBar={true}
-                initial
               />
               <Scene key="newPayment"
                 component={NewPayment}

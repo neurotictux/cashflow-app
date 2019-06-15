@@ -1,6 +1,7 @@
 import React from 'react'
-import { Text, Animated } from 'react-native'
+import { Animated } from 'react-native'
 import PropTypes from 'prop-types'
+import { ErrorText } from './styles'
 
 export default class ErrorForm extends React.Component {
 
@@ -40,8 +41,9 @@ export default class ErrorForm extends React.Component {
           inputRange: [-10, 0],
           outputRange: [0, 1]
         })
+        , ...this.props.style
       }}>
-        <Text style={{ color: '#F33' }}>{this.state.text}</Text>
+        <ErrorText>{this.state.text}</ErrorText>
       </Animated.View>
     )
   }
@@ -49,5 +51,6 @@ export default class ErrorForm extends React.Component {
 
 ErrorForm.propTypes = {
   touched: PropTypes.bool,
-  text: PropTypes.string
+  text: PropTypes.string,
+  style: PropTypes.object
 }

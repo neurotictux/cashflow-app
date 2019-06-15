@@ -1,3 +1,3 @@
 export { paymentStorage } from './paymentStorage'
 export { creditCardStorage } from './creditCardStorage'
-export { tokenStorage } from './tokenStorage'
+export { userStorage } from './userStorage'

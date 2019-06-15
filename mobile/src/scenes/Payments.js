@@ -36,6 +36,7 @@ export default class Payments extends Component {
       })
       .catch(err => {
         this.setState({ loading: false })
+        console.log(err)
         console.warn(err)
       })
   }

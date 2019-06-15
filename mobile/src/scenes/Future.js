@@ -1,11 +1,11 @@
 import React from 'react'
 import { Text, View, FlatList, Dimensions, Picker } from 'react-native'
 import { Actions } from 'react-native-router-flux'
-import { PaymentService } from 'cashflow-cross-cutting'
 
 import { PaymentFutureListItem, BaseViewComponent } from '../components'
 import { TokenStorage } from '../storage'
 import { toDate, currentMonth, generatePickerMonthYear } from '../utils/string'
+import { paymentService } from '../services'
 
 const screenHeight = Dimensions.get('window').height
 
@@ -28,7 +28,8 @@ export default class Future extends React.Component {
   }
 
   componentDidMount() {
-    // this.refresh()
+    console.log('future')
+    this.refresh()
     // PaymentStorage.getFuture()
     //   .then(res => {
     //     if (res) {
@@ -59,7 +60,7 @@ export default class Future extends React.Component {
     if (!this.state.loading)
       this.setState({ loading: true })
 
-    PaymentService.getFuture('05/2019', '12/2020')
+    paymentService.getFuture('05/2019', '12/2020')
       .then(res => {
         // console.log(res)
         const months = Object.keys(res)

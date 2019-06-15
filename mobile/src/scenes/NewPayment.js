@@ -13,7 +13,6 @@ import { object, string, number } from 'yup'
 import { PaymentType } from '../utils/constants'
 import { fromReal, onlyInteger, toDateFormat, generatePickerMonthYear } from '../utils/string'
 
-
 import { creditCardService, paymentService } from '../services'
 
 import { ErrorForm, TextInputLayout } from '../components'
