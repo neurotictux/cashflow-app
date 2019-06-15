@@ -38,6 +38,7 @@ export default class App extends Component {
                 title="Login"
                 hideNavBar={true}
                 type='reset'
+                initial
               />
               <Scene key="payments"
                 component={Payments}
@@ -46,7 +47,8 @@ export default class App extends Component {
               />
               <Scene key="newPayment"
                 component={NewPayment}
-                title="Novo Pagamento" />
+                title="Novo Pagamento"
+              />
               <Scene key="simulation"
                 component={Simulation}
                 title="Simulation"
@@ -61,7 +63,6 @@ export default class App extends Component {
                 component={Cards}
                 title="Cartões de Crédito"
                 hideNavBar={true}
-                initial
               />
             </Scene>
           </Router>

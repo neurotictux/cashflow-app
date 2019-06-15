@@ -84,7 +84,7 @@ class BaseViewComponent extends DrawerLayoutAndroid {
             rightElement={{
               menu: {
                 icon: 'more-vert',
-                labels: ['Refresh', 'Logout']
+                labels: ['Atualizar', 'Sair']
               }
             }}
             onRightElementPress={label => this.menuSelected(label.index)}

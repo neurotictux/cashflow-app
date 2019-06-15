@@ -5,10 +5,9 @@ import { Actions } from 'react-native-router-flux'
 import ActionButton from 'react-native-action-button'
 import { PaymentService } from 'cashflow-cross-cutting'
 
-import { PaymentStorage, creditCardStorage } from '../storage'
+import { paymentStorage, creditCardStorage } from '../storage'
 import { PaymentListItem, BaseViewComponent } from '../components'
-
-const paymentService = new PaymentService(PaymentStorage, creditCardStorage)
+import { paymentService } from '../services'
 
 export default class Payments extends Component {
 
@@ -17,12 +16,12 @@ export default class Payments extends Component {
     this.state = {
       payments: [],
       filteredPayments: [],
-      loading: true
+      loading: false
     }
   }
 
   componentDidMount() {
-    // this.refresh()
+    this.refresh()
   }
 
   refresh() {
@@ -37,6 +36,7 @@ export default class Payments extends Component {
       })
       .catch(err => {
         this.setState({ loading: false })
+        console.log(err)
         console.warn(err)
       })
   }
@@ -102,13 +102,17 @@ export default class Payments extends Component {
             <TouchableOpacity delayLongPress={500}
               onPress={() => Actions.newPayment({ payment: item.value, title: 'Editar Pagamento' })}
               onLongPress={() => this.openDialog(item.value)}>
-              <Card >
+              <Card>
                 <PaymentListItem payment={item.value} />
               </Card>
             </TouchableOpacity>}
         />
 
-        <ActionButton onPress={() => Actions.newPayment({ payment: {}, title: 'Novo Pagamento' })} offsetX={10} offsetY={10} buttonColor="#282" />
+        <ActionButton
+          onPress={() => Actions.newPayment({
+            payment: {},
+            title: 'Novo Pagamento'
+          })} offsetX={10} offsetY={10} buttonColor="#282" />
       </BaseViewComponent>
 
     )

@@ -1,181 +1,210 @@
 import React, { Component } from 'react'
-import { ActivityIndicator, Text, Button, Picker, View, TextInput } from 'react-native'
+import PropTypes from 'prop-types'
+import {
+  Platform, ActivityIndicator, KeyboardAvoidingView,
+  Text, Button, Picker, View
+} from 'react-native'
 import { Actions } from 'react-native-router-flux'
-import { Checkbox } from 'react-native-material-ui'
+import { Checkbox, Card } from 'react-native-material-ui'
 import { TextInputMask } from 'react-native-masked-text'
+import { withFormik } from 'formik'
+import { object, string, number } from 'yup'
 
 import { PaymentType } from '../utils/constants'
-import { CreditCardService, PaymentService } from '../services'
-import { fromReal, onlyInteger, fromMoneyString, toReal, generatePickerMonthYear } from '../utils/string'
+import { fromReal, onlyInteger, toDateFormat, generatePickerMonthYear } from '../utils/string'
+
+import { creditCardService, paymentService } from '../services'
+
+import { ErrorForm, TextInputLayout } from '../components'
 
 const styles = {
   input: {
     width: 200,
-    borderColor: '#000',
     borderBottomColor: '#000',
-    borderBottomWidth: 1
+    borderBottomWidth: 1,
+    fontSize: 20,
+    padding: 3,
+    margin: 0
   }
-}
+}, REQUIRED_FIELD = 'Campo obrigatório'
 
-export default class NewPayment extends Component {
+class FormNewPayment extends Component {
 
   constructor(props) {
     super(props)
-    const p = props.payment || { type: PaymentType.Expense }
     const now = new Date()
-
-    const paymentDate = p.firstPayment ? new Date(p.firstPayment) : now
-    const date = `${paymentDate.getMonth() + 1}/01/${paymentDate.getFullYear()}`.split('/')
-
     this.state = {
-      id: p.id,
-      description: p.description,
-      cost: toReal(p.cost ? p.cost : '0'),
-      type: p.type || PaymentType.Expense,
-      date: `${date[0] > 9 ? date[0] : '0' + date[0]}/${date[2]}`,
-      error: '',
-      plots: p.plots ? p.plots + '' : '',
-      plotsPaid: p.plotsPaid ? p.plotsPaid + '' : '',
-      singlePlot: p.singlePlot,
-      fixedPayment: p.fixedPayment,
-      useCreditCard: false,
-      cards: [],
-      card: p.creditCard || {},
-      loading: true,
+      cards: [{ id: 0, name: 'SELECIONE...' }],
+      firstPayment: '',
+      loading: false,
+      costText: props.values.cost || 0,
       monthsYearsPicker: generatePickerMonthYear('01/' + (now.getFullYear() - 1), 5)
     }
   }
 
   componentDidMount() {
-    CreditCardService.get()
-      .then(res => this.setState({ cards: res, loading: false }))
-      .catch(err => this.setState({ error: err.message, loading: false }))
-  }
-
-  save() {
-
-    const { id, description, cost, type, date, plots, plotsPaid, singlePlot, fixedPayment, useCreditCard, card } = this.state
-
-    const arrDate = date.split('/')
-    const firstPayment = `${arrDate[0]}/01/${arrDate[1]}`
-
-    const payment = {
-      id,
-      description,
-      type,
-      plots: !fixedPayment && !singlePlot ? plots : 0,
-      plotsPaid: !fixedPayment && !singlePlot ? plotsPaid : 0,
-      firstPayment: firstPayment,
-      fixedPayment,
-      singlePlot: !fixedPayment && singlePlot ? true : false,
-      cost: fromReal(cost),
-      creditCardId: useCreditCard ? card.id : null
-    }
-
-    this.setState({ loading: true })
-
-    PaymentService.save(payment)
-      .then(res => {
-        console.warn('sucesso')
-        setTimeout(() => { Actions.refresh({ refreshPayments: true }) }, 500)
-        Actions.pop()
+    creditCardService.get()
+      .then(cards => {
+        cards = [{ id: '_0', name: 'SELECIONE...' }].concat(cards)
+        this.setState({ cards })
+        const card = cards.find(p => p.id === this.props.values.creditCardId)
+        if (card)
+          this.props.setFieldValue('creditCard', card)
       })
-      .catch(err => {
-        console.warn(err)
-        this.setState({ loading: false, error: err.message })
-
-      })
+      .catch(err => console.warn(err))
   }
 
   render() {
+    const { touched, errors, values, setFieldValue, isSubmitting, handleSubmit } = this.props
     return (
-      <View style={{ marginTop: 20, alignItems: 'center', justifyContent: 'space-between' }}>
-        {this.state.loading ? <ActivityIndicator size="large" /> : null}
-        <TextInput
-          onChangeText={t => this.setState({ error: '', description: t })}
-          value={this.state.description}
-          placeholder="Descrição"
-          style={styles.input}
-        />
-        <View style={{ marginTop: 20 }} width={200} height={30}>
-          <Checkbox onCheck={(checked) => this.setState({ singlePlot: checked })} label="Parcela única ?" value="agree" checked={this.state.singlePlot} />
-        </View>
+      <Card style={{ flex: 1 }}>
+        <KeyboardAvoidingView enabled
+          behavior={Platform.select({
+            ios: 'padding',
+            android: null,
+          })}
+          style={{ marginTop: 20, alignItems: 'center', justifyContent: 'space-between' }}>
+          {isSubmitting ? <ActivityIndicator size="large" /> : null}
 
-        {this.state.singlePlot ? null :
-          <View style={{ marginTop: 20 }} width={200} height={30}>
-            <Checkbox onCheck={(checked) => this.setState({ fixedPayment: checked })} label="Mensal ?" value="agree" checked={this.state.fixedPayment} />
+          <TextInputLayout label="Descrição"
+            error={errors.description}
+            value={values.description}
+            touched={touched.description}
+            onChangeText={t => setFieldValue('description', t)} />
+
+          <View width={200} height={30} style={{ backgroundColor: 'white' }}>
+            <Checkbox
+              label="Mensal Fixo ?"
+              value="agree"
+              checked={values.fixedPayment}
+              onCheck={checked => setFieldValue('fixedPayment', checked)} />
           </View>
-        }
 
-        {this.state.cards.length ?
-          <View>
-            <View style={{ marginTop: 20 }} width={200} height={30}>
-              <Checkbox onCheck={(checked) => this.setState({ useCreditCard: checked })} label="Cartão de Crédito ?" value="agree" checked={this.state.useCreditCard} />
+          <TextInputMask type="money"
+            value={this.state.costText}
+            style={styles.input}
+            options={{ unit: 'R$ ' }}
+            onChangeText={t => { this.setState({ costText: t }); setFieldValue('cost', fromReal(t)) }} />
+
+          <ErrorForm touched={touched.cost} text={errors.cost} />
+
+          {values.fixedPayment ? null :
+            <TextInputLayout label="N° de parcelas"
+              error={errors.qtdInstallments}
+              value={values.qtdInstallments}
+              touched={touched.qtdInstallments}
+              onChangeText={t => setFieldValue('qtdInstallments', onlyInteger(t) || '')} />
+          }
+
+          <View style={{ width: 200, borderBottomWidth: 1, alignItems: 'flex-end' }}>
+            <Picker
+              selectedValue={values.type}
+              style={{ height: 50, width: 200 }}
+              onValueChange={itemValue => setFieldValue('type', itemValue)}>
+              <Picker.Item color="red" label="DESPESA" value={PaymentType.Expense} />
+              <Picker.Item color="green" label="RENDA" value={PaymentType.Income} />
+            </Picker>
+          </View>
+
+          {this.state.cards.length > 1 ?
+            <View style={{ width: 200, borderBottomWidth: 1, alignItems: 'flex-end' }}>
+              <Picker
+                selectedValue={values.creditCard}
+                style={{ height: 50, width: 200 }}
+                onValueChange={itemValue => setFieldValue('creditCard', itemValue)}>
+                {this.state.cards.map(c => <Picker.Item key={c.id} label={c.name} value={c} />)}
+              </Picker>
             </View>
+            : null}
 
-            {this.state.useCreditCard ?
-              <View style={{ width: 200, borderBottomWidth: 1, alignItems: 'flex-end' }}>
-                <Picker
-                  selectedValue={this.state.card}
-                  style={{ height: 50, width: 200 }}
-                  onValueChange={(itemValue, index) => this.setState({ error: '', card: itemValue })}>
-                  {this.state.cards.map(c => <Picker.Item key={c.id} label={c.name} value={c} />)}
-                </Picker>
-              </View>
-              : null}
-
+          <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 10 }}>
+            <Text style={{ marginRight: 10 }}>DATA:</Text>
+            <Picker
+              mode="dropdown"
+              selectedValue={values.date}
+              style={{ height: 50, width: 140, alignContent: 'center', alignItems: 'center', justifyContent: 'center' }}
+              onValueChange={date => setFieldValue('date', date)}>
+              {this.state.monthsYearsPicker.map((p, i) => <Picker.Item key={i} label={p} value={p} />)}
+            </Picker>
           </View>
-          : null}
-
-        {this.state.fixedPayment || this.state.singlePlot
-          ? null :
-          <View>
-            <TextInput
-              onChangeText={t => this.setState({ error: '', plots: onlyInteger(t) })}
-              value={this.state.plots}
-              placeholder="N° de parcelas"
-              style={styles.input}
-            />
-
-            <TextInput
-              onChangeText={t => this.setState({ error: '', plotsPaid: onlyInteger(t) })}
-              value={this.state.plotsPaid}
-              placeholder="Nº de parcelas pagas"
-              style={styles.input}
-            />
+          <View style={{ marginTop: 20, justifyContent: 'space-between' }} width={200}>
+            <Button disabled={isSubmitting} onPress={() => handleSubmit()} raised={true} color='#282' title='Save' />
           </View>
-        }
-
-        <TextInputMask type="money"
-          value={this.state.cost}
-          style={styles.input}
-          options={{ unit: 'R$ ' }}
-          onChangeText={t => this.setState({ error: '', cost: t })} />
-
-        <View style={{ width: 200, borderBottomWidth: 1, alignItems: 'flex-end' }}>
-          <Picker
-            selectedValue={this.state.type}
-            style={{ height: 50, width: 200 }}
-            onValueChange={(itemValue, index) => this.setState({ error: '', type: itemValue })}>
-            <Picker.Item label="Despesa" value={PaymentType.Expense} />
-            <Picker.Item label="Renda" value={PaymentType.Income} />
-          </Picker>
-        </View>
-        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 10 }}>
-          <Text style={{ marginRight: 10 }}>Primeiro Pagamento:</Text>
-          <Picker
-            mode="dropdown"
-            selectedValue={this.state.date}
-            style={{ height: 50, width: 140, alignContent: 'center', alignItems: 'center', justifyContent: 'center' }}
-            onValueChange={date => this.setState({ date: date })}>
-            {this.state.monthsYearsPicker.map((p, i) => <Picker.Item key={i} label={p} value={p} />)}
-          </Picker>
-        </View>
-        <View style={{ marginTop: 20, justifyContent: 'space-between' }} width={200}>
-          <Button disabled={this.state.loading} onPress={() => this.save()} raised={true} color='#282' title='Save' />
-        </View>
-        <Text style={{ color: '#F33' }}>{this.state.error}</Text>
-      </View>
+          <ErrorForm touched={true} text={values.apiError} />
+        </KeyboardAvoidingView>
+      </Card>
     )
   }
 }
+
+FormNewPayment.propTypes = {
+  payment: PropTypes.object,
+  touched: PropTypes.object,
+  errors: PropTypes.object,
+  values: PropTypes.object,
+  setFieldValue: PropTypes.func,
+  isSubmitting: PropTypes.bool,
+  handleSubmit: PropTypes.func
+}
+
+export default withFormik({
+  mapPropsToValues: ({ payment }) => {
+    const installments = payment.installments || []
+    const date = installments[0] ? installments[0].date : new Date()
+    return {
+      id: payment.id,
+      creditCardId: payment.creditCardId,
+      cost: installments[0].cost || 0,
+      description: payment.description || '',
+      type: payment.type || PaymentType.Expense,
+      installments: installments,
+      qtdInstallments: (installments.length || '') + '',
+      useCreditCard: payment.creditCardId,
+      fixedPayment: payment.fixedPayment,
+      date: toDateFormat(date, 'MM/yyyy'),
+      card: { id: 0 }
+    }
+  },
+  displayName: 'TESTE PAGAMENTo',
+  handleSubmit: (values, { setFieldValue, setSubmitting }) => {
+    const monthYear = values.date.split('/')
+    let month = Number(monthYear[0])
+    let year = Number(monthYear[1])
+    values.installments = []
+    if (values.creditCard && !values.creditCard.id || values.creditCard.id === '_0')
+      values.creditCard = null
+    values.qtdInstallments = values.fixedPayment ? 1 : values.qtdInstallments || 1
+    for (let i = 1; i <= values.qtdInstallments; i++) {
+      values.installments.push({
+        number: i,
+        cost: values.cost,
+        date: new Date(`${month}/01/${year}`)
+      })
+      month++
+      if (month > 12) {
+        year++
+        month = 1
+      }
+    }
+    paymentService.save(values)
+      .then(() => {
+        setSubmitting(false)
+        setTimeout(() => Actions.refresh({ refreshPayments: true }), 200)
+        Actions.pop()
+      }).catch(err => {
+        setSubmitting(false)
+        setFieldValue('apiError', err.message)
+      })
+  },
+  validateOnChange: true,
+  validationSchema: object().shape({
+    description: string().required(REQUIRED_FIELD),
+    cost: number().test('length', 'Informe um valor maior que zero', (val) => {
+      return val > 0
+    }).required(REQUIRED_FIELD),
+    qtdInstallments: string().test('len', 'Informe um valor entre 1 e 48', (val) => {
+      return val > 0 && val <= 48
+    }).required(REQUIRED_FIELD),
+    date: string().required(REQUIRED_FIELD)
+  })
+})(FormNewPayment)

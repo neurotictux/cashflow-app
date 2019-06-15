@@ -1327,9 +1327,9 @@ caseless@~0.12.0:
   integrity sha1-G2gcIf+EAzyCZUMJBolCDRhxUdw=
 
 cashflow-cross-cutting@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/cashflow-cross-cutting/-/cashflow-cross-cutting-1.0.0.tgz#b79e6fbd2d3cb7ff385b088d455862107eed2dd2"
-  integrity sha512-OBYnipSIh8iJ39i3ibuGFtvKNjDMuBtKQG02A23sako5uJKfrVTV4HSc9jWWuDHFDuJVPtqDYyBm2Jh3iG4DIA==
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/cashflow-cross-cutting/-/cashflow-cross-cutting-1.0.3.tgz#ba8c4e25ddb0a18a412e8338c80327934282d06e"
+  integrity sha512-IxU0etUsj2yBbsP/g7orpiQ4P2cSnaQN2o+031gmjzoktEVCrI0jeitpVv/4QkWhMfftJAbh2Ba8zQmF+3TluQ==
 
 chalk@^2.0.0, chalk@^2.0.1, chalk@^2.1.0, chalk@^2.4.2:
   version "2.4.2"
