@@ -8,8 +8,8 @@ const apiUrl = 'http://localhost:3000/api'
 axios.interceptors.response.use(response => response, err => {
   const { request, status } = err.response
   if (status === 401 && !request.responseURL.endsWith('/api/token')) {
-    userStorage.saveToken(null)
-    Actions.reset()
+    userStorage.save({ token: null })
+    // Actions.reset()
     Actions.login()
   }
   return Promise.reject(err)
@@ -18,14 +18,14 @@ axios.interceptors.response.use(response => response, err => {
 const sendRequest = async (method, url, useToken, data) => {
   let headers
   if (useToken) {
-    headers = { Authorization: `Bearer ${await userStorage.get()}` }
+    headers = { Authorization: `Bearer ${(await userStorage.get()).token}` }
   }
 
   const req = { method, headers, url: apiUrl + url, data }
 
   return axios(req).then(res => res.data)
     .catch(err => {
-      const { data, status } = err.response || { status: -1, data: { message: 'Erro desconhecido.' } }
+      const { data, status } = err.response || { status: -1, data: { message: '' + err } }
       throw {
         message: status === 400 ? data.message : data,
         status: status

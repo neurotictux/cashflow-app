@@ -1,100 +1,61 @@
 import React from 'react'
-import { ActivityIndicator, Dimensions, View, Text, DrawerLayoutAndroid } from 'react-native'
-import { Button, Toolbar } from 'react-native-material-ui'
+import { ActivityIndicator, View } from 'react-native'
+import { Toolbar } from 'react-native-material-ui'
 import PropTypes from 'prop-types'
 import { Actions } from 'react-native-router-flux'
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 
-// import { UserStorage } from '../../storage'
+import { userStorage } from '../../storage'
 
-const screenHeight = Dimensions.get('window').height
-const appDrawer = 'appDrawer'
+import { Tabs } from '../index'
 
-class BaseViewComponent extends DrawerLayoutAndroid {
-
-  constructor(props) {
-    super(props)
-
-    this.state = {
-      maxHeightList: screenHeight,
-      user: {email: 'teste@mail.com'}
-    }
-  }
-
-  componentDidMount() {
-    // UserStorage.get().then(user => {
-    //   if (user)
-    //     this.setState({ user: user })
-    // })
-  }
+class BaseViewComponent extends React.Component {
 
   menuSelected(idx) {
-    if (this.props.menuSelected)
+    if (idx === 1) {
+      userStorage.save({ token: null }).then(() => Actions.login())
+    } else if (this.props.menuSelected)
       this.props.menuSelected(idx)
   }
 
-  changeHeight(toolbarHeight) {
-    this.setState({ maxHeightList: screenHeight - toolbarHeight - 25 })
-  }
-
-  toScreen(idx) {
-    this.refs['appDrawer'].closeDrawer()
+  toPage(idx) {
     switch (idx) {
+      case 0:
+        Actions.futurePayments()
+        break
       case 1:
         Actions.payments()
         break
       case 2:
-        Actions.futurePayments()
+        Actions.cards()
         break
     }
   }
 
   render() {
-
-    var navigationView = (
-      <View style={{ flex: 1, backgroundColor: '#383' }}>
-        <View style={{ height: 100, backgroundColor: '#7c7', justifyContent: 'flex-end' }}>
-          <Icon
-            name='account'
-            style={{ color: '#FFF', textAlign: 'center', fontSize: 50 }} />
-          <Text style={{ textAlign: 'center', fontSize: 20, marginBottom: 10, fontWeight: 'bold', color: '#FFF' }}>{this.state.user.email}</Text>
-        </View>
-        <Button text='Pagamentos' primary raised onPress={() => this.toScreen(1)} />
-        <Button text='Estimativas' primary raised onPress={() => this.toScreen(2)} />
-      </View>
-    )
-
     return (
-      <DrawerLayoutAndroid
-        drawerWidth={200}
-        ref={appDrawer}
-        drawerPosition={DrawerLayoutAndroid.positions.Left}
-        renderNavigationView={() => navigationView}>
-        <View onLayout={e => this.changeHeight(e.nativeEvent.layout.height)}>
-          <Toolbar
-            style={{ container: { backgroundColor: '#282' } }}
-            leftElement="menu"
-            centerElement={this.props.title}
-            searchable={{
-              autoFocus: false,
-              placeholder: 'Busca...',
-              onChangeText: (val) => this.props.onSearchChanged ? this.props.onSearchChanged(val) : null,
-              onSearchClosed: () => this.props.onSearchClosed ? this.props.onSearchClosed() : null
-            }}
-            rightElement={{
-              menu: {
-                icon: 'more-vert',
-                labels: ['Atualizar', 'Sair']
-              }
-            }}
-            onRightElementPress={label => this.menuSelected(label.index)}
-            onLeftElementPress={() => this.refs['appDrawer'].openDrawer()}
-          />
-        </View>
-        <View style={{ maxHeight: this.state.maxHeightList }}>
+      <View style={{ flex: 1, backgroundColor: '#DDD' }}>
+        <Toolbar
+          style={{ container: { backgroundColor: '#282' } }}
+          centerElement={this.props.title}
+          searchable={{
+            autoFocus: false,
+            placeholder: 'Busca...',
+            onChangeText: (val) => this.props.onSearchChanged ? this.props.onSearchChanged(val) : null,
+            onSearchClosed: () => this.props.onSearchClosed ? this.props.onSearchClosed() : null
+          }}
+          rightElement={{
+            menu: {
+              icon: 'more-vert',
+              labels: ['Atualizar', 'Sair']
+            }
+          }}
+          onRightElementPress={label => this.menuSelected(label.index)}
+        />
+        <View style={{ flex: 1 }}>
           {this.props.loading ? <ActivityIndicator size="large" /> : this.props.children}
         </View>
-      </DrawerLayoutAndroid>
+        <Tabs currentPage={this.props.currentPage} toPage={(i) => this.toPage(i)} />
+      </View>
     )
   }
 }
@@ -102,7 +63,11 @@ class BaseViewComponent extends DrawerLayoutAndroid {
 BaseViewComponent.propTypes = {
   title: PropTypes.string,
   menuSelected: PropTypes.func,
-  loading: PropTypes.bool
+  loading: PropTypes.bool,
+  currentPage: PropTypes.number.isRequired,
+  onSearchChanged: PropTypes.func,
+  onSearchClosed: PropTypes.func,
+  children: PropTypes.any
 }
 
 export default BaseViewComponent

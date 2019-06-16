@@ -64,6 +64,7 @@ export default class Cards extends React.Component {
   render() {
     return (
       <BaseViewComponent
+        currentPage={2}
         title="Cartões de Crédito"
         menuSelected={i => this.menuSelected(i)}
         loading={this.state.loading}

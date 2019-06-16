@@ -20,15 +20,15 @@ export default class Login extends React.Component {
 
   constructor(props) {
     super(props)
-    this.state = { email: '', password: '', error: '', loading: false }
+    this.state = { email: '', password: '', error: '', loading: true }
   }
 
   componentDidMount() {
     userStorage.get().then(({ email, token }) => {
       if (token)
         Actions.futurePayments()
-      else if (email) {
-        this.setState({ email: email })
+      else {
+        this.setState({ email: email || '', loading: false })
       }
     })
   }
@@ -42,10 +42,7 @@ export default class Login extends React.Component {
           email: this.state.email,
           token: res.token
         }
-        userStorage.save(user).then(() => {
-          console.log('Actions.futurePayments()')
-          Actions.futurePayments()
-        })
+        userStorage.save(user).then(() => Actions.futurePayments())
       })
       .catch(err => this.setState({
         loading: false,

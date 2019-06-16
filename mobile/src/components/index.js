@@ -13,3 +13,4 @@ export { default as FadeInView } from './animations/FadeInView'
 
 // main
 export { default as BaseViewComponent } from './main/BaseViewComponent'
+export { default as Tabs } from './Tabs'

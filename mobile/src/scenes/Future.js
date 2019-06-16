@@ -3,7 +3,7 @@ import { Text, View, FlatList, Dimensions, Picker } from 'react-native'
 import { Actions } from 'react-native-router-flux'
 
 import { PaymentFutureListItem, BaseViewComponent } from '../components'
-import { TokenStorage } from '../storage'
+import { userStorage } from '../storage'
 import { toDate, currentMonth, generatePickerMonthYear } from '../utils/string'
 import { paymentService } from '../services'
 
@@ -28,25 +28,7 @@ export default class Future extends React.Component {
   }
 
   componentDidMount() {
-    console.log('future')
     this.refresh()
-    // PaymentStorage.getFuture()
-    //   .then(res => {
-    //     if (res) {
-    //       const months = Object.keys(res)
-    //       const maxDateStored = months[months.length - 1]
-    //       this.setState({
-    //         months: months,
-    //         payments: res,
-    //         forecastAt: maxDateStored,
-    //         maxDateStored: maxDateStored,
-    //         loading: false,
-    //         filteredMonths: this.filteredMonths(null, months)
-    //       })
-    //     }
-    //     else
-    //       this.refresh()
-    //   }).catch(() => { })
   }
 
   refresh(forecastAt) {
@@ -57,12 +39,11 @@ export default class Future extends React.Component {
       filtro = `${date[0]}/${date[1]}`
     }
 
-    if (!this.state.loading)
-      this.setState({ loading: true })
-
+    this.setState({ loading: true })
+    console.log('inicio')
     paymentService.getFuture('05/2019', '12/2020')
       .then(res => {
-        // console.log(res)
+        console.log(res)
         const months = Object.keys(res)
         this.setState({
           months: months,
@@ -74,7 +55,7 @@ export default class Future extends React.Component {
         // PaymentStorage.saveFuture(res)
       })
       .catch(err => {
-        // console.warn(err)
+        console.warn(err)
         if (err.status !== 401)
           this.setState({ loading: false })
       })
@@ -94,7 +75,7 @@ export default class Future extends React.Component {
         break
       case 1:
         // PaymentStorage.saveFuture(null)
-        TokenStorage.save(null).then(() => Actions.login())
+        userStorage.save({ token: null }).then(() => Actions.login())
         break
     }
   }
@@ -113,20 +94,10 @@ export default class Future extends React.Component {
   render() {
     return (
       <BaseViewComponent
+      currentPage={0}
         title="Estimativa Financeira"
         menuSelected={index => this.menuSelected(index)}
         loading={this.state.loading}>
-        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 10 }}>
-          <Text style={{ marginRight: 10 }}>Previsão até:</Text>
-          <Picker
-            mode="dropdown"
-            selectedValue={this.state.forecastAt}
-            style={{ height: 50, width: 140, alignContent: 'center', alignItems: 'center', justifyContent: 'center' }}
-            onValueChange={date => this.dateChanged(date)}>
-            {monthsYearsPicker.map((p, i) => <Picker.Item key={i} label={p} value={p} />)}
-          </Picker>
-        </View>
-
         <FlatList
           data={this.state.filteredMonths}
           renderItem={({ item }) => {

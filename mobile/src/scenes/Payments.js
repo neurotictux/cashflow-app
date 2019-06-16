@@ -3,9 +3,6 @@ import { TouchableOpacity, Alert, FlatList } from 'react-native'
 import { Card } from 'react-native-material-ui'
 import { Actions } from 'react-native-router-flux'
 import ActionButton from 'react-native-action-button'
-import { PaymentService } from 'cashflow-cross-cutting'
-
-import { paymentStorage, creditCardStorage } from '../storage'
 import { PaymentListItem, BaseViewComponent } from '../components'
 import { paymentService } from '../services'
 
@@ -90,6 +87,7 @@ export default class Payments extends Component {
   render() {
     return (
       <BaseViewComponent
+        currentPage={1}
         title="Pagamentos"
         menuSelected={index => this.menuSelected(index)}
         loading={this.state.loading}
