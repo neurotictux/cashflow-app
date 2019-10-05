@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
-import { ListView, Button, Text, View } from 'react-native'
+import { Button, Text, View } from 'react-native'
 import { Card } from 'react-native-material-ui'
 import { PatternTextInput } from '../components'
 import { toMoney } from '../utils/string'
 
-const ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
+// const ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
 
 export default class Simulation extends Component {
 
@@ -15,7 +15,7 @@ export default class Simulation extends Component {
       last: '',
       total: '',
       fgts: '',
-      dataSource: ds.cloneWithRows([]),
+      // dataSource: ds.cloneWithRows([]),
       sumTotal: '$ 0.00'
     }
     this.firstChanged = this.firstChanged.bind(this)
@@ -68,7 +68,7 @@ export default class Simulation extends Component {
 
     this.setState({
       sumTotal: '$ ' + total.toFixed(2),
-      dataSource: ds.cloneWithRows(installments)
+      // dataSource: ds.cloneWithRows(installments)
     })
   }
 
@@ -143,7 +143,7 @@ export default class Simulation extends Component {
           <Text>{this.state.sumTotal}</Text>
         </View>
 
-        <ListView
+        {/* <ListView
           enableEmptySections={true}
           collapsable={true}
           paddingLeft={10}
@@ -160,7 +160,7 @@ export default class Simulation extends Component {
                 </View>
               </View>
             </Card>
-          } />
+          } /> */}
       </View>
     )
   }

@@ -4,7 +4,7 @@ import ActionButton from 'react-native-action-button'
 import { TextInput, FlatList, Text, View, Modal, Alert } from 'react-native'
 
 import { BaseViewComponent } from '../components'
-import { creditCardStorage } from '../storage'
+import { creditCardService } from '../services'
 
 export default class Cards extends React.Component {
 
@@ -15,25 +15,43 @@ export default class Cards extends React.Component {
       show: false,
       edit: false,
       cards: [],
-      card: null
+      card: null,
+      loading: true
     }
   }
 
   componentDidMount() {
-    creditCardStorage.getAll().then(cards => this.setState({ cards }))
+
+    // NetInfo.isConnected.fetch().then(isConnected => {
+    //   if (isConnected) {
+    //     Alert.alert('You are online!')
+    //   } else {
+    //     Alert.alert('You are offline!')
+    //   }
+    // }).catch(err => console.log(err))
+
+    this.refresh()
+  }
+
+  refresh() {
+    this.setState({ loading: true })
+    creditCardService.get().then(cards => {
+      cards = cards.map(c => ({ ...c, key: c.id + '' }))
+      this.setState({ cards, show: false, loading: false })
+    }).catch(() => this.setState({ show: false, loading: false }))
   }
 
   save() {
     const card = this.state.card || {}
-    card.name = this.state.name
+    card.name = (this.state.name || '').toUpperCase()
     const self = this
-    if (card.appId)
-      creditCardStorage.update(card)
-        .then((cards) => self.setState({ show: false, cards }))
+    if (card.id)
+      creditCardService.update(card)
+        .then(() => self.refresh())
         .catch(err => Alert.alert('ERRO', JSON.stringify(err)))
     else
-      creditCardStorage.create(card)
-        .then(cards => self.setState({ show: false, cards }))
+      creditCardService.create(card)
+        .then(() => self.refresh())
         .catch(err => Alert.alert('ERRO', JSON.stringify(err)))
   }
 
@@ -53,8 +71,8 @@ export default class Cards extends React.Component {
       {
         text: 'excluir',
         onPress: () => {
-          creditCardStorage.remove(this.state.card)
-            .then((cards) => this.setState({ show: false, cards }))
+          creditCardService.remove(this.state.card.id)
+            .then(() => this.refresh())
             .catch(err => Alert.alert('ERRO', JSON.stringify(err)))
         }
       }
@@ -122,9 +140,8 @@ export default class Cards extends React.Component {
         <FlatList
           style={{ height: '100%' }}
           data={this.state.cards}
-          renderItem={({ item, index }) =>
+          renderItem={({ item }) =>
             <ListItem
-              key={index}
               style={{ container: { margin: 10 } }}
               centerElement={<Text>{item.name}</Text>}
               onPress={() => this.open(item)}

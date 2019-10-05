@@ -5,6 +5,7 @@ import PropTypes from 'prop-types'
 import ErrorForm from './ErrorForm'
 
 const TextInputLayout = ({ onChangeText, style, label, value, error, touched }) => {
+  console.log(error)
   return (
     <View style={{ margin: 10, padding: 0, ...(style || {}).container }}>
       <Text style={{

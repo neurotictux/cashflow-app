@@ -1,58 +1,58 @@
 import React from 'react'
-import { Text, View, FlatList, Dimensions, Picker } from 'react-native'
+import { FlatList, ToastAndroid } from 'react-native'
 import { Actions } from 'react-native-router-flux'
 
 import { PaymentFutureListItem, BaseViewComponent } from '../components'
 import { userStorage } from '../storage'
-import { toDate, currentMonth, generatePickerMonthYear } from '../utils/string'
+import { toDate } from '../utils/string'
 import { paymentService } from '../services'
-
-const screenHeight = Dimensions.get('window').height
-
-const monthsYearsPicker = generatePickerMonthYear()
+import { paymentStorage } from '../storage'
 
 export default class Future extends React.Component {
 
   constructor(props) {
     super(props)
-
+    const now = new Date()
     this.state = {
       payments: {},
       months: [],
-      filteredMonths: {},
+      filteredMonths: [],
       loading: true,
-      maxHeightList: screenHeight,
-      forecastAt: currentMonth(3),
-      maxDateStored: null
+      updates: 0,
+      forecastAt: { month: now.getMonth() + 1, year: now.getFullYear() + 1 }
     }
   }
 
   componentDidMount() {
-    this.refresh()
+    paymentStorage.get()
+      .then(pays => {
+        const months = Object.keys(pays || [])
+        if (months.length) {
+          this.setState({ loading: false, months, payments: pays })
+          this.updateList(this.state.forecastAt, months, pays)
+        } else
+          this.fetchPayments()
+      })
+      .catch(err => {
+        this.setState({ loading: false })
+        console.warn(err)
+      })
   }
 
-  refresh(forecastAt) {
-    forecastAt = forecastAt || this.state.forecastAt
-    let filtro = null
-    if (forecastAt) {
-      const date = forecastAt.split('/')
-      filtro = `${date[0]}/${date[1]}`
-    }
+  fetchPayments() {
+    const start = new Date()
+    const end = new Date(start.getFullYear() + 5, 12, 0)
+    const startDate = `${start.getMonth() + 1}/${start.getFullYear()}`
+    const endDate = `${end.getMonth() + 1}/${end.getFullYear()}`
 
     this.setState({ loading: true })
-    console.log('inicio')
-    paymentService.getFuture('05/2019', '12/2020')
-      .then(res => {
-        console.log(res)
-        const months = Object.keys(res)
-        this.setState({
-          months: months,
-          payments: res,
-          loading: false,
-          forecastAt: forecastAt,
-          filteredMonths: this.filteredMonths(forecastAt, months)
-        })
-        // PaymentStorage.saveFuture(res)
+    paymentService.getFuture(startDate, endDate)
+      .then(pays => {
+        ToastAndroid.show('Dados atualizados!', ToastAndroid.SHORT)
+        paymentStorage.save(pays)
+        const months = Object.keys(pays)
+        this.updateList(this.state.forecastAt, months, pays)
+        this.setState({ loading: false })
       })
       .catch(err => {
         console.warn(err)
@@ -61,44 +61,48 @@ export default class Future extends React.Component {
       })
   }
 
-  filteredMonths(month, months) {
-    if (month)
-      months = months.filter(p => p === month || toDate(p) < toDate(month))
-    return months.map((p, i) => ({ key: i + '', value: p }))
+  updateList(forecastAt, months, payments) {
+    const forecastAtStr = `${forecastAt.month}/${forecastAt.year}`
+    const filteredMonths = this.state.months
+      .filter(p => p === forecastAtStr || toDate(p) < toDate(forecastAtStr))
+      .map((p, i) => ({ key: i + '', value: p }))
+
+    if (months && payments)
+      this.setState({ filteredMonths, months, payments })
+    else
+      this.setState({ filteredMonths })
   }
 
+  loadMore() {
+    const { forecastAt, updates } = this.state
+    if (updates <= 2) {
+      forecastAt.year++
+      this.updateList(forecastAt)
+      this.setState({ updates: updates + 1 })
+      console.log(updates)
+    }
+  }
 
   menuSelected(idx) {
     switch (idx) {
       case 0:
-        this.refresh()
+        this.fetchPayments()
         break
       case 1:
-        // PaymentStorage.saveFuture(null)
         userStorage.save({ token: null }).then(() => Actions.login())
         break
-    }
-  }
-
-  dateChanged(value) {
-    if (value !== this.state.maxDateStored && toDate(value) > toDate(this.state.maxDateStored)) {
-      this.refresh(value)
-    } else {
-      this.setState({
-        forecastAt: value,
-        filteredMonths: this.filteredMonths(value, this.state.months)
-      })
     }
   }
 
   render() {
     return (
       <BaseViewComponent
-      currentPage={0}
+        currentPage={0}
         title="Estimativa Financeira"
         menuSelected={index => this.menuSelected(index)}
         loading={this.state.loading}>
         <FlatList
+          onEndReached={() => this.loadMore()}
           data={this.state.filteredMonths}
           renderItem={({ item }) => {
             const monthYear = item.value.split('/')

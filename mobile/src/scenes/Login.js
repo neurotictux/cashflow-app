@@ -44,10 +44,13 @@ export default class Login extends React.Component {
         }
         userStorage.save(user).then(() => Actions.futurePayments())
       })
-      .catch(err => this.setState({
-        loading: false,
-        error: err.message
-      }))
+      .catch(err => {
+        console.log(err)
+        this.setState({
+          loading: false,
+          error: err.message
+        })
+      })
   }
 
   render() {

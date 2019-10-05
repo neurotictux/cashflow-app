@@ -80,13 +80,16 @@ class FormNewPayment extends Component {
               onCheck={checked => setFieldValue('fixedPayment', checked)} />
           </View>
 
-          <TextInputMask type="money"
-            value={this.state.costText}
-            style={styles.input}
-            options={{ unit: 'R$ ' }}
-            onChangeText={t => { this.setState({ costText: t }); setFieldValue('cost', fromReal(t)) }} />
+          <View style={{ marginTop: 10 }}>
+            <Text>Valor da parcela</Text>
+            <TextInputMask type="money"
+              value={this.state.costText}
+              style={styles.input}
+              options={{ unit: 'R$ ' }}
+              onChangeText={t => { this.setState({ costText: t }); setFieldValue('cost', fromReal(t)) }} />
 
-          <ErrorForm touched={touched.cost} text={errors.cost} />
+            <ErrorForm touched={touched.cost} text={errors.cost} />
+          </View>
 
           {values.fixedPayment ? null :
             <TextInputLayout label="N° de parcelas"
@@ -154,7 +157,7 @@ export default withFormik({
     return {
       id: payment.id,
       creditCardId: payment.creditCardId,
-      cost: installments[0].cost || 0,
+      cost: installments.length ? installments[0].cost : 0,
       description: payment.description || '',
       type: payment.type || PaymentType.Expense,
       installments: installments,
@@ -171,7 +174,7 @@ export default withFormik({
     let month = Number(monthYear[0])
     let year = Number(monthYear[1])
     values.installments = []
-    if (values.creditCard && !values.creditCard.id || values.creditCard.id === '_0')
+    if (values.creditCard && (!values.creditCard.id || values.creditCard.id === '_0'))
       values.creditCard = null
     values.qtdInstallments = values.fixedPayment ? 1 : values.qtdInstallments || 1
     for (let i = 1; i <= values.qtdInstallments; i++) {

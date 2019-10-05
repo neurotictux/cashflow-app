@@ -2,41 +2,11 @@ import AsyncStorage from '@react-native-community/async-storage'
 
 const KEY = '@CashFlow:PAYMENTS'
 
-const getByUser = async () => {
-  return JSON.parse(await AsyncStorage.getItem(KEY)) || []
-}
+const get = async () => JSON.parse(await AsyncStorage.getItem(KEY)) || []
 
-const create = async (payment) => {
-  const payments = (await getByUser())
-  payment.appId = 1
-  payments.forEach(e => {
-    if (e.appId >= payment.appId)
-      payment.appId = e.appId + 1
-  })
-  payments.push(payment)
-  await AsyncStorage.setItem(KEY, payments)
-  return payments
-}
-
-const update = async (payment) => {
-  const payments = (await getByUser()).filter(p => p.appId !== payment.appId)
-  payment.updatedAt = new Date()
-  if (payment.sync !== 'D')
-    payment.sync = 'U'
-  payments.push(payment)
-  payments.sort((a, b) => a.appId < b.appId ? -1 : a.appId > b.appId ? 1 : 0)
-  await AsyncStorage.setItem(KEY, payments)
-  return payments
-}
-
-const remove = (payment) => {
-  payment.sync = 'D'
-  return update(payment)
-}
+const save = (payments) => AsyncStorage.setItem(KEY, JSON.stringify(payments || []))
 
 export const paymentStorage = {
-  getByUser,
-  create,
-  update,
-  remove
+  get,
+  save
 }

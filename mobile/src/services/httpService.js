@@ -2,14 +2,16 @@ import axios from 'axios'
 import { userStorage } from '../storage'
 import { Actions } from 'react-native-router-flux'
 
-// const apiUrl = 'https://appcashflow.herokuapp.com/api'
-const apiUrl = 'http://localhost:3000/api'
+const apiUrl = 'https://appcashflow.herokuapp.com/api'
+// const apiUrl = 'http://localhost:3000/api'
 
 axios.interceptors.response.use(response => response, err => {
+  if (err + '' === 'Error: Network Error')
+    return Promise.reject('Verifique a conexão com a internet')
   const { request, status } = err.response
   if (status === 401 && !request.responseURL.endsWith('/api/token')) {
     userStorage.save({ token: null })
-    // Actions.reset()
+    Actions.reset()
     Actions.login()
   }
   return Promise.reject(err)
@@ -25,7 +27,7 @@ const sendRequest = async (method, url, useToken, data) => {
 
   return axios(req).then(res => res.data)
     .catch(err => {
-      const { data, status } = err.response || { status: -1, data: { message: '' + err } }
+      const { data, status } = err.response || { status: -1, data: '' + err }
       throw {
         message: status === 400 ? data.message : data,
         status: status
